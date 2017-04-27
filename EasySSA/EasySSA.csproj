@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Core\Network\PacketManager.cs" />
     <Compile Include="EasySSA.cs" />
+    <Compile Include="Extensions\ByteArrayExtensions.cs" />
     <Compile Include="Packets\Command.cs" />
     <Compile Include="Packets\CommandFactory.cs" />
     <Compile Include="Packets\OPCommand.cs" />
@@ -57,7 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\Threading\" />
-    <Folder Include="Extensions\" />
     <Folder Include="NetFwTypeLib\" />
     <Folder Include="Packets\Messages\Client\" />
     <Folder Include="Packets\Messages\Server\" />
