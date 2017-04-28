@@ -7,7 +7,11 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets {
-    class OPCommand {
+namespace EasySSA.Core.Network.Security {
+    public enum SecurityFlags {
+        None = 0,
+        Handshake = 1,
+        Blowfish = 2,
+        SecurityBytes = 4,
     }
 }

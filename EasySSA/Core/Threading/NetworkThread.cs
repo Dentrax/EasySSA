@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets {
-    class OPCommand {
+namespace EasySSA.Core.Threading {
+    public sealed class NetworkThread : ThreadBase {
     }
 }

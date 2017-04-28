@@ -7,7 +7,10 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets {
-    class OPCommand {
+namespace EasySSA.Services {
+    public enum ServiceProviderType {
+        Server,
+        Packet,
+        NONE
     }
 }

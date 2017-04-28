@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets {
-    class OPCommand {
+namespace EasySSA.Client {
+    class Fingerprint {
     }
 }

@@ -7,7 +7,14 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets {
-    class OPCommand {
+using EasySSA.Common;
+
+namespace EasySSA.Services {
+    public interface IServiceProvider : IProvider {
+        bool IsStarted { get; }
+        void Initialize(ServiceProvider.InitializeContextBase context);
+        void Terminate();
+        void Start();
+        void Stop();
     }
 }

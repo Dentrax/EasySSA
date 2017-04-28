@@ -6,8 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
-namespace EasySSA.Packets {
-    class OPCommand {
+namespace EasySSA.Core.Threading.Checkers {
+    public abstract class CheckerBase {
     }
 }

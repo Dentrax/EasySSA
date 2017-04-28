@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets {
-    class OPCommand {
+namespace EasySSA.Server.Services {
+    public sealed class GatewayServer : SROServiceServer {
     }
 }

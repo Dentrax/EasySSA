@@ -7,7 +7,15 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets {
-    class OPCommand {
+using EasySSA.SSA;
+
+namespace EasySSA.Packets.Messages.Server {
+    public sealed class ExchangePacket : Packet {
+
+        //Packet -> 0x7081
+
+        public ExchangePacket(ushort opcode) : base(opcode) {
+            
+        }
     }
 }

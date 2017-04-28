@@ -7,7 +7,8 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets {
-    class OPCommand {
+namespace EasySSA.Services.PacketService {
+    public interface IPacketProvider : IServiceProvider {
+        
     }
 }
