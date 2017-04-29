@@ -8,12 +8,19 @@
 #endregion
 
 using System;
-using System.Net;
+using EasySSA.SSA;
 
-namespace EasySSA.Server.Services {
-    public sealed class GatewayServer : SROServiceServer {
-        public override void Start(IPEndPoint endpoint) {
-            throw new NotImplementedException();
+namespace EasySSA.Packets {
+    public abstract class FixedPacket : Packet, IExploitProcessor, IExploitFixer {
+        public FixedPacket(ushort opcode) : base(opcode) {
+
         }
+
+        public abstract void FoundExploits();
+
+        public abstract void ProcessExploits();
+
+        public abstract void FixExploits();
+        
     }
 }

@@ -7,13 +7,14 @@
 // ====================================================
 #endregion
 
-using System;
-using System.Net;
+using EasySSA.SSA;
 
-namespace EasySSA.Server.Services {
-    public sealed class GatewayServer : SROServiceServer {
-        public override void Start(IPEndPoint endpoint) {
-            throw new NotImplementedException();
+namespace EasySSA.Packets.Messages.Client {
+    public sealed class LoginPacket : Packet {
+
+        public LoginPacket(ushort opcode) : base(opcode) {
+
         }
+
     }
 }

@@ -8,6 +8,7 @@
 #endregion
 
 using System;
+using EasySSA.Server.Services;
 
 namespace EasySSA.Services.ServerService {
     public sealed class ServerProvider : ServiceProvider, IServerProvider {
@@ -18,6 +19,10 @@ namespace EasySSA.Services.ServerService {
 
             }
         }
+
+        private AgentServer m_agentServer;
+
+        private GatewayServer m_gatewayServer;
 
         public ServerProvider() {
         }

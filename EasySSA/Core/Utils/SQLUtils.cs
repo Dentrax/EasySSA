@@ -7,7 +7,10 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Core.Network {
-    class AsyncSocket {
+namespace EasySSA.Core.Utils {
+    public static class SQLUtils {
+
+
+
     }
 }

@@ -6,7 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 namespace EasySSA.SSA {
-    public class Security
+    public class Security : IDisposable
     {
         #region SecurityFlags
         // Security flags container
@@ -260,6 +260,10 @@ namespace EasySSA.SSA {
             return (byte)(NextUInt16() & 0xFF);
         }
         #endregion
+
+        private readonly object m_locker = new object();
+
+        private bool m_Disposed;
 
         uint m_value_x;
         uint m_value_g;
@@ -745,103 +749,143 @@ namespace EasySSA.SSA {
             return writer.GetBytes();
         }
 
-        bool HasPacketToSend()
+        public bool HasPacketToSend()
         {
-            // No packets, easy case
-            if (m_outgoing_packets.Count == 0)
-            {
+            lock (this.m_class_lock) {
+
+                // No packets, easy case
+                if (m_outgoing_packets.Count == 0)
+                {
+                    return false;
+                }
+
+                // If we have packets and have accepted the handshake, we can send whenever,
+                // so return true.
+                if (m_accepted_handshake)
+                {
+                    return true;
+                }
+
+                // Otherwise, check to see if we have pending handshake packets to send
+                Packet packet = m_outgoing_packets[0];
+                if (packet.Opcode == 0x5000 || packet.Opcode == 0x9000)
+                {
+                    return true;
+                }
+
+                // If we get here, we have out of order packets that cannot be sent yet.
                 return false;
             }
-
-            // If we have packets and have accepted the handshake, we can send whenever,
-            // so return true.
-            if (m_accepted_handshake)
-            {
-                return true;
-            }
-
-            // Otherwise, check to see if we have pending handshake packets to send
-            Packet packet = m_outgoing_packets[0];
-            if (packet.Opcode == 0x5000 || packet.Opcode == 0x9000)
-            {
-                return true;
-            }
-
-            // If we get here, we have out of order packets that cannot be sent yet.
-            return false;
         }
 
-        KeyValuePair<TransferBuffer, Packet> GetPacketToSend()
+        //TODO: Add a Locker here
+
+        public KeyValuePair<TransferBuffer, Packet> GetPacketToSend()
         {
-            if (m_outgoing_packets.Count == 0)
-            {
-                throw (new Exception("[SecurityAPI::GetPacketToSend] No packets are avaliable to send."));
-            }
+            lock (this.m_class_lock) {
 
-            Packet packet = m_outgoing_packets[0];
-            m_outgoing_packets.RemoveAt(0);
-
-            if (packet.Massive)
-            {
-                ushort parts = 0;
-
-                PacketWriter final = new PacketWriter();
-                PacketWriter final_data = new PacketWriter();
-
-                byte[] input_data = packet.GetBytes();
-                PacketReader input_reader = new PacketReader(input_data);
-
-                TransferBuffer workspace = new TransferBuffer(4089, 0, (int)input_data.Length);
-
-                while (workspace.Size > 0)
+                if (m_outgoing_packets.Count == 0)
                 {
-                    PacketWriter part_data = new PacketWriter();
-
-                    int cur_size = workspace.Size > 4089 ? 4089 : workspace.Size; // Max buffer size is 4kb for the client
-
-                    part_data.Write((byte)0); // Data flag
-
-                    part_data.Write(input_data, workspace.Offset, cur_size);
-
-                    workspace.Offset += cur_size;
-                    workspace.Size -= cur_size; // Update the size
-
-                    final_data.Write(FormatPacket(0x600D, part_data.GetBytes(), false));
-
-                    ++parts; // Track how many parts there are
+                    throw (new Exception("[SecurityAPI::GetPacketToSend] No packets are avaliable to send."));
                 }
 
-                // Write the final header packet to the front of the packet
-                PacketWriter final_header = new PacketWriter();
-                final_header.Write((byte)1); // Header flag
-                final_header.Write((short)parts);
-                final_header.Write(packet.Opcode);
-                final.Write(FormatPacket(0x600D, final_header.GetBytes(), false));
+                Packet packet = m_outgoing_packets[0];
+                m_outgoing_packets.RemoveAt(0);
 
-                // Finish the large packet of all the data
-                final.Write(final_data.GetBytes());
-
-                // Return the collated data
-                byte[] raw_bytes = final.GetBytes();
-                packet.Lock();
-                return new KeyValuePair<TransferBuffer, Packet>(new TransferBuffer(raw_bytes, 0, raw_bytes.Length, true), packet);
-            }
-            else
-            {
-                bool encrypted = packet.Encrypted;
-                if (!m_client_security)
+                if (packet.Massive)
                 {
-                    if (m_enc_opcodes.Contains(packet.Opcode))
+                    ushort parts = 0;
+
+                    PacketWriter final = new PacketWriter();
+                    PacketWriter final_data = new PacketWriter();
+
+                    byte[] input_data = packet.GetBytes();
+                    PacketReader input_reader = new PacketReader(input_data);
+
+                    TransferBuffer workspace = new TransferBuffer(4089, 0, (int)input_data.Length);
+
+                    while (workspace.Size > 0)
                     {
-                        encrypted = true;
+                        PacketWriter part_data = new PacketWriter();
+
+                        int cur_size = workspace.Size > 4089 ? 4089 : workspace.Size; // Max buffer size is 4kb for the client
+
+                        part_data.Write((byte)0); // Data flag
+
+                        part_data.Write(input_data, workspace.Offset, cur_size);
+
+                        workspace.Offset += cur_size;
+                        workspace.Size -= cur_size; // Update the size
+
+                        final_data.Write(FormatPacket(0x600D, part_data.GetBytes(), false));
+
+                        ++parts; // Track how many parts there are
                     }
+
+                    // Write the final header packet to the front of the packet
+                    PacketWriter final_header = new PacketWriter();
+                    final_header.Write((byte)1); // Header flag
+                    final_header.Write((short)parts);
+                    final_header.Write(packet.Opcode);
+                    final.Write(FormatPacket(0x600D, final_header.GetBytes(), false));
+
+                    // Finish the large packet of all the data
+                    final.Write(final_data.GetBytes());
+
+                    // Return the collated data
+                    byte[] raw_bytes = final.GetBytes();
+                    packet.Lock();
+                    return new KeyValuePair<TransferBuffer, Packet>(new TransferBuffer(raw_bytes, 0, raw_bytes.Length, true), packet);
                 }
-                byte[] raw_bytes = FormatPacket(packet.Opcode, packet.GetBytes(), encrypted);
-                packet.Lock();
-                return new KeyValuePair<TransferBuffer, Packet>(new TransferBuffer(raw_bytes, 0, raw_bytes.Length, true), packet);
+                else
+                {
+                    bool encrypted = packet.Encrypted;
+                    if (!m_client_security)
+                    {
+                        if (m_enc_opcodes.Contains(packet.Opcode))
+                        {
+                            encrypted = true;
+                        }
+                    }
+                    byte[] raw_bytes = FormatPacket(packet.Opcode, packet.GetBytes(), encrypted);
+                    packet.Lock();
+                    return new KeyValuePair<TransferBuffer, Packet>(new TransferBuffer(raw_bytes, 0, raw_bytes.Length, true), packet);
+                }
             }
         }
         #endregion
+
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~Security() {
+            Dispose(false);
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (!m_Disposed) {
+
+                if (disposing) {
+                    //
+                }
+
+                m_count_byte_seeds = null;
+                m_security_flags = null;
+                m_outgoing_packets.Clear();
+                m_outgoing_packets = null;
+                m_incoming_packets.Clear();
+                m_incoming_packets = null;
+                m_enc_opcodes.Clear();
+                m_enc_opcodes = null;
+                m_blowfish = null;
+                m_recv_buffer.Buffer = null;
+                m_recv_buffer = null;
+                m_class_lock = null;
+                m_Disposed = true;
+            }
+        }
 
         // Default constructor
         public Security()

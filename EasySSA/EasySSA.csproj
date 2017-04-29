@@ -43,9 +43,15 @@
   <ItemGroup>
     <Compile Include="Client\Fingerprint.cs" />
     <Compile Include="Common\IProvider.cs" />
-    <Compile Include="Core\Network\AsyncSocket.cs" />
+    <Compile Include="Core\Database\Database.cs" />
+    <Compile Include="Core\Database\MSSQL.cs" />
+    <Compile Include="Core\Database\NOSQL.cs" />
+    <Compile Include="Core\Database\SQL.cs" />
+    <Compile Include="Core\Network\AsyncServer.cs" />
     <Compile Include="Core\Network\PacketManager.cs" />
-    <Compile Include="Core\Network\Security\SecurityFlags.cs" />
+    <Compile Include="Core\Network\Securities\SecurityFlags.cs" />
+    <Compile Include="Core\Network\SocketContext.cs" />
+    <Compile Include="Core\Network\TCPServer.cs" />
     <Compile Include="Core\Threading\Checkers\CheckerBase.cs" />
     <Compile Include="Core\Threading\Checkers\VersionChecker.cs" />
     <Compile Include="Core\Threading\ConsoleThread.cs" />
@@ -53,8 +59,15 @@
     <Compile Include="Core\Threading\NetworkThread.cs" />
     <Compile Include="Core\Threading\ThreadBase.cs" />
     <Compile Include="Core\Utils\ObjectPool.cs" />
+    <Compile Include="Core\Utils\SQLUtils.cs" />
     <Compile Include="EasySSA.cs" />
     <Compile Include="Extensions\ByteArrayExtensions.cs" />
+    <Compile Include="Packets\FixedPacket.cs" />
+    <Compile Include="Packets\IExploitFixer.cs" />
+    <Compile Include="Packets\IExploitProcessor.cs" />
+    <Compile Include="Packets\Messages\Client\LoginPacket.cs" />
+    <Compile Include="Packets\OPCodeFactory.cs" />
+    <Compile Include="Server\ServerServiceType.cs" />
     <Compile Include="Services\CoreServices.cs" />
     <Compile Include="Services\IService.cs" />
     <Compile Include="Services\IServiceProvider.cs" />
@@ -86,11 +99,9 @@
     <Compile Include="SSA\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Core\Database\" />
     <Folder Include="Core\IO\" />
     <Folder Include="NetFwTypeLib\" />
     <Folder Include="Packets\Commands\" />
-    <Folder Include="Packets\Messages\Client\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EasySSA.licenseheader" />
