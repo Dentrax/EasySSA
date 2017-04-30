@@ -37,5 +37,24 @@ namespace EasySSA.Core.Network {
 
         public abstract void Start(IPEndPoint endpoint);
 
+        //ANTI-CPU LOAD RELAX
+        //        var delay = TimeSpan.FromMilliseconds(50);
+        //while (true) {
+        // await Task.Delay(delay);
+        //        await SendMessageAsync(mySocket, someData);
+        //        await ReceiveReplyAsync(mySocket);
+        //    }
+
+
+        //TODO
+        //    Check if client is connected
+        //    Poll the client
+        //Check if data is available
+        //Read the data
+        //Go back to step 1
+
+        //https://social.msdn.microsoft.com/Forums/vstudio/en-US/20f737aa-6c45-4e9f-b627-d3128d31de61/multi-threaded-server-socket-for-multiple-clients-threading-and-send-receive-issue?forum=csharpgeneral
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
     }
 }

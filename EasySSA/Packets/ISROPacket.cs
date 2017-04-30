@@ -7,14 +7,18 @@
 // ====================================================
 #endregion
 
-using EasySSA.SSA;
+namespace EasySSA.Packets {
+    public interface ISROPacket {
 
-namespace EasySSA.Packets.Messages.Client {
-    public sealed class LoginPacket : SROPacket {
+        PacketServerType ServerType { get; }
 
-        public LoginPacket(ushort opcode) : base(opcode) {
+        PacketSendType SendType { get; }
 
-        }
+        PacketSocketType SocketType { get; }
+
+        PacketServerType IncomingFrom { get; }
+
+        PacketServerType OutgoingTo { get; }
 
     }
 }

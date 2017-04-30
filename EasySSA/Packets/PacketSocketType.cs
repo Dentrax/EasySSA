@@ -8,10 +8,8 @@
 #endregion
 
 namespace EasySSA.Packets {
-    public interface IExploitProcessor {
-
-        void FoundExploits();
-        void ProcessExploits();
-
+    public enum PacketSocketType {
+        SERVER,
+        CLIENT
     }
 }

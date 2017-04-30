@@ -7,14 +7,10 @@
 // ====================================================
 #endregion
 
-using EasySSA.SSA;
-
-namespace EasySSA.Packets.Messages.Client {
-    public sealed class LoginPacket : SROPacket {
-
-        public LoginPacket(ushort opcode) : base(opcode) {
-
-        }
-
+namespace EasySSA.Packets {
+    public enum PacketSendType {
+        REQUEST,
+        RESPONSE,
+        UNKNOWN
     }
 }

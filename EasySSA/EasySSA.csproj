@@ -62,11 +62,21 @@
     <Compile Include="Core\Utils\SQLUtils.cs" />
     <Compile Include="EasySSA.cs" />
     <Compile Include="Extensions\ByteArrayExtensions.cs" />
-    <Compile Include="Packets\FixedPacket.cs" />
-    <Compile Include="Packets\IExploitFixer.cs" />
-    <Compile Include="Packets\IExploitProcessor.cs" />
+    <Compile Include="Packets\Exploits\ExploitPacket.cs" />
+    <Compile Include="Packets\Exploits\ExploitPacketCollection.cs" />
+    <Compile Include="Packets\Exploits\ExploitPacketInfo.cs" />
+    <Compile Include="Packets\ISROPacket.cs" />
+    <Compile Include="Packets\Messages\UnknownPacket.cs" />
+    <Compile Include="Packets\PacketDatabase.cs" />
+    <Compile Include="Packets\PacketSendType.cs" />
+    <Compile Include="Packets\PacketSocketType.cs" />
+    <Compile Include="Packets\SROPacket.cs" />
+    <Compile Include="Packets\PacketServerType.cs" />
+    <Compile Include="Processor\IExploitFixer.cs" />
+    <Compile Include="Processor\IExploitProcessor.cs" />
     <Compile Include="Packets\Messages\Client\LoginPacket.cs" />
     <Compile Include="Packets\OPCodeFactory.cs" />
+    <Compile Include="Processor\ExploitPacketProcessor.cs" />
     <Compile Include="Server\ServerServiceType.cs" />
     <Compile Include="Services\CoreServices.cs" />
     <Compile Include="Services\IService.cs" />
@@ -102,6 +112,10 @@
     <Folder Include="Core\IO\" />
     <Folder Include="NetFwTypeLib\" />
     <Folder Include="Packets\Commands\" />
+    <Folder Include="Packets\Messages\Agent\" />
+    <Folder Include="Packets\Messages\Download\" />
+    <Folder Include="Packets\Messages\Gateway\" />
+    <Folder Include="Packets\Messages\Global\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EasySSA.licenseheader" />

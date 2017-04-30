@@ -7,20 +7,10 @@
 // ====================================================
 #endregion
 
-using System;
-using EasySSA.SSA;
-
-namespace EasySSA.Packets {
-    public abstract class FixedPacket : Packet, IExploitProcessor, IExploitFixer {
-        public FixedPacket(ushort opcode) : base(opcode) {
+namespace EasySSA.Packets.Messages {
+    public sealed class UnknownPacket : SROPacket {
+        public UnknownPacket(ushort opcode) : base(opcode) {
 
         }
-
-        public abstract void FoundExploits();
-
-        public abstract void ProcessExploits();
-
-        public abstract void FixExploits();
-        
     }
 }
