@@ -8,7 +8,8 @@
 #endregion
 
 using EasySSA.Packets.Messages;
-using EasySSA.Packets.Messages.Client;
+using EasySSA.Packets.Messages.Download;
+using EasySSA.SSA;
 
 namespace EasySSA.Packets {
     public static class PacketDatabase {
@@ -17,14 +18,43 @@ namespace EasySSA.Packets {
             return packet.Opcode;
         }
 
-        public static SROPacket GetOPCodeTypeFrom(ushort opcode) {
+        public static SROPacket GetPacketFrom(Packet rhs) {
+            return PacketDatabase.GetPacketFrom(rhs.Opcode);
+        }
+
+        public static SROPacket GetPacketFrom(ushort opcode) {
             switch (opcode) {
 
-                case (ushort)OPCode.Gateway.Request.LAUNCHER:
-                    return new LoginPacket(opcode);
+                #region GLO6BAL
 
-                case (ushort)OPCode.Gateway.Request.CHECKVERSION:
-                    return new LoginPacket(opcode);
+                #region GLO6BAL-REQUEST
+
+                #endregion
+
+                #region GLO6BAL-RESPONSE
+
+                #endregion
+
+                #endregion
+
+                #region DOWNLOAD
+
+                #region DOWNLOAD-REQUEST
+                case (ushort)OPCode.Download.Request.FILE_COMPLETE:
+                    return new DOWNLOAD_FILE_COMPLETE_PACKET(opcode, false, PacketSendType.REQUEST, PacketServerType.DOWNLOAD, PacketSocketType.CLIENT);
+                case (ushort)OPCode.Download.Request.FILE_REQUEST:
+                    return new DOWNLOAD_FILE_REQUEST_PACKET(opcode, false, PacketSendType.REQUEST, PacketServerType.DOWNLOAD, PacketSocketType.CLIENT);
+                #endregion
+
+                #region DOWNLOAD-RESPONSE
+                case (ushort)OPCode.Download.Response.FILE_CHUNK:
+                    return new DOWNLOAD_FILE_CHUNK_RESPONSE_PACKET(opcode, false, PacketSendType.RESPONSE, PacketServerType.DOWNLOAD, PacketSocketType.SERVER);
+                #endregion
+
+                #endregion
+
+
+
 
 
                 default: return new UnknownPacket(opcode);

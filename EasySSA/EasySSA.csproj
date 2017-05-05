@@ -66,6 +66,11 @@
     <Compile Include="Packets\Exploits\ExploitPacketCollection.cs" />
     <Compile Include="Packets\Exploits\ExploitPacketInfo.cs" />
     <Compile Include="Packets\ISROPacket.cs" />
+    <Compile Include="Packets\Messages\Download\DOWNLOAD_FILE_CHUNK_RESPONSE_PACKET.cs" />
+    <Compile Include="Packets\Messages\Download\DOWNLOAD_FILE_COMPLETE_PACKET.cs" />
+    <Compile Include="Packets\Messages\Download\DOWNLOAD_FILE_REQUEST_PACKET.cs" />
+    <Compile Include="Packets\Messages\Global\GLOBAL_HANDSHAKE_REQUEST.cs" />
+    <Compile Include="Packets\Messages\Global\GLOBAL_HANDSHAKE_RESPONSE.cs" />
     <Compile Include="Packets\Messages\UnknownPacket.cs" />
     <Compile Include="Packets\PacketDatabase.cs" />
     <Compile Include="Packets\PacketSendType.cs" />
@@ -113,9 +118,7 @@
     <Folder Include="NetFwTypeLib\" />
     <Folder Include="Packets\Commands\" />
     <Folder Include="Packets\Messages\Agent\" />
-    <Folder Include="Packets\Messages\Download\" />
     <Folder Include="Packets\Messages\Gateway\" />
-    <Folder Include="Packets\Messages\Global\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EasySSA.licenseheader" />

@@ -52,7 +52,14 @@ namespace EasySSA.Packets {
             this.m_socketType = socketType;
         }
 
+        protected void Create(PacketSendType sendType, PacketServerType serverType, PacketSocketType socketType){
+            this.m_sendType = sendType;
+            this.m_serverType = serverType;
+            this.m_socketType = socketType;
+        }
 
-     
+
+
+
     }
 }
