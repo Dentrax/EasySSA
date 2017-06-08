@@ -7,7 +7,8 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Server.Services {
-    public sealed class AgentServer : SROModuleServer {
+namespace EasySSA.Core.Tweening.Options {
+    public struct NoOptions : IPlugOptions {
+        public void Reset() { }
     }
 }

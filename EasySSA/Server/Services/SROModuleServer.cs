@@ -7,7 +7,9 @@
 // ====================================================
 #endregion
 
+using EasySSA.Core.Network;
+
 namespace EasySSA.Server.Services {
-    public sealed class AgentServer : SROModuleServer {
+    public abstract class SROModuleServer : TCPServer {
     }
 }

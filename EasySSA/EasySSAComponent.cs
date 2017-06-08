@@ -7,7 +7,12 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Server.Services {
-    public sealed class AgentServer : SROModuleServer {
+using System;
+
+namespace EasySSA {
+    public sealed class EasySSAComponent : IEasySSAInit {
+        public IEasySSAInit SetCapacity(int tweenersCapacity, int sequencesCapacity) {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -5,9 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+#endregion
 
 //Reference -> https://github.com/tanisman/SilkroadProject/blob/master/SCommon/Networking/SocketContext.cs
-#endregion
 
 using System;
 using System.Net.Sockets;

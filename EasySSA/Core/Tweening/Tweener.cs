@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Server.Services {
-    public sealed class AgentServer : SROModuleServer {
+namespace EasySSA.Core.Tweening {
+    public abstract class Tweener : Tween {
     }
 }

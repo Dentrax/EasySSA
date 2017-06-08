@@ -11,7 +11,7 @@ using System;
 using System.Net;
 
 namespace EasySSA.Server.Services {
-    public sealed class GatewayServer : SROServiceServer {
+    public sealed class GatewayServer : SROModuleServer {
         public override void Start(IPEndPoint endpoint) {
             throw new NotImplementedException();
         }

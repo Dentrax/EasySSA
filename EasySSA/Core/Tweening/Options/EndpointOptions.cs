@@ -7,9 +7,15 @@
 // ====================================================
 #endregion
 
-using EasySSA.Core.Network;
+using System.Net;
 
-namespace EasySSA.Server.Services {
-    public abstract class SROServiceServer : TCPServer {
+namespace EasySSA.Core.Tweening.Options {
+    public struct EndpointOptions : IPlugOptions {
+
+        public IPEndPoint IPEndPoint;
+
+        public void Reset() {
+            IPEndPoint = default(IPEndPoint);
+        }
     }
 }

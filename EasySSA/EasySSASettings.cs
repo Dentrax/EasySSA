@@ -7,7 +7,17 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Server.Services {
-    public sealed class AgentServer : SROModuleServer {
+namespace EasySSA {
+    public sealed class EasySSASettings {
+
+        public static bool USE_SAFE_MODE = true;
+
+        public static bool USE_DEBUG_MODE = false;
+
+        public const int DEFAULT_MAX_TWEENERS = 200;
+        public const int DEFAULT_MAX_SEQUENCES = 50;
+
+
+
     }
 }
