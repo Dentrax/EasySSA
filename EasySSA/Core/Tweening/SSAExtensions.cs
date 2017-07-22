@@ -38,14 +38,6 @@ namespace EasySSA.Core.Tweening {
             return DOTween.Kill(target, complete);
         }
 
-        public static int DOFlip(this Component target) {
-            return DOTween.Flip(target);
-        }
-
-        public static int DOFlip(this Material target) {
-            return DOTween.Flip(target);
-        }
-
         public static int DOGoto(this Component target, float to, bool andPlay = false) {
             return DOTween.Goto(target, to, andPlay);
         }
