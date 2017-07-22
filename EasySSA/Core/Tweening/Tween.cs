@@ -62,7 +62,7 @@ namespace EasySilkroadSecurityApi.Core.Tweening {
         internal int miscInt = -1; // Used by some plugins to store data (currently only by Paths to store current waypoint index)
 
         internal virtual void Reset() {
-            timeScale = 1;
+            //timeScale = 1;
             isBackwards = false;
             id = null;
             isIndependentUpdate = false;
