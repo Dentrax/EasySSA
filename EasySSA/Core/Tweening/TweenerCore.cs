@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 
+using System;
 using EasySSA.Core.Tweening.Options;
 
 namespace EasySSA.Core.Tweening {
@@ -28,6 +29,10 @@ namespace EasySSA.Core.Tweening {
             setter = null;
             hasManuallySetStartValue = false;
             isFromAllowed = true;
+        }
+
+        internal override bool Startup() {
+            throw new NotImplementedException();
         }
 
         // Called by TweenManager.Validate.
