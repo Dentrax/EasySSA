@@ -53,9 +53,9 @@ namespace EasySSA
 
         public static IEasySSAInit Init(bool? recycleAllByDefault = null, bool? useSafeMode = null, LogBehaviour? logBehaviour = null) {
             if (WasInitialized) return instance;
-            if (!Application.isPlaying || isQuitting) return null;
+            if (!IsQuitting) return null;
 
-            DOTweenSettings settings = Resources.Load(DOTweenSettings.AssetName) as DOTweenSettings;
+            EasySSASettings settings = Resources.Load(EasySSASettings.AssetName) as EasySSASettings;
             return Init(settings, recycleAllByDefault, useSafeMode, logBehaviour);
         }
 
