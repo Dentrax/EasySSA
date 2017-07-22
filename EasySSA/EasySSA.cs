@@ -8,12 +8,12 @@
 #endregion
 
 using System;
-using EasySSA.Core.Tweening;
-using EasySSA.Core.Tweening.Options;
-using System.Collections.Generic;
 using System.Net;
+using System.Collections.Generic;
+using EasySilkroadSecurityApi.Core.Tweening;
+using EasySilkroadSecurityApi.Core.Tweening.Options;
 
-namespace EasySSA
+namespace EasySilkroadSecurityApi
 {
     public sealed class EasySSA {
 

@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace EasySSA.SSA {
+namespace EasySilkroadSecurityApi.SSA {
     public class Security : IDisposable
     {
         #region SecurityFlags

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace EasySSA.SSA {
+namespace EasySilkroadSecurityApi.SSA {
     internal class PacketWriter : BinaryWriter
     {
         MemoryStream m_ms;

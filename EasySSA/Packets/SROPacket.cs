@@ -8,9 +8,9 @@
 #endregion
 
 using System;
-using EasySSA.SSA;
+using EasySilkroadSecurityApi.SSA;
 
-namespace EasySSA.Packets {
+namespace EasySilkroadSecurityApi.Packets {
     public abstract class SROPacket : Packet, ISROPacket {
 
         private PacketSendType m_sendType;

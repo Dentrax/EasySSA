@@ -7,9 +7,9 @@
 // ====================================================
 #endregion
 
-using EasySSA.SSA;
+using EasySilkroadSecurityApi.SSA;
 
-namespace EasySSA.Core.Tweening {
+namespace EasySilkroadSecurityApi.Core.Tweening {
     public sealed class TweenParams {
 
         public static readonly TweenParams Params = new TweenParams();

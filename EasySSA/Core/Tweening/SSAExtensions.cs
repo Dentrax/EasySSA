@@ -8,9 +8,9 @@
 #endregion
 
 using System.Net;
-using EasySSA.Server.Services;
+using EasySilkroadSecurityApi.Server.Services;
 
-namespace EasySSA.Core.Tweening {
+namespace EasySilkroadSecurityApi.Core.Tweening {
     public static class SSAExtensions {
 
         public static Tweener DOBind(this SROModuleServer target, IPEndPoint host, bool snapping = false) {

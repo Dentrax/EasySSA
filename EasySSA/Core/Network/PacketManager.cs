@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Core.Network {
+namespace EasySilkroadSecurityApi.Core.Network {
     public sealed class PacketManager {
     }
 }

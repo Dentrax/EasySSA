@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Core.Tweening {
+namespace EasySilkroadSecurityApi.Core.Tweening {
     public abstract class ABSSequentiable {
         //internal TweenType tweenType;
         //internal float sequencedPosition; // position in Sequence

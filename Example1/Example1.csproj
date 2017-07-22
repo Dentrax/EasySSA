@@ -48,5 +48,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EasySSA\EasySSA.csproj">
+      <Project>{fb7d0d1a-2bff-4385-8a19-fb2392b1be24}</Project>
+      <Name>EasySSA</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

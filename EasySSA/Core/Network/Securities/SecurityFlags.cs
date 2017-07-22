@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Core.Network.Securities {
+namespace EasySilkroadSecurityApi.Core.Network.Securities {
     public enum SecurityFlags {
         None = 0,
         Handshake = 1,

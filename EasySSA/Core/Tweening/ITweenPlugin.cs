@@ -7,6 +7,6 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Core.Tweening {
+namespace EasySilkroadSecurityApi.Core.Tweening {
     public interface ITweenPlugin { }
 }

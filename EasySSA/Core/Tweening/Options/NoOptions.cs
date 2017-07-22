@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Core.Tweening.Options {
+namespace EasySilkroadSecurityApi.Core.Tweening.Options {
     public struct NoOptions : IPlugOptions {
         public void Reset() { }
     }

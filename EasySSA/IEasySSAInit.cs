@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA {
+namespace EasySilkroadSecurityApi {
     public interface IEasySSAInit {
         IEasySSAInit SetCapacity(int tweenersCapacity, int sequencesCapacity);
     }

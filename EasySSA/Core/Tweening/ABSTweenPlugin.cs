@@ -7,9 +7,9 @@
 // ====================================================
 #endregion
 
-using EasySSA.Core.Tweening.Options;
+using EasySilkroadSecurityApi.Core.Tweening.Options;
 
-namespace EasySSA.Core.Tweening {
+namespace EasySilkroadSecurityApi.Core.Tweening {
     public abstract class ABSTweenPlugin<T1, T2, TPlugOptions> : ITweenPlugin where TPlugOptions : struct, IPlugOptions {
         public abstract void Reset(TweenerCore<T1, T2, TPlugOptions> t);
         public abstract void SetFrom(TweenerCore<T1, T2, TPlugOptions> t, bool isRelative);

@@ -7,9 +7,9 @@
 // ====================================================
 #endregion
 
-using EasySSA.SSA;
+using EasySilkroadSecurityApi.SSA;
 
-namespace EasySSA.Packets.Messages.Server {
+namespace EasySilkroadSecurityApi.Packets.Messages.Server {
     public sealed class GuildLimitPacket : Packet {
         public GuildLimitPacket(ushort opcode) : base(opcode) {
 

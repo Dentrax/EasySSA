@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Common {
+namespace EasySilkroadSecurityApi.Common {
     public interface IProvider {
     }
 }

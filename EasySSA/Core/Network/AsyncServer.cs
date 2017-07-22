@@ -10,10 +10,10 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using EasySSA.Core.Network.Securities;
-using EasySSA.Core.Utils;
+using EasySilkroadSecurityApi.Core.Network.Securities;
+using EasySilkroadSecurityApi.Core.Utils;
 
-namespace EasySSA.Core.Network {
+namespace EasySilkroadSecurityApi.Core.Network {
     public abstract class AsyncServer {
 
         private Socket m_Socket;

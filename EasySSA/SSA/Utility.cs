@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 
-namespace EasySSA.SSA {
+namespace EasySilkroadSecurityApi.SSA {
     public class Utility
     {
         public static string HexDump(byte[] buffer)

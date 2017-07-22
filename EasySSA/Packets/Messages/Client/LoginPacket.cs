@@ -7,9 +7,9 @@
 // ====================================================
 #endregion
 
-using EasySSA.SSA;
+using EasySilkroadSecurityApi.SSA;
 
-namespace EasySSA.Packets.Messages.Client {
+namespace EasySilkroadSecurityApi.Packets.Messages.Client {
     public sealed class LoginPacket : SROPacket {
 
         public LoginPacket(ushort opcode) : base(opcode) {

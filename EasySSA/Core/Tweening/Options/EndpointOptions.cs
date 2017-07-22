@@ -9,7 +9,7 @@
 
 using System.Net;
 
-namespace EasySSA.Core.Tweening.Options {
+namespace EasySilkroadSecurityApi.Core.Tweening.Options {
     public struct EndpointOptions : IPlugOptions {
 
         public IPEndPoint IPEndPoint;

@@ -7,11 +7,11 @@
 // ====================================================
 #endregion
 
-using EasySSA.Packets.Messages;
-using EasySSA.Packets.Messages.Download;
-using EasySSA.SSA;
+using EasySilkroadSecurityApi.Packets.Messages;
+using EasySilkroadSecurityApi.Packets.Messages.Download;
+using EasySilkroadSecurityApi.SSA;
 
-namespace EasySSA.Packets {
+namespace EasySilkroadSecurityApi.Packets {
     public static class PacketDatabase {
 
         public static ushort GetOPCodeFrom(SROPacket packet) {

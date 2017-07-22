@@ -11,12 +11,12 @@
 
 using System;
 using System.Net.Sockets;
-using EasySSA.SSA;
-using EasySSA.Core.Network.Securities;
+using EasySilkroadSecurityApi.SSA;
+using EasySilkroadSecurityApi.Core.Network.Securities;
 using System.Threading;
 using System.Collections.Generic;
 
-namespace EasySSA.Core.Network {
+namespace EasySilkroadSecurityApi.Core.Network {
     public abstract class SocketContext : IDisposable {
 
         private bool m_wasDisposed;

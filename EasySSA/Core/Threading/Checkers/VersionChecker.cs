@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Core.Threading.Checkers {
+namespace EasySilkroadSecurityApi.Core.Threading.Checkers {
     public sealed class VersionChecker : CheckerBase {
     }
 }

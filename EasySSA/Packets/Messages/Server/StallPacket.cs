@@ -7,9 +7,9 @@
 // ====================================================
 #endregion
 
-using EasySSA.SSA;
+using EasySilkroadSecurityApi.SSA;
 
-namespace EasySSA.Packets.Messages.Server {
+namespace EasySilkroadSecurityApi.Packets.Messages.Server {
     public sealed class StallPacket : Packet {
         //Packet -> 0x70B1
         public StallPacket(ushort opcode) : base(opcode) {

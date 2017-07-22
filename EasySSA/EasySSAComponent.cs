@@ -9,7 +9,7 @@
 
 using System;
 
-namespace EasySSA {
+namespace EasySilkroadSecurityApi {
     public sealed class EasySSAComponent : IEasySSAInit {
         public IEasySSAInit SetCapacity(int tweenersCapacity, int sequencesCapacity) {
             throw new NotImplementedException();

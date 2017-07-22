@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Services.PacketService {
+namespace EasySilkroadSecurityApi.Services.PacketService {
     public interface IPacketProvider : IServiceProvider {
         
     }

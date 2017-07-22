@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA {
+namespace EasySilkroadSecurityApi {
     public sealed class EasySSASettings {
 
         public static bool USE_SAFE_MODE = true;

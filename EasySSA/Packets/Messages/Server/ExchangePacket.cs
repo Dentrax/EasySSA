@@ -7,9 +7,9 @@
 // ====================================================
 #endregion
 
-using EasySSA.SSA;
+using EasySilkroadSecurityApi.SSA;
 
-namespace EasySSA.Packets.Messages.Server {
+namespace EasySilkroadSecurityApi.Packets.Messages.Server {
     public sealed class ExchangePacket : Packet {
 
         //Packet -> 0x7081

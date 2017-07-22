@@ -8,9 +8,9 @@
 #endregion
 
 using System;
-using EasySSA.Core.Tweening.Options;
+using EasySilkroadSecurityApi.Core.Tweening.Options;
 
-namespace EasySSA.Core.Tweening {
+namespace EasySilkroadSecurityApi.Core.Tweening {
     public class TweenerCore<T1, T2, TPlugOptions> : Tweener where TPlugOptions : struct, IPlugOptions {
         public T2 startValue, endValue, changeValue;
         public TPlugOptions plugOptions;

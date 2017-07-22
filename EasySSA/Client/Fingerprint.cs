@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Client {
+namespace EasySilkroadSecurityApi.Client {
     class Fingerprint {
     }
 }

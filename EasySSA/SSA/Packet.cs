@@ -2,7 +2,7 @@
 using System.Text;
 using System.IO;
 
-namespace EasySSA.SSA {
+namespace EasySilkroadSecurityApi.SSA {
     public class Packet
     {
         private ushort m_opcode;

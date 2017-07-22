@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Services {
+namespace EasySilkroadSecurityApi.Services {
     public enum ServiceProviderType {
         Server,
         Packet,

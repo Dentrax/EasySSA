@@ -7,9 +7,9 @@
 // ====================================================
 #endregion
 
-using EasySSA.Core.Network;
+using EasySilkroadSecurityApi.Core.Network;
 
-namespace EasySSA.Server.Services {
+namespace EasySilkroadSecurityApi.Server.Services {
     public abstract class SROModuleServer : TCPServer {
     }
 }

@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Services {
+namespace EasySilkroadSecurityApi.Services {
     public interface IService {
     }
 }

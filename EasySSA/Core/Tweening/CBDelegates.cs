@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Core.Tweening {
+namespace EasySilkroadSecurityApi.Core.Tweening {
     public delegate void TweenCallback();
     public delegate void TweenCallback<in T>(T value);
 

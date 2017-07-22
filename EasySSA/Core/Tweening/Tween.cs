@@ -9,7 +9,7 @@
 
 using System;
 
-namespace EasySSA.Core.Tweening {
+namespace EasySilkroadSecurityApi.Core.Tweening {
     public abstract class Tween : ABSSequentiable {
 
         public object ID;

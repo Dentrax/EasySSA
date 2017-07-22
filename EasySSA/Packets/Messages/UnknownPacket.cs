@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets.Messages {
+namespace EasySilkroadSecurityApi.Packets.Messages {
     public sealed class UnknownPacket : SROPacket {
         public UnknownPacket(ushort opcode) : base(opcode) {
 

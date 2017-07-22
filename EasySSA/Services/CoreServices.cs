@@ -10,10 +10,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EasySSA.Services.PacketService;
-using EasySSA.Services.ServerService;
+using EasySilkroadSecurityApi.Services.PacketService;
+using EasySilkroadSecurityApi.Services.ServerService;
 
-namespace EasySSA.Services {
+namespace EasySilkroadSecurityApi.Services {
     public sealed class CoreServices {
         private Dictionary<ServiceProviderType, IServiceProvider> m_services = new Dictionary<ServiceProviderType, IServiceProvider>();
 

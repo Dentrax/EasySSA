@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Core.Threading {
+namespace EasySilkroadSecurityApi.Core.Threading {
     public abstract class ThreadBase {
     }
 }

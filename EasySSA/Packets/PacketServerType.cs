@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets {
+namespace EasySilkroadSecurityApi.Packets {
     public enum PacketServerType {
         GATEWAY,
         AGENT,

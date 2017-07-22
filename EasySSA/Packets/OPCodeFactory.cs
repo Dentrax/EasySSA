@@ -7,11 +7,11 @@
 // ====================================================
 #endregion
 
-using EasySSA.Packets.Messages.Server;
+using EasySilkroadSecurityApi.Packets.Messages.Server;
 using System;
 using System.Collections.Generic;
 
-namespace EasySSA.Packets {
+namespace EasySilkroadSecurityApi.Packets {
     public sealed class OPCodeFactory {
 
         public static readonly Dictionary<uint, Type> PACKET_LIST;

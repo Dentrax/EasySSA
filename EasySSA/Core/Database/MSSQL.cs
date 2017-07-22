@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Core.Database {
+namespace EasySilkroadSecurityApi.Core.Database {
     public sealed class MSSQL : SQL {
     }
 }

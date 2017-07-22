@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Server.Services {
+namespace EasySilkroadSecurityApi.Server.Services {
     public sealed class AgentServer : SROModuleServer {
     }
 }

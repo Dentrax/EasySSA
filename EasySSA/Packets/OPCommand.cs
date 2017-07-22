@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets {
+namespace EasySilkroadSecurityApi.Packets {
     class OPCommand {
     }
 }
