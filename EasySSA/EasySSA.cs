@@ -33,6 +33,12 @@ namespace EasySilkroadSecurityApi
         
         internal static EasySSAComponent instance;
 
+        static EasySSA() {
+#if DEBUG
+            IsDebugBuild = true;
+#endif
+        }
+
         //EasySSA ssa = new EasySSA();
         //ssa.Init();
         //ssa.OnPacketReceived()
@@ -69,23 +75,10 @@ namespace EasySilkroadSecurityApi
             DOTweenComponent.Create();
             // Assign settings
             if (settings != null) {
-                if (useSafeMode == null) DOTween.useSafeMode = settings.useSafeMode;
+                if (useSafeMode == null) DOTween.useSafeMode = settings.UseSafeMode;
                 if (logBehaviour == null) DOTween.logBehaviour = settings.logBehaviour;
-                if (recycleAllByDefault == null) DOTween.defaultRecyclable = settings.defaultRecyclable;
-                DOTween.timeScale = settings.timeScale;
-                DOTween.useSmoothDeltaTime = settings.useSmoothDeltaTime;
-                DOTween.maxSmoothUnscaledTime = settings.maxSmoothUnscaledTime;
-                DOTween.defaultRecyclable = recycleAllByDefault == null ? settings.defaultRecyclable : (bool)recycleAllByDefault;
-                DOTween.showUnityEditorReport = settings.showUnityEditorReport;
-                DOTween.drawGizmos = settings.drawGizmos;
-                DOTween.defaultAutoPlay = settings.defaultAutoPlay;
-                DOTween.defaultUpdateType = settings.defaultUpdateType;
-                DOTween.defaultTimeScaleIndependent = settings.defaultTimeScaleIndependent;
-                DOTween.defaultEaseType = settings.defaultEaseType;
-                DOTween.defaultEaseOvershootOrAmplitude = settings.defaultEaseOvershootOrAmplitude;
-                DOTween.defaultEasePeriod = settings.defaultEasePeriod;
-                DOTween.defaultAutoKill = settings.defaultAutoKill;
-                DOTween.defaultLoopType = settings.defaultLoopType;
+                if (recycleAllByDefault == null) DOTween.defaultRecyclable = settings.DefaultRecyclable;
+                DOTween.defaultRecyclable = recycleAllByDefault == null ? settings.DefaultRecyclable : (bool)recycleAllByDefault;
             }
             // Log
             if (Debugger.logPriority >= 2) Debugger.Log("DOTween initialization (useSafeMode: " + DOTween.useSafeMode + ", recycling: " + (DOTween.defaultRecyclable ? "ON" : "OFF") + ", logBehaviour: " + DOTween.logBehaviour + ")");
@@ -97,11 +90,6 @@ namespace EasySilkroadSecurityApi
             TweenManager.SetCapacities(tweenersCapacity, sequencesCapacity);
         }
 
-        /// <summary>
-        /// Kills all tweens, clears all cached tween pools and plugins and resets the max Tweeners/Sequences capacities to the default values.
-        /// </summary>
-        /// <param name="destroy">If TRUE also destroys DOTween's gameObject and resets its initializiation, default settings and everything else
-        /// (so that next time you use it it will need to be re-initialized)</param>
         public static void Clear(bool destroy = false) {
             TweenManager.PurgeAll();
             PluginsManager.PurgeAll();
@@ -135,6 +123,24 @@ namespace EasySilkroadSecurityApi
         public static int Validate() {
             return TweenManager.Validate();
         }
+
+        #region Tween TO
+
+        //public static TweenerCore<float, float, FloatOptions> To(DOGetter<float> getter, DOSetter<float> setter, float endValue, float duration) {
+
+        //    return ApplyTo<float, float, FloatOptions>(getter, setter, endValue, duration);
+        //}
+
+        public static TweenerCore<double, double, NoOptions> DOPacketDebug(DOGetter<double> getter, DOSetter<double> setter, double endValue, float duration) {
+
+            return ApplyTo<double, double, NoOptions>(getter, setter, endValue, duration);
+        }
+        public static Tweener To(DOGetter<int> getter, DOSetter<int> setter, int endValue, float duration) {
+
+            return ApplyTo<int, int, NoOptions>(getter, setter, endValue, duration);
+        }
+        
+        #endregion
 
         #region Global Info Getters
 

@@ -17,7 +17,8 @@ namespace EasySilkroadSecurityApi {
         public const int DEFAULT_MAX_TWEENERS = 200;
         public const int DEFAULT_MAX_SEQUENCES = 50;
 
-
-
+        public bool UseSafeMode = true;
+        public LogBehaviour logBehaviour = LogBehaviour.ErrorsOnly;
+        public bool DefaultRecyclable;
     }
 }
