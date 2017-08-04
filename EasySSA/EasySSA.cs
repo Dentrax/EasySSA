@@ -54,30 +54,20 @@ namespace EasySilkroadSecurityApi
 
         static void AutoInit() {
             EasySSASettings settings = new EasySSASettings();
-            Init(settings, null, null);
+            Init(settings, false);
         }
 
-        public static IEasySSAInit Init(bool? recycleAllByDefault = null, bool? useSafeMode = null) {
+        public static IEasySSAInit Init(bool useSafeMode) {
             if (WasInitialized) return instance;
             if (!IsQuitting) return null;
 
             EasySSASettings settings = new EasySSASettings();
-            return Init(settings, recycleAllByDefault, useSafeMode, logBehaviour);
+            return Init(settings, useSafeMode);
         }
 
-        static IEasySSAInit Init(EasySSASettings settings, bool? recycleAllByDefault, bool? useSafeMode) {
+        static IEasySSAInit Init(EasySSASettings settings, bool useSafeMode) {
             WasInitialized = true;
-            // Options
-            if (recycleAllByDefault != null) DOTween.defaultRecyclable = (bool)recycleAllByDefault;
-            if (useSafeMode != null) DOTween.useSafeMode = (bool)useSafeMode;
-            // Gameobject - also assign instance
-            DOTweenComponent.Create();
-            // Assign settings
-            if (settings != null) {
-                if (useSafeMode == null) DOTween.useSafeMode = settings.UseSafeMode;
-                if (recycleAllByDefault == null) DOTween.defaultRecyclable = settings.DefaultRecyclable;
-                DOTween.defaultRecyclable = recycleAllByDefault == null ? settings.DefaultRecyclable : (bool)recycleAllByDefault;
-            }
+
 
             return instance;
         }
