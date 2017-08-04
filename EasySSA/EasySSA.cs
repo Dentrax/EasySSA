@@ -54,141 +54,41 @@ namespace EasySilkroadSecurityApi
 
         static void AutoInit() {
             EasySSASettings settings = new EasySSASettings();
-            Init(settings, null, null, null);
+            Init(settings, null, null);
         }
 
-        public static IEasySSAInit Init(bool? recycleAllByDefault = null, bool? useSafeMode = null, LogBehaviour? logBehaviour = null) {
+        public static IEasySSAInit Init(bool? recycleAllByDefault = null, bool? useSafeMode = null) {
             if (WasInitialized) return instance;
             if (!IsQuitting) return null;
 
-            EasySSASettings settings = Resources.Load(EasySSASettings.AssetName) as EasySSASettings;
+            EasySSASettings settings = new EasySSASettings();
             return Init(settings, recycleAllByDefault, useSafeMode, logBehaviour);
         }
 
-        static IEasySSAInit Init(EasySSASettings settings, bool? recycleAllByDefault, bool? useSafeMode, LogBehaviour? logBehaviour) {
+        static IEasySSAInit Init(EasySSASettings settings, bool? recycleAllByDefault, bool? useSafeMode) {
             WasInitialized = true;
             // Options
             if (recycleAllByDefault != null) DOTween.defaultRecyclable = (bool)recycleAllByDefault;
             if (useSafeMode != null) DOTween.useSafeMode = (bool)useSafeMode;
-            if (logBehaviour != null) DOTween.logBehaviour = (LogBehaviour)logBehaviour;
             // Gameobject - also assign instance
             DOTweenComponent.Create();
             // Assign settings
             if (settings != null) {
                 if (useSafeMode == null) DOTween.useSafeMode = settings.UseSafeMode;
-                if (logBehaviour == null) DOTween.logBehaviour = settings.logBehaviour;
                 if (recycleAllByDefault == null) DOTween.defaultRecyclable = settings.DefaultRecyclable;
                 DOTween.defaultRecyclable = recycleAllByDefault == null ? settings.DefaultRecyclable : (bool)recycleAllByDefault;
             }
-            // Log
-            if (Debugger.logPriority >= 2) Debugger.Log("DOTween initialization (useSafeMode: " + DOTween.useSafeMode + ", recycling: " + (DOTween.defaultRecyclable ? "ON" : "OFF") + ", logBehaviour: " + DOTween.logBehaviour + ")");
 
             return instance;
         }
 
-        public static void SetTweensCapacity(int tweenersCapacity, int sequencesCapacity) {
-            TweenManager.SetCapacities(tweenersCapacity, sequencesCapacity);
-        }
 
         public static void Clear(bool destroy = false) {
-            TweenManager.PurgeAll();
-            PluginsManager.PurgeAll();
             if (!destroy) return;
 
-            initialized = false;
-            useSafeMode = false;
-            showUnityEditorReport = false;
-            drawGizmos = true;
-            timeScale = 1;
-            useSmoothDeltaTime = false;
-            logBehaviour = LogBehaviour.ErrorsOnly;
-            defaultEaseType = Ease.OutQuad;
-            defaultEaseOvershootOrAmplitude = 1.70158f;
-            defaultEasePeriod = 0;
-            defaultUpdateType = UpdateType.Normal;
-            defaultTimeScaleIndependent = false;
-            defaultAutoPlay = AutoPlay.All;
-            defaultLoopType = LoopType.Restart;
-            defaultAutoKill = true;
-            defaultRecyclable = false;
-            maxActiveTweenersReached = maxActiveSequencesReached = 0;
 
-            DOTweenComponent.DestroyInstance();
         }
 
-        public static void ClearCachedTweens() {
-            TweenManager.PurgePools();
-        }
-
-        public static int Validate() {
-            return TweenManager.Validate();
-        }
-
-        #region Tween TO
-
-        //public static TweenerCore<float, float, FloatOptions> To(DOGetter<float> getter, DOSetter<float> setter, float endValue, float duration) {
-
-        //    return ApplyTo<float, float, FloatOptions>(getter, setter, endValue, duration);
-        //}
-
-        public static TweenerCore<double, double, NoOptions> DOPacketDebug(DOGetter<double> getter, DOSetter<double> setter, double endValue, float duration) {
-
-            return ApplyTo<double, double, NoOptions>(getter, setter, endValue, duration);
-        }
-        public static Tweener To(DOGetter<int> getter, DOSetter<int> setter, int endValue, float duration) {
-
-            return ApplyTo<int, int, NoOptions>(getter, setter, endValue, duration);
-        }
-        
-        #endregion
-
-        #region Global Info Getters
-
-        public static bool IsTweening(object targetOrId, bool alsoCheckIfIsPlaying = false) {
-            return TweenManager.FilteredOperation(OperationType.IsTweening, FilterType.TargetOrId, targetOrId, alsoCheckIfIsPlaying, 0) > 0;
-        }
-
-        public static int TotalPlayingTweens() {
-            return TweenManager.TotalPlayingTweens();
-        }
-
-        public static List<Tween> PlayingTweens() {
-            return TweenManager.GetActiveTweens(true);
-        }
-
-        public static List<Tween> PausedTweens() {
-            return TweenManager.GetActiveTweens(false);
-        }
-
-        public static List<Tween> TweensById(object id, bool playingOnly = false) {
-            if (id == null) return null;
-
-            return TweenManager.GetTweensById(id, playingOnly);
-        }
-
-        public static List<Tween> TweensByTarget(object target, bool playingOnly = false) {
-            return TweenManager.GetTweensByTarget(target, playingOnly);
-        }
-
-        #endregion
-
-        public static TweenerCore<string, IPEndPoint, EndpointOptions> Bind(DOGetter<string> getter, DOSetter<string> setter, IPEndPoint host) {
-            return ApplyTo<string, IPEndPoint, EndpointOptions>(getter, setter, host);
-        }
-
-        public static TweenerCore<T1, T2, TPlugOptions> To<T1, T2, TPlugOptions>(ABSTweenPlugin<T1, T2, TPlugOptions> plugin, DOGetter<T1> getter, DOSetter<T1> setter, T2 endValue) where TPlugOptions : struct, IPlugOptions {
-            return ApplyTo(getter, setter, endValue, plugin);
-        }
-
-        static TweenerCore<T1, T2, TPlugOptions> ApplyTo<T1, T2, TPlugOptions>(DOGetter<T1> getter, DOSetter<T1> setter, T2 endValue, ABSTweenPlugin<T1, T2, TPlugOptions> plugin = null) where TPlugOptions : struct, IPlugOptions {
-            InitCheck();
-            TweenerCore<T1, T2, TPlugOptions> tweener = TweenManager.GetTweener<T1, T2, TPlugOptions>();
-            if (!Tweener.Setup(tweener, getter, setter, endValue, plugin)) {
-                TweenManager.Despawn(tweener);
-                return null;
-            }
-            return tweener;
-        }
 
     }
 }
