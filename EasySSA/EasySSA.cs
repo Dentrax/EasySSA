@@ -19,17 +19,12 @@ namespace EasySilkroadSecurityApi
 
         public static readonly Version Version = new Version(1, 0, 0, 0);
 
-
-        public const string TEXT_MAX_TWEENS_REACHED = "Max Tweens reached: capacity has automatically been increased from #0 to #1. Use DOTween.SetTweensCapacity to set it manually at startup";
-        public const string TEXT_CANT_CHANGE_SEQUENCED_VALUES = "You cannot change the values of a tween contained inside a Sequence";
-
         internal static bool WasInitialized { get; private set; }
 
         internal static bool IsQuitting { get; private set; }
 
         internal static bool IsDebugBuild;
 
-        internal static int maxActiveTweenersReached, maxActiveSequencesReached; 
         
         internal static EasySSAComponent instance;
 

@@ -7,7 +7,13 @@
 // ====================================================
 #endregion
 
+using System;
+using System.Net;
+
 namespace EasySilkroadSecurityApi.Server.Services {
     public sealed class AgentServer : SROModuleServer {
+        public override void Start(IPEndPoint endpoint) {
+            throw new NotImplementedException();
+        }
     }
 }

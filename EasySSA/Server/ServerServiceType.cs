@@ -12,11 +12,11 @@ namespace EasySilkroadSecurityApi.Server {
         GATEWAY,
         AGENT,
         SR_GAME,
-        DOWNLOAD_MANAGER,
-        SR_SHARD_MANAGER,
-        GLOBAL_MANAGER,
-        FARM_MANAGER,
-        MACHINE_MANAGER,
+        DOWNLOAD,
+        SR_SHARD,
+        GLOBAL,
+        FARM,
+        MACHINE,
         NONE
     }
 }
