@@ -7,9 +7,8 @@
 // ====================================================
 #endregion
 
-using EasySSA.Packets.Messages;
-using EasySSA.Packets.Messages.Download;
 using EasySSA.SSA;
+using EasySSA.Server;
 
 namespace EasySSA.Packets {
     public static class PacketDatabase {
@@ -25,13 +24,13 @@ namespace EasySSA.Packets {
         public static SROPacket GetPacketFrom(ushort opcode) {
             switch (opcode) {
 
-                #region GLO6BAL
+                #region GLOBAL
 
-                #region GLO6BAL-REQUEST
+                #region GLOBAL-REQUEST
 
                 #endregion
 
-                #region GLO6BAL-RESPONSE
+                #region GLOBAL-RESPONSE
 
                 #endregion
 
@@ -41,23 +40,19 @@ namespace EasySSA.Packets {
 
                 #region DOWNLOAD-REQUEST
                 case (ushort)OPCode.Download.Request.FILE_COMPLETE:
-                    return new DOWNLOAD_FILE_COMPLETE_PACKET(opcode, false, PacketSendType.REQUEST, ServerType.DOWNLOAD, PacketSocketType.CLIENT);
+                    return new SROPacket("DOWNLOAD_FILE_COMPLETE_PACKET", opcode, false, PacketSendType.REQUEST, ServerServiceType.DOWNLOAD, PacketSocketType.CLIENT);
                 case (ushort)OPCode.Download.Request.FILE_REQUEST:
-                    return new DOWNLOAD_FILE_REQUEST_PACKET(opcode, false, PacketSendType.REQUEST, ServerType.DOWNLOAD, PacketSocketType.CLIENT);
+                    return new SROPacket("DOWNLOAD_FILE_REQUEST_PACKET", opcode, false, PacketSendType.REQUEST, ServerServiceType.DOWNLOAD, PacketSocketType.CLIENT);
                 #endregion
 
                 #region DOWNLOAD-RESPONSE
                 case (ushort)OPCode.Download.Response.FILE_CHUNK:
-                    return new DOWNLOAD_FILE_CHUNK_RESPONSE_PACKET(opcode, false, PacketSendType.RESPONSE, ServerType.DOWNLOAD, PacketSocketType.SERVER);
+                    return new SROPacket("DOWNLOAD_FILE_CHUNK_RESPONSE_PACKET", opcode, false, PacketSendType.RESPONSE, ServerServiceType.DOWNLOAD, PacketSocketType.SERVER);
                 #endregion
 
                 #endregion
-
-
-
-
-
-                default: return new UnknownPacket(opcode);
+                 
+                default: return new SROPacket(opcode);
             }
         }
 

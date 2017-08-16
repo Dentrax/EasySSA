@@ -17,6 +17,6 @@ namespace EasySSA.Server {
         GLOBAL,
         FARM,
         MACHINE,
-        NONE
+        UNKNOWN
     }
 }

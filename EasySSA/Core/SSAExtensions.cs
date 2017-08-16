@@ -16,10 +16,10 @@ namespace EasySSA.Core.Tweening {
     public static class SSAExtensions {
 
 
-        public static T SetServerType<T>(this T t, ServerType serverType) where T : SROModuleServer {
+        public static T SetServerType<T>(this T t, ServerServiceType serverType) where T : SROModuleServer {
             if (t == null || !t.IsActive) return t;
 
-            t.ServerType = serverType;
+            t.ServerServiceType = serverType;
             return t;
         }
 
@@ -38,10 +38,10 @@ namespace EasySSA.Core.Tweening {
             return t;
         }
 
-        public static T OnClientDisconnected<T>(this T t, Func<Client, bool> clientCallback, Action<ClientDisconnectType> disconnectCallback) where T : SROModuleServer {
+        public static T OnClientDisconnected<T>(this T t, Func<Client, ClientDisconnectType> callback) where T : SROModuleServer {
             if (t == null || !t.IsActive) return t;
 
-            t.OnClientDisconnected = disconnectCallback;
+            t.OnClientDisconnected = callback;
             return t;
         }
     }

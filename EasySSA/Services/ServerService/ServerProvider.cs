@@ -9,6 +9,7 @@
 
 using System;
 using EasySSA.Server.Services;
+using EasySSA.Server;
 
 namespace EasySSA.Services.ServerService {
     public sealed class ServerProvider : ServiceProvider, IServerProvider {
@@ -54,7 +55,7 @@ namespace EasySSA.Services.ServerService {
         }
 
 
-        public void OnClientConnected() {
+        public void AddModuleServer(SROModuleServer moduleServer) {
 
         }
 

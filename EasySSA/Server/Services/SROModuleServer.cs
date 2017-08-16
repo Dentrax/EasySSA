@@ -7,19 +7,33 @@
 // ====================================================
 #endregion
 
+using EasySSA.Common;
 using EasySSA.Core.Network;
+using EasySSA.Packets;
 using System;
+using System.Net;
 
 namespace EasySSA.Server.Services {
-    public abstract class SROModuleServer : TCPServer {
+    public abstract class SROModuleServer {
 
         internal Action OnClientConnected;
-        internal Action<ClientDisconnectType> OnClientDisconnected;
+        internal Func<Client, ClientDisconnectType> OnClientDisconnected;
 
-        internal ServerType ServerType;
-        internal ServerType ServerIndex;
+        internal ServerServiceType ServerServiceType;
+        internal int ServerIndex;
 
         internal int MaxClientCount;
+
+
+        internal int CurrentClientCount;
+
+        public SROModuleServer() {
+
+        }
+
+       
+
+
 
     }
 }

@@ -11,7 +11,7 @@ namespace EasySSA.Common {
 
         public Socket Socket { get; private set; }
 
-        public ServerServiceType ServerType { get; private set; }
+        public ServerServiceType ServerServiceType { get; private set; }
 
         public string IPAddress { get; private set; }
 

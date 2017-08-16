@@ -32,10 +32,28 @@ namespace EasySSA
 
         //EasySSA ssa = new EasySSA();
         //ssa.Init();
-        //ssa.OnPacketReceived()
 
-        //SROModuleServer agent = new AgentServer();
-        //agent.DOBind(ip, port).On
+        //ssa.AddServer(ServerType.Gateway, 1)
+        //   .SetFingerprint("f")
+        //   .SetEndPoint("ip", "port")
+        //   .SetRedirect("ip", "port")
+        //   .SetMaxClientCount(500)
+        //   .OnClientConnect()
+        //   .OnClientDisconnect()
+        //   .OnPacketReceived()
+        //   ...
+
+        //ssa.AddServer(ServerType.Agent, 1)
+        //   .SetFingerprint("f")
+        //   .SetEndPoint("ip", "port")
+        //   .SetRedirect("ip", "port")
+        //   .SetMaxClientCount(500)
+        //   .OnClientConnect()
+        //   .OnClientDisconnect()
+        //   .OnPacketReceived()
+        //   ...
+
+        //ssa.DOBind()
 
         static void InitCheck() {
             if (WasInitialized || IsQuitting) return;

@@ -12,15 +12,15 @@ using EasySSA.Server;
 namespace EasySSA.Packets {
     public interface ISROPacket {
 
-        ServerType ServerType { get; }
+        ServerServiceType ServerServiceType { get; }
 
         PacketSendType SendType { get; }
 
         PacketSocketType SocketType { get; }
 
-        ServerType IncomingFrom { get; }
+        ServerServiceType IncomingFrom { get; }
 
-        ServerType OutgoingTo { get; }
+        ServerServiceType OutgoingTo { get; }
 
     }
 }

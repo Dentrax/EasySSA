@@ -11,6 +11,7 @@ namespace EasySSA.Server {
     public enum ClientDisconnectType {
         MAX_CONNECTION_REACHED,
         TIMEOUT,
+        DISPOSED,
         MANUALLY
     }
 }

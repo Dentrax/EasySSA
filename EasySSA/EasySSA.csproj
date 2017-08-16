@@ -43,14 +43,12 @@
   <ItemGroup>
     <Compile Include="Common\Client.cs" />
     <Compile Include="Server\ClientDisconnectType.cs" />
-    <Compile Include="Server\ServerParams.cs" />
     <Compile Include="SSA\Fingerprint.cs" />
     <Compile Include="Common\IProvider.cs" />
     <Compile Include="Core\Database\Database.cs" />
     <Compile Include="Core\Database\MSSQL.cs" />
     <Compile Include="Core\Database\NOSQL.cs" />
     <Compile Include="Core\Database\SQL.cs" />
-    <Compile Include="Core\Network\AsyncServer.cs" />
     <Compile Include="Core\Network\PacketManager.cs" />
     <Compile Include="Core\Network\Securities\SecurityFlags.cs" />
     <Compile Include="Core\Network\SocketContext.cs" />
@@ -61,9 +59,6 @@
     <Compile Include="Core\Threading\MemoryThread.cs" />
     <Compile Include="Core\Threading\NetworkThread.cs" />
     <Compile Include="Core\Threading\ThreadBase.cs" />
-    <Compile Include="Core\Options\EndpointOptions.cs" />
-    <Compile Include="Core\Options\IPlugOptions.cs" />
-    <Compile Include="Core\Options\NoOptions.cs" />
     <Compile Include="Core\SSAExtensions.cs" />
     <Compile Include="Core\Utils\ObjectPool.cs" />
     <Compile Include="Core\Utils\SQLUtils.cs" />
@@ -78,7 +73,6 @@
     <Compile Include="Packets\PacketSendType.cs" />
     <Compile Include="Packets\PacketSocketType.cs" />
     <Compile Include="Packets\SROPacket.cs" />
-    <Compile Include="Server\ServerType.cs" />
     <Compile Include="Packets\OPCodeFactory.cs" />
     <Compile Include="Server\ServerServiceType.cs" />
     <Compile Include="Services\CoreServices.cs" />

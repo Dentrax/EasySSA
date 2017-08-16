@@ -12,8 +12,10 @@ using System.Net;
 
 namespace EasySSA.Server.Services {
     public sealed class AgentServer : SROModuleServer {
-        public override void Start(IPEndPoint endpoint) {
-            throw new NotImplementedException();
+
+        public AgentServer() {
+            this.ServerServiceType = ServerServiceType.AGENT;
         }
+
     }
 }
