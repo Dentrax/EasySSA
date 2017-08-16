@@ -939,12 +939,20 @@ namespace EasySilkroadSecurityApi.SSA {
 
         // Changes the 0x2001 identify packet data that will be sent out by
         // this security object.
+
         public void ChangeIdentity(string name, byte flag)
         {
             lock (m_class_lock)
             {
                 m_identity_name = name;
                 m_identity_flag = flag;
+            }
+        }
+
+        public void ChangeIdentity(Fingerprint fingerprint) {
+            lock (m_class_lock) {
+                m_identity_name = fingerprint.IdentityID;
+                m_identity_flag = fingerprint.IdentityFlag;
             }
         }
 

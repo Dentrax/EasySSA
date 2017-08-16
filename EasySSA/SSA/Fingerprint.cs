@@ -9,8 +9,17 @@
 
 namespace EasySilkroadSecurityApi.SSA {
     public sealed class Fingerprint {
+        
+        public string IdentityID { get; private set; }
 
+        public byte IdentityFlag { get; private set; }
 
+        public string SHA { get; private set; }
 
+        public Fingerprint(string identityID, byte identityFlag, string sha) {
+            this.IdentityID = identityID;
+            this.IdentityFlag = identityFlag;
+            this.SHA = sha;
+        }
     }
 }

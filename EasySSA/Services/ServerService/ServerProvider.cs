@@ -13,7 +13,7 @@ using EasySilkroadSecurityApi.Server.Services;
 namespace EasySilkroadSecurityApi.Services.ServerService {
     public sealed class ServerProvider : ServiceProvider, IServerProvider {
 
-        public sealed class InitializeContext : ServiceProvider.InitializeContextBase {
+        public sealed new class InitializeContext : ServiceProvider.InitializeContextBase {
 
             public InitializeContext() : base() {
 
@@ -52,5 +52,9 @@ namespace EasySilkroadSecurityApi.Services.ServerService {
         public override void Stop() {
             throw new NotImplementedException();
         }
+
+
+        public
+
     }
 }

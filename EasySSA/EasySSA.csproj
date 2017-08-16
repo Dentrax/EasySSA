@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Client.cs" />
     <Compile Include="SSA\Fingerprint.cs" />
     <Compile Include="Common\IProvider.cs" />
     <Compile Include="Core\Database\Database.cs" />
@@ -70,22 +71,12 @@
     <Compile Include="Extensions\ByteArrayExtensions.cs" />
     <Compile Include="Extensions\PacketExtensions.cs" />
     <Compile Include="IEasySSAInit.cs" />
-    <Compile Include="Packets\Exploits\ExploitPacket.cs" />
-    <Compile Include="Packets\Exploits\ExploitPacketCollection.cs" />
-    <Compile Include="Packets\Exploits\ExploitPacketInfo.cs" />
     <Compile Include="Packets\ISROPacket.cs" />
-    <Compile Include="Packets\Messages\Download\DOWNLOAD_FILE_CHUNK_RESPONSE_PACKET.cs" />
-    <Compile Include="Packets\Messages\Download\DOWNLOAD_FILE_COMPLETE_PACKET.cs" />
-    <Compile Include="Packets\Messages\Download\DOWNLOAD_FILE_REQUEST_PACKET.cs" />
-    <Compile Include="Packets\Messages\Global\GLOBAL_HANDSHAKE_REQUEST.cs" />
-    <Compile Include="Packets\Messages\Global\GLOBAL_HANDSHAKE_RESPONSE.cs" />
-    <Compile Include="Packets\Messages\UnknownPacket.cs" />
     <Compile Include="Packets\PacketDatabase.cs" />
     <Compile Include="Packets\PacketSendType.cs" />
     <Compile Include="Packets\PacketSocketType.cs" />
     <Compile Include="Packets\SROPacket.cs" />
     <Compile Include="Packets\PacketServerType.cs" />
-    <Compile Include="Packets\Messages\Client\LoginPacket.cs" />
     <Compile Include="Packets\OPCodeFactory.cs" />
     <Compile Include="Server\ServerServiceType.cs" />
     <Compile Include="Services\CoreServices.cs" />
@@ -98,9 +89,6 @@
     <Compile Include="Services\ServerService\ServerProvider.cs" />
     <Compile Include="Packets\Command.cs" />
     <Compile Include="Packets\CommandFactory.cs" />
-    <Compile Include="Packets\Messages\Server\ExchangePacket.cs" />
-    <Compile Include="Packets\Messages\Server\GuildLimitPacket.cs" />
-    <Compile Include="Packets\Messages\Server\StallPacket.cs" />
     <Compile Include="Packets\OPCode.cs" />
     <Compile Include="Packets\OPCommand.cs" />
     <Compile Include="Processor\PacketProcessor.cs" />
@@ -121,10 +109,8 @@
   <ItemGroup>
     <Folder Include="Client\" />
     <Folder Include="Core\IO\" />
-    <Folder Include="NetFwTypeLib\" />
     <Folder Include="Packets\Commands\" />
-    <Folder Include="Packets\Messages\Agent\" />
-    <Folder Include="Packets\Messages\Gateway\" />
+    <Folder Include="Packets\Messages\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EasySSA.licenseheader" />

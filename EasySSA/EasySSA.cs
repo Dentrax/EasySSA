@@ -8,10 +8,6 @@
 #endregion
 
 using System;
-using System.Net;
-using System.Collections.Generic;
-using EasySilkroadSecurityApi.Core.Tweening;
-using EasySilkroadSecurityApi.Core.Tweening.Options;
 
 namespace EasySilkroadSecurityApi
 {
@@ -66,6 +62,8 @@ namespace EasySilkroadSecurityApi
 
             return instance;
         }
+
+        //new TestServer().DOBind("ip", "port").SetMaxBindTries(3).SetMaxConnections(300).ONBind(delegate {...}).ONReceiveBytes(delegate {...}).ONSocketStatusChanged(delegate {...}).ONBlaBlaBla...
 
 
         public static void Clear(bool destroy = false) {

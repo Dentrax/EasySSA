@@ -10,6 +10,7 @@
 namespace EasySilkroadSecurityApi.Packets {
     public enum PacketSocketType {
         SERVER,
-        CLIENT
+        CLIENT,
+        UNKNOWN
     }
 }

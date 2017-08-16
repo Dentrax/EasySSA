@@ -13,15 +13,15 @@ using EasySilkroadSecurityApi.SSA;
 namespace EasySilkroadSecurityApi.Packets {
     public abstract class SROPacket : Packet, ISROPacket {
 
-        private PacketSendType m_sendType;
+        private PacketSendType m_sendType = PacketSendType.UNKNOWN;
 
-        private PacketServerType m_serverType;
+        private PacketServerType m_serverType = PacketServerType.UNKNOWN;
 
-        private PacketSocketType m_socketType;
+        private PacketSocketType m_socketType = PacketSocketType.UNKNOWN;
 
-        private PacketServerType m_incomingFrom;
+        private PacketServerType m_incomingFrom = PacketServerType.UNKNOWN;
 
-        private PacketServerType m_outgoingTo;
+        private PacketServerType m_outgoingTo = PacketServerType.UNKNOWN;
 
         public PacketSendType SendType {
             get { return this.m_sendType; }
@@ -35,9 +35,12 @@ namespace EasySilkroadSecurityApi.Packets {
             get { return this.m_socketType; }
         }
 
-        public PacketServerType IncomingFrom => throw new NotImplementedException();
-        public PacketServerType OutgoingTo => throw new NotImplementedException();
-
+        public PacketServerType IncomingFrom {
+            get { return this.m_incomingFrom; }
+        }
+        public PacketServerType OutgoingTo {
+            get { return this.m_outgoingTo; }
+        }
 
         public SROPacket(Packet rhs) : base(rhs) { }
         public SROPacket(ushort opcode) : base(opcode) { }
@@ -57,9 +60,6 @@ namespace EasySilkroadSecurityApi.Packets {
             this.m_serverType = serverType;
             this.m_socketType = socketType;
         }
-
-
-
 
     }
 }
