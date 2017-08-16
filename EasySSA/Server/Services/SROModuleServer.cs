@@ -7,9 +7,19 @@
 // ====================================================
 #endregion
 
-using EasySilkroadSecurityApi.Core.Network;
+using EasySSA.Core.Network;
+using System;
 
-namespace EasySilkroadSecurityApi.Server.Services {
+namespace EasySSA.Server.Services {
     public abstract class SROModuleServer : TCPServer {
+
+        internal Action OnClientConnected;
+        internal Action<ClientDisconnectType> OnClientDisconnected;
+
+        internal ServerType ServerType;
+        internal ServerType ServerIndex;
+
+        internal int MaxClientCount;
+
     }
 }

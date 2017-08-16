@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySilkroadSecurityApi.Packets {
+namespace EasySSA.Packets {
     public enum PacketSocketType {
         SERVER,
         CLIENT,

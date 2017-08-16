@@ -6,7 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-namespace EasySilkroadSecurityApi.Core.Threading.Checkers {
+namespace EasySSA.Core.Threading.Checkers {
     public abstract class CheckerBase {
     }
 }

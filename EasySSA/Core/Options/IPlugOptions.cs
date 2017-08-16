@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySilkroadSecurityApi.Core.Tweening.Options {
+namespace EasySSA.Core.Tweening.Options {
     public interface IPlugOptions {
     }
 }

@@ -7,15 +7,16 @@
 // ====================================================
 #endregion
 
-using System.Net;
-
-namespace EasySSA.Core.Tweening.Options {
-    public struct EndpointOptions : IPlugOptions {
-
-        public IPEndPoint IPEndPoint;
-
-        public void Reset() {
-            IPEndPoint = default(IPEndPoint);
-        }
+namespace EasySSA.Server {
+    public enum ServerType {
+        GATEWAY,
+        AGENT,
+        SR_GAME,
+        DOWNLOAD,
+        SR_SHARD,
+        GLOBAL,
+        FARM,
+        MACHINE,
+        UNKNOWN
     }
 }

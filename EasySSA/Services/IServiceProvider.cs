@@ -7,9 +7,9 @@
 // ====================================================
 #endregion
 
-using EasySilkroadSecurityApi.Common;
+using EasySSA.Common;
 
-namespace EasySilkroadSecurityApi.Services {
+namespace EasySSA.Services {
     public interface IServiceProvider : IProvider {
         bool IsStarted { get; }
         void Initialize(ServiceProvider.InitializeContextBase context);

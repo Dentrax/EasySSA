@@ -9,7 +9,7 @@
 
 using System;
 
-namespace EasySilkroadSecurityApi.Services.PacketService {
+namespace EasySSA.Services.PacketService {
     public sealed class PacketProvider : ServiceProvider, IPacketProvider {
         public sealed class InitializeContext : ServiceProvider.InitializeContextBase {
 

@@ -8,9 +8,9 @@
 #endregion
 
 using System;
-using EasySilkroadSecurityApi.Server.Services;
+using EasySSA.Server.Services;
 
-namespace EasySilkroadSecurityApi.Services.ServerService {
+namespace EasySSA.Services.ServerService {
     public sealed class ServerProvider : ServiceProvider, IServerProvider {
 
         public sealed new class InitializeContext : ServiceProvider.InitializeContextBase {
@@ -54,7 +54,9 @@ namespace EasySilkroadSecurityApi.Services.ServerService {
         }
 
 
-        public
+        public void OnClientConnected() {
+
+        }
 
     }
 }

@@ -7,10 +7,10 @@
 // ====================================================
 #endregion
 
-using EasySilkroadSecurityApi.Packets;
-using EasySilkroadSecurityApi.SSA;
+using EasySSA.Packets;
+using EasySSA.SSA;
 
-namespace EasySilkroadSecurityApi.Processor {
+namespace EasySSA.Processor {
     public abstract class PacketProcessor {
 
         void test() {

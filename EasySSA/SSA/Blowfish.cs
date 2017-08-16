@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EasySilkroadSecurityApi.SSA
+namespace EasySSA.SSA
 {
 	public class Blowfish
 	{

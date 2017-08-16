@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySilkroadSecurityApi.Core.Network {
+namespace EasySSA.Core.Network {
     public abstract class TCPServer : AsyncServer {
     }
 }

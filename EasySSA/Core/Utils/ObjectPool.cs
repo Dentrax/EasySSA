@@ -10,7 +10,7 @@
 using System;
 using System.Collections.Concurrent;
 
-namespace EasySilkroadSecurityApi.Core.Utils {
+namespace EasySSA.Core.Utils {
     public sealed class ObjectPool<T> where T : IDisposable {
         private ConcurrentBag<T> m_concurrentBag;
         private Func<T> m_objectCallBack;

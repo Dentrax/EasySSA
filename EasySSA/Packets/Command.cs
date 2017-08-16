@@ -7,10 +7,10 @@
 // ====================================================
 #endregion
 
-using EasySilkroadSecurityApi.SSA;
+using EasySSA.SSA;
 using System.Collections.Generic;
 
-namespace EasySilkroadSecurityApi.Packets {
+namespace EasySSA.Packets {
     public abstract class Command {
 
         private Security m_security;

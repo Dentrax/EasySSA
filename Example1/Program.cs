@@ -1,6 +1,6 @@
-﻿using EasySilkroadSecurityApi;
-using EasySilkroadSecurityApi.Extensions;
-using EasySilkroadSecurityApi.SSA;
+﻿using EasySSA;
+using EasySSA.Extensions;
+using EasySSA.SSA;
 
 namespace Example1 {
     class Program {

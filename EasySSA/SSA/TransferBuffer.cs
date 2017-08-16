@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace EasySilkroadSecurityApi.SSA {
+namespace EasySSA.SSA {
     public class TransferBuffer
     {
         byte[] m_buffer;

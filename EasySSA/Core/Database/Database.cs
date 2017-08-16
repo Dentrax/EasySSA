@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySilkroadSecurityApi.Core.Database {
+namespace EasySSA.Core.Database {
     public abstract class Database {
     }
 }

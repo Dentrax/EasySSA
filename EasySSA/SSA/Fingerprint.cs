@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySilkroadSecurityApi.SSA {
+namespace EasySSA.SSA {
     public sealed class Fingerprint {
         
         public string IdentityID { get; private set; }

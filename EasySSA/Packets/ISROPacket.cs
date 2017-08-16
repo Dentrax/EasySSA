@@ -7,18 +7,20 @@
 // ====================================================
 #endregion
 
-namespace EasySilkroadSecurityApi.Packets {
+using EasySSA.Server;
+
+namespace EasySSA.Packets {
     public interface ISROPacket {
 
-        PacketServerType ServerType { get; }
+        ServerType ServerType { get; }
 
         PacketSendType SendType { get; }
 
         PacketSocketType SocketType { get; }
 
-        PacketServerType IncomingFrom { get; }
+        ServerType IncomingFrom { get; }
 
-        PacketServerType OutgoingTo { get; }
+        ServerType OutgoingTo { get; }
 
     }
 }

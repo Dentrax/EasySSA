@@ -7,11 +7,11 @@
 // ====================================================
 #endregion
 
-using EasySilkroadSecurityApi.Packets.Messages;
-using EasySilkroadSecurityApi.Packets.Messages.Download;
-using EasySilkroadSecurityApi.SSA;
+using EasySSA.Packets.Messages;
+using EasySSA.Packets.Messages.Download;
+using EasySSA.SSA;
 
-namespace EasySilkroadSecurityApi.Packets {
+namespace EasySSA.Packets {
     public static class PacketDatabase {
 
         public static ushort GetOPCodeFrom(SROPacket packet) {
@@ -41,14 +41,14 @@ namespace EasySilkroadSecurityApi.Packets {
 
                 #region DOWNLOAD-REQUEST
                 case (ushort)OPCode.Download.Request.FILE_COMPLETE:
-                    return new DOWNLOAD_FILE_COMPLETE_PACKET(opcode, false, PacketSendType.REQUEST, PacketServerType.DOWNLOAD, PacketSocketType.CLIENT);
+                    return new DOWNLOAD_FILE_COMPLETE_PACKET(opcode, false, PacketSendType.REQUEST, ServerType.DOWNLOAD, PacketSocketType.CLIENT);
                 case (ushort)OPCode.Download.Request.FILE_REQUEST:
-                    return new DOWNLOAD_FILE_REQUEST_PACKET(opcode, false, PacketSendType.REQUEST, PacketServerType.DOWNLOAD, PacketSocketType.CLIENT);
+                    return new DOWNLOAD_FILE_REQUEST_PACKET(opcode, false, PacketSendType.REQUEST, ServerType.DOWNLOAD, PacketSocketType.CLIENT);
                 #endregion
 
                 #region DOWNLOAD-RESPONSE
                 case (ushort)OPCode.Download.Response.FILE_CHUNK:
-                    return new DOWNLOAD_FILE_CHUNK_RESPONSE_PACKET(opcode, false, PacketSendType.RESPONSE, PacketServerType.DOWNLOAD, PacketSocketType.SERVER);
+                    return new DOWNLOAD_FILE_CHUNK_RESPONSE_PACKET(opcode, false, PacketSendType.RESPONSE, ServerType.DOWNLOAD, PacketSocketType.SERVER);
                 #endregion
 
                 #endregion

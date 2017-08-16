@@ -10,7 +10,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace EasySilkroadSecurityApi.Services {
+namespace EasySSA.Services {
     public sealed class ServiceProviderLocator<ServiceProviderType> {
         public static readonly ServiceProviderLocator<ServiceProviderType> Instance = new ServiceProviderLocator<ServiceProviderType>();
 

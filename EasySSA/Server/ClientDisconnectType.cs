@@ -7,16 +7,10 @@
 // ====================================================
 #endregion
 
-namespace EasySilkroadSecurityApi.Packets {
-    public enum PacketServerType {
-        GATEWAY,
-        AGENT,
-        SR_GAME,
-        DOWNLOAD,
-        SR_SHARD,
-        GLOBAL,
-        FARM,
-        MACHINE,
-        UNKNOWN
+namespace EasySSA.Server {
+    public enum ClientDisconnectType {
+        MAX_CONNECTION_REACHED,
+        TIMEOUT,
+        MANUALLY
     }
 }

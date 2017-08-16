@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySilkroadSecurityApi.Services {
+namespace EasySSA.Services {
     public abstract class ServiceProvider {
 
         public class InitializeContextBase {

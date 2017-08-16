@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace EasySilkroadSecurityApi.SSA {
+namespace EasySSA.SSA {
     internal class PacketReader : System.IO.BinaryReader
     {
         byte[] m_input;

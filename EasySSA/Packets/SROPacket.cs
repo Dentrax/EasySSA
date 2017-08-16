@@ -8,26 +8,27 @@
 #endregion
 
 using System;
-using EasySilkroadSecurityApi.SSA;
+using EasySSA.SSA;
+using EasySSA.Server;
 
-namespace EasySilkroadSecurityApi.Packets {
-    public abstract class SROPacket : Packet, ISROPacket {
+namespace EasySSA.Packets {
+    public sealed class SROPacket : Packet, ISROPacket {
 
         private PacketSendType m_sendType = PacketSendType.UNKNOWN;
 
-        private PacketServerType m_serverType = PacketServerType.UNKNOWN;
+        private ServerType m_serverType = ServerType.UNKNOWN;
 
         private PacketSocketType m_socketType = PacketSocketType.UNKNOWN;
 
-        private PacketServerType m_incomingFrom = PacketServerType.UNKNOWN;
+        private ServerType m_incomingFrom = ServerType.UNKNOWN;
 
-        private PacketServerType m_outgoingTo = PacketServerType.UNKNOWN;
+        private ServerType m_outgoingTo = ServerType.UNKNOWN;
 
         public PacketSendType SendType {
             get { return this.m_sendType; }
         }
 
-        public PacketServerType ServerType {
+        public ServerType ServerType {
             get { return this.m_serverType; }
         }
 
@@ -35,10 +36,10 @@ namespace EasySilkroadSecurityApi.Packets {
             get { return this.m_socketType; }
         }
 
-        public PacketServerType IncomingFrom {
+        public ServerType IncomingFrom {
             get { return this.m_incomingFrom; }
         }
-        public PacketServerType OutgoingTo {
+        public ServerType OutgoingTo {
             get { return this.m_outgoingTo; }
         }
 
@@ -49,13 +50,13 @@ namespace EasySilkroadSecurityApi.Packets {
         public SROPacket(ushort opcode, bool encrypted, bool massive, byte[] bytes) : base(opcode, encrypted, massive, bytes) { }
         public SROPacket(ushort opcode, bool encrypted, bool massive, byte[] bytes, int offset, int length) : base(opcode, encrypted, massive, bytes, offset, length) { }
 
-        public SROPacket(ushort opcode, bool encrypted, PacketSendType sendType, PacketServerType serverType, PacketSocketType socketType) : base(opcode, encrypted) {
+        public SROPacket(ushort opcode, bool encrypted, PacketSendType sendType, ServerType serverType, PacketSocketType socketType) : base(opcode, encrypted) {
             this.m_sendType = sendType;
             this.m_serverType = serverType;
             this.m_socketType = socketType;
         }
 
-        protected void Create(PacketSendType sendType, PacketServerType serverType, PacketSocketType socketType){
+        protected void Create(PacketSendType sendType, ServerType serverType, PacketSocketType socketType){
             this.m_sendType = sendType;
             this.m_serverType = serverType;
             this.m_socketType = socketType;

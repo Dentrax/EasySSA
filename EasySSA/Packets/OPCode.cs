@@ -12,7 +12,7 @@
 //Reference -> https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/Packets
 
 
-namespace EasySilkroadSecurityApi.Packets {
+namespace EasySSA.Packets {
     public static class OPCode {
 
         public struct Global {

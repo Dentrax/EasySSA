@@ -11,7 +11,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace EasySilkroadSecurityApi.Extensions {
+namespace EasySSA.Extensions {
     public static class ByteArrayExtensions {
         public static string HexDump(this byte[] buffer) =>
         buffer.HexDump(0, buffer.Length);

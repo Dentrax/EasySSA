@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySilkroadSecurityApi.Core.Utils {
+namespace EasySSA.Core.Utils {
     public static class SQLUtils {
 
 

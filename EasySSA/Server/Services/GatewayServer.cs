@@ -10,7 +10,7 @@
 using System;
 using System.Net;
 
-namespace EasySilkroadSecurityApi.Server.Services {
+namespace EasySSA.Server.Services {
     public sealed class GatewayServer : SROModuleServer {
         public override void Start(IPEndPoint endpoint) {
             throw new NotImplementedException();

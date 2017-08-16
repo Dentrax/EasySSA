@@ -9,7 +9,7 @@
 
 using System;
 
-namespace EasySilkroadSecurityApi
+namespace EasySSA
 {
     public sealed class EasySSA {
 

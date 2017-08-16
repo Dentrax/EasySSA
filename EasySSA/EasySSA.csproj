@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Client.cs" />
+    <Compile Include="Server\ClientDisconnectType.cs" />
+    <Compile Include="Server\ServerParams.cs" />
     <Compile Include="SSA\Fingerprint.cs" />
     <Compile Include="Common\IProvider.cs" />
     <Compile Include="Core\Database\Database.cs" />
@@ -76,7 +78,7 @@
     <Compile Include="Packets\PacketSendType.cs" />
     <Compile Include="Packets\PacketSocketType.cs" />
     <Compile Include="Packets\SROPacket.cs" />
-    <Compile Include="Packets\PacketServerType.cs" />
+    <Compile Include="Server\ServerType.cs" />
     <Compile Include="Packets\OPCodeFactory.cs" />
     <Compile Include="Server\ServerServiceType.cs" />
     <Compile Include="Services\CoreServices.cs" />
