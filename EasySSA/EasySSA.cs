@@ -7,7 +7,10 @@
 // ====================================================
 #endregion
 
+using EasySSA.Server;
+using EasySSA.SSA;
 using System;
+using System.Net;
 
 namespace EasySSA
 {
@@ -22,7 +25,7 @@ namespace EasySSA
         internal static bool IsDebugBuild;
 
         
-        internal static EasySSAComponent instance;
+        internal static EasySSAComponent s_instance;
 
         static EasySSA() {
 #if DEBUG
@@ -55,6 +58,8 @@ namespace EasySSA
 
         //ssa.DOBind()
 
+        #region Initializers
+
         static void InitCheck() {
             if (WasInitialized || IsQuitting) return;
 
@@ -67,7 +72,7 @@ namespace EasySSA
         }
 
         public static IEasySSAInit Init(bool useSafeMode) {
-            if (WasInitialized) return instance;
+            if (WasInitialized) return s_instance;
             if (!IsQuitting) return null;
 
             EasySSASettings settings = new EasySSASettings();
@@ -78,11 +83,12 @@ namespace EasySSA
             WasInitialized = true;
 
 
-            return instance;
+            return s_instance;
         }
 
-        //new TestServer().DOBind("ip", "port").SetMaxBindTries(3).SetMaxConnections(300).ONBind(delegate {...}).ONReceiveBytes(delegate {...}).ONSocketStatusChanged(delegate {...}).ONBlaBlaBla...
+        #endregion
 
+        //new TestServer().DOBind("ip", "port").SetMaxBindTries(3).SetMaxConnections(300).ONBind(delegate {...}).ONReceiveBytes(delegate {...}).ONSocketStatusChanged(delegate {...}).ONBlaBlaBla...
 
         public static void Clear(bool destroy = false) {
             if (!destroy) return;

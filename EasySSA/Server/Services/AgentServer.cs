@@ -7,14 +7,15 @@
 // ====================================================
 #endregion
 
+using EasySSA.Common;
+using EasySSA.Services;
 using System;
 using System.Net;
 
 namespace EasySSA.Server.Services {
     public sealed class AgentServer : SROModuleServer {
 
-        public AgentServer() {
-            this.ServerServiceType = ServerServiceType.AGENT;
+        public AgentServer(Client client, SROServiceComponent serviceComponent) : base(client, serviceComponent) {
         }
 
     }

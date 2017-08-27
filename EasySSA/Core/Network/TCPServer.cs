@@ -10,13 +10,16 @@
 using EasySSA.Common;
 using EasySSA.Core.Network.Securities;
 using EasySSA.Core.Utils;
+using EasySSA.Server;
+using EasySSA.Server.Services;
+using EasySSA.Services;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
 namespace EasySSA.Core.Network {
-    public abstract class TCPServer {
+    public sealed class TCPServer {
 
         internal bool IsActive;
 
@@ -37,8 +40,14 @@ namespace EasySSA.Core.Network {
 
         private Thread m_accepterThread = null;
 
+        private SROServiceComponent m_serviceComponent;
 
-        public void DOBind(IPEndPoint endpoint) {
+        public TCPServer(SROServiceComponent serviceComponent) {
+            this.m_serviceComponent = serviceComponent;
+        }
+
+
+        public void DOBind(Action<bool> callback = null) {
 
             if (m_listenerSocket != null) {
                 throw new Exception("[TCPServer::DOBind()] -> Trying to start server on socket which is already in use!");
@@ -47,12 +56,15 @@ namespace EasySSA.Core.Network {
             m_listenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             try {
-                m_listenerSocket.Bind(endpoint);
+                m_listenerSocket.Bind(m_serviceComponent.EndPoint);
                 m_listenerSocket.Listen(100);
 
                 m_accepterThread = new Thread(DOBeginAccepter);
                 m_accepterThread.Start();
+
+                if (callback != null) callback(true);
             } catch (SocketException e) {
+                if (callback != null) callback(false);
                 throw new Exception("[TCPServer::DOBind()] -> Could not bind/listen/BeginAccept socket! " + e.ToString());
             }
 
@@ -82,95 +94,50 @@ namespace EasySSA.Core.Network {
                 throw new Exception("[TCPServer::DOConnectionAccepter()] -> ObjectDisposedException while EndAccept " + e.ToString());
             }
 
-            Client c = new Client(socket);
-
-
+            Client client = new Client(socket);
 
             try {
-                switch (m_ServerType) {
-                    case E_ServerType.GatewayServer: {
-                            //pass socket to gateway context handler
-                            new GatewayContext(client, OnClientDisconnect);
-                            //m_ClientCount_Gateway++;
-                            Console.Title = string.Format("Client count [GatewayServer: {0}] [AgentServer1: {1}] [AgentServer2: {2}]", FilterMain.gateway, FilterMain.agent1, FilterMain.agent2);
-                        }
+                switch (this.m_serviceComponent.ServiceType) {
+                    case ServerServiceType.GATEWAY:
+                        new GatewayServer(client, this.m_serviceComponent);
                         break;
-                    case E_ServerType.AgentServer: {
-                            //pass socket to agent context handler
-                            new AgentContext(client, OnClientDisconnect);
-                            //m_ClientCount_Agent++;
-                            //FilterMain.cur_players++;
-                            Console.Title = string.Format("Client count [GatewayServer: {0}] [AgentServer1: {1}] [AgentServer2: {2}]", FilterMain.gateway, FilterMain.agent1, FilterMain.agent2); ;
-                        }
+                    case ServerServiceType.AGENT:
+                        new AgentServer(client, this.m_serviceComponent);
                         break;
-                    case E_ServerType.AgentServer2: {
-                            //pass socket to agent context handler
-                            new AgentContext2(client, OnClientDisconnect);
-                            //m_ClientCount_Agent2++;
-                            //FilterMain.cur_players++;
-                            Console.Title = string.Format("Client count [GatewayServer: {0}] [AgentServer1: {1}] [AgentServer2: {2}]", FilterMain.gateway, FilterMain.agent1, FilterMain.agent2);
-                        }
-                        break;
-                    default: {
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine(FilterMain.FILTER + "AcceptConnectionCallback()::Unknown server type");
-                            Console.ResetColor();
-                            //Environment.Exit(0);
-                        }
-                        break;
+                    default:
+                        throw new NotSupportedException("[SROServiceComponent::DOBind()] -> NotSupportedService handled : " + this.m_serviceComponent.ServiceType);
                 }
             } catch (SocketException SocketEx) {
                 Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine(FilterMain.FILTER + "AcceptConnectionCallback()::Error while starting context. Exception: {0}", SocketEx.ToString());
                 Console.ResetColor();
             }
         }
 
-        void OnClientDisconnect(ref Socket client, E_ServerType HandlerType) {
+        void OnClientDisconnect(ref Socket client) {
             // Check
-            if (client == null) {
-                return;
-            }
+            //if (client == null) {
+            //    return;
+            //}
 
-            switch (HandlerType) {
-                case E_ServerType.GatewayServer: {
-                        //m_ClientCount_Gateway--;
-                        Console.Title = string.Format("Client count [GatewayServer: {0}] [AgentServer1: {1}] [AgentServer2: {2}]", FilterMain.gateway, FilterMain.agent1, FilterMain.agent2);
-                    }
-                    break;
-                case E_ServerType.AgentServer: {
-                        //m_ClientCount_Agent--;
-                        //FilterMain.cur_players--;
-                        Console.Title = string.Format("Client count [GatewayServer: {0}] [AgentServer1: {1}] [AgentServer2: {2}]", FilterMain.gateway, FilterMain.agent1, FilterMain.agent2);
-                    }
-                    break;
-                case E_ServerType.AgentServer2: {
-                        //m_ClientCount_Agent2--;
-                        //FilterMain.cur_players--;
-                        Console.Title = string.Format("Client count [GatewayServer: {0}] [AgentServer1: {1}] [AgentServer2: {2}]", FilterMain.gateway, FilterMain.agent1, FilterMain.agent2);
-                    }
-                    break;
-            }
-
-            try {
-                client.Close();
-            } catch (SocketException SocketEx) {
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine(FilterMain.FILTER + "OnClientDisconnect()::Error closing socket. Exception: {0}", SocketEx.ToString());
-                Console.ResetColor();
-            } catch (ObjectDisposedException ObjDispEx) {
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine(FilterMain.FILTER + "OnClientDisconnect()::Error closing socket (socket already disposed?). Exception: {0}", ObjDispEx.ToString());
-                Console.ResetColor();
-            } catch {
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine(FilterMain.FILTER + "Something went wrong with Async systems.");
-                Console.ResetColor();
-            }
+            //try {
+            //    client.Close();
+            //} catch (SocketException SocketEx) {
+            //    Console.ForegroundColor = ConsoleColor.DarkRed;
+            //    Console.WriteLine(FilterMain.FILTER + "OnClientDisconnect()::Error closing socket. Exception: {0}", SocketEx.ToString());
+            //    Console.ResetColor();
+            //} catch (ObjectDisposedException ObjDispEx) {
+            //    Console.ForegroundColor = ConsoleColor.DarkRed;
+            //    Console.WriteLine(FilterMain.FILTER + "OnClientDisconnect()::Error closing socket (socket already disposed?). Exception: {0}", ObjDispEx.ToString());
+            //    Console.ResetColor();
+            //} catch {
+            //    Console.ForegroundColor = ConsoleColor.DarkRed;
+            //    Console.WriteLine(FilterMain.FILTER + "Something went wrong with Async systems.");
+            //    Console.ResetColor();
+            //}
 
 
-            client = null;
-            GC.Collect();
+            //client = null;
+            //GC.Collect();
         }
     }
 }

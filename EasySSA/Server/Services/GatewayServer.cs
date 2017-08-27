@@ -7,13 +7,14 @@
 // ====================================================
 #endregion
 
+using EasySSA.Common;
+using EasySSA.Services;
 using System;
 using System.Net;
 
 namespace EasySSA.Server.Services {
     public sealed class GatewayServer : SROModuleServer {
-        public GatewayServer() {
-            this.ServerServiceType = ServerServiceType.GATEWAY;
+        public GatewayServer(Client client, SROServiceComponent serviceComponent) : base(client, serviceComponent) {
         }
     }
 }

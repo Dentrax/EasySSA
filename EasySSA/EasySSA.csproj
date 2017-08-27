@@ -42,7 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Client.cs" />
+    <Compile Include="Packets\PacketOperationType.cs" />
     <Compile Include="Server\ClientDisconnectType.cs" />
+    <Compile Include="Services\SROServiceComponent.cs" />
     <Compile Include="SSA\Fingerprint.cs" />
     <Compile Include="Common\IProvider.cs" />
     <Compile Include="Core\Database\Database.cs" />
@@ -59,7 +61,6 @@
     <Compile Include="Core\Threading\MemoryThread.cs" />
     <Compile Include="Core\Threading\NetworkThread.cs" />
     <Compile Include="Core\Threading\ThreadBase.cs" />
-    <Compile Include="Core\SSAExtensions.cs" />
     <Compile Include="Core\Utils\ObjectPool.cs" />
     <Compile Include="Core\Utils\SQLUtils.cs" />
     <Compile Include="EasySSA.cs" />

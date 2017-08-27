@@ -7,33 +7,44 @@
 // ====================================================
 #endregion
 
-using EasySSA.Common;
-using EasySSA.Core.Network;
-using EasySSA.Packets;
 using System;
-using System.Net;
+using System.Net.Sockets;
+using System.Collections.Generic;
+
+using EasySSA.SSA;
+using EasySSA.Common;
+using EasySSA.Services;
+
 
 namespace EasySSA.Server.Services {
     public abstract class SROModuleServer {
 
-        internal Action OnClientConnected;
-        internal Func<Client, ClientDisconnectType> OnClientDisconnected;
+        internal protected SROServiceComponent ServiceComponent;
 
-        internal ServerServiceType ServerServiceType;
-        internal int ServerIndex;
+        internal protected Client Client;
 
-        internal int MaxClientCount;
+        protected Socket m_clientSocket;
+        protected Socket m_serviceSocket;
 
+        protected Security m_localSecurity;
+        protected Security m_serviceSecurity;
 
-        internal int CurrentClientCount;
+        protected List<Packet> m_localRecevivePackets;
+        protected List<Packet> m_serviceRecevivePackets;
 
-        public SROModuleServer() {
+        private List<KeyValuePair<TransferBuffer, Packet>> m_localSendPackets;
+        private List<KeyValuePair<TransferBuffer, Packet>> m_serviceSendPackets;
 
+        internal protected readonly object LOCK = new object();
+
+        public SROModuleServer(Client client, SROServiceComponent serviceComponent) {
+            this.ServiceComponent = serviceComponent;
+            this.Client = client;
         }
 
-       
+        public void DOBind(Action<bool> callback) {
 
-
+        }
 
     }
 }
