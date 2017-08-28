@@ -14,7 +14,7 @@ namespace Example1 {
 
             SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
                                         .SetFingerprint(new Fingerprint("SRO_Client", 1, ""))
-                                        .SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("192.168.1.1"), 5050))
+                                        .SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15779))
                                         .SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("192.168.1.1"), 6060))
                                         .SetMaxClientCount(500);
 
