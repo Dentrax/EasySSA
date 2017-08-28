@@ -21,9 +21,6 @@ namespace EasySSA.Services.ServerService {
             }
         }
 
-        private AgentServer m_agentServer;
-
-        private GatewayServer m_gatewayServer;
 
         public ServerProvider() {
         }
@@ -55,7 +52,7 @@ namespace EasySSA.Services.ServerService {
         }
 
 
-        public void AddModuleServer(SROModuleServer moduleServer) {
+        public void AddModuleServer(SROServiceContext moduleServer) {
 
         }
 

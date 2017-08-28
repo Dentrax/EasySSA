@@ -4,6 +4,7 @@
         REPLACE,
         INJECT,
         IGNORE,
+        BLOCK_IP,
         NOTHING
     }
 }

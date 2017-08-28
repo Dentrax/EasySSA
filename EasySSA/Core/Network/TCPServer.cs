@@ -56,14 +56,23 @@ namespace EasySSA.Core.Network {
             m_listenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             try {
-                m_listenerSocket.Bind(m_serviceComponent.EndPoint);
+                m_listenerSocket.Bind(m_serviceComponent.LocalEndPoint);
                 m_listenerSocket.Listen(100);
 
                 m_accepterThread = new Thread(DOBeginAccepter);
                 m_accepterThread.Start();
 
+                if(this.m_serviceComponent.OnLocalSocketStatusChanged != null) {
+                    this.m_serviceComponent.OnLocalSocketStatusChanged(SocketError.Success);
+                }
+
                 if (callback != null) callback(true);
             } catch (SocketException e) {
+
+                if (this.m_serviceComponent.OnLocalSocketStatusChanged != null) {
+                    this.m_serviceComponent.OnLocalSocketStatusChanged(SocketError.Fault);
+                }
+
                 if (callback != null) callback(false);
                 throw new Exception("[TCPServer::DOBind()] -> Could not bind/listen/BeginAccept socket! " + e.ToString());
             }
@@ -96,48 +105,28 @@ namespace EasySSA.Core.Network {
 
             Client client = new Client(socket);
 
-            try {
-                switch (this.m_serviceComponent.ServiceType) {
-                    case ServerServiceType.GATEWAY:
-                        new GatewayServer(client, this.m_serviceComponent);
-                        break;
-                    case ServerServiceType.AGENT:
-                        new AgentServer(client, this.m_serviceComponent);
-                        break;
-                    default:
-                        throw new NotSupportedException("[SROServiceComponent::DOBind()] -> NotSupportedService handled : " + this.m_serviceComponent.ServiceType);
+            if(this.m_serviceComponent.OnClientConnected != null) {
+                bool result = this.m_serviceComponent.OnClientConnected(client);
+                if (result) {
+                    this.BindClient(client);
+                } else {
+                    //TODO: Do not bind implements
                 }
-            } catch (SocketException SocketEx) {
+            } else {
+                this.BindClient(client);
+            }
+           
+        }
+
+        private void BindClient(Client client) {
+            try {
+
+                new SROServiceContext(client, this.m_serviceComponent).DOBind(this.m_serviceComponent.OnServiceSocketStatusChanged);
+
+            } catch (SocketException e) {
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.ResetColor();
             }
-        }
-
-        void OnClientDisconnect(ref Socket client) {
-            // Check
-            //if (client == null) {
-            //    return;
-            //}
-
-            //try {
-            //    client.Close();
-            //} catch (SocketException SocketEx) {
-            //    Console.ForegroundColor = ConsoleColor.DarkRed;
-            //    Console.WriteLine(FilterMain.FILTER + "OnClientDisconnect()::Error closing socket. Exception: {0}", SocketEx.ToString());
-            //    Console.ResetColor();
-            //} catch (ObjectDisposedException ObjDispEx) {
-            //    Console.ForegroundColor = ConsoleColor.DarkRed;
-            //    Console.WriteLine(FilterMain.FILTER + "OnClientDisconnect()::Error closing socket (socket already disposed?). Exception: {0}", ObjDispEx.ToString());
-            //    Console.ResetColor();
-            //} catch {
-            //    Console.ForegroundColor = ConsoleColor.DarkRed;
-            //    Console.WriteLine(FilterMain.FILTER + "Something went wrong with Async systems.");
-            //    Console.ResetColor();
-            //}
-
-
-            //client = null;
-            //GC.Collect();
         }
     }
 }

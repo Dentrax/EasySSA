@@ -16,30 +16,39 @@ using EasySSA.Common;
 using EasySSA.Packets;
 using EasySSA.Server.Services;
 using EasySSA.Core.Network;
+using System.Net.Sockets;
 
 namespace EasySSA.Services {
     public sealed class SROServiceComponent {
 
-        public SROModuleServer ServiceServer { get; private set; }
+        public SROServiceContext ServiceServer { get; private set; }
 
         public ServerServiceType ServiceType { get; private set; }
 
         public int ServiceIndex { get; private set; }
-       
+
+        public Action<SocketError> OnLocalSocketStatusChanged;
+
+        public Action<SocketError> OnServiceSocketStatusChanged;
+
 
         public Func<Client, bool> OnClientConnected;
 
         public Action<Client, ClientDisconnectType> OnClientDisconnected;
 
-        public Func<Client, SROPacket, PacketOperationType> OnPacketReceived;
+        public Func<Client, SROPacket, PacketSocketType, PacketResult> OnPacketReceived;
 
         public Fingerprint Fingerprint { get; private set; }
 
-        public IPEndPoint EndPoint { get; private set; }
+        public IPEndPoint LocalEndPoint { get; private set; }
 
-        public IPEndPoint RedirectPoint { get; private set; }
+        public IPEndPoint ServiceEndPoint { get; private set; }
 
-        private int m_maxClientCount;
+        public int MaxClientCount { get; private set; }
+
+        public int ListenerTimeout { get; private set; }
+
+        public int RedirectTimeout { get; private set; }
 
         public SROServiceComponent(ServerServiceType serviceType, int serviceIndex) {
             this.ServiceType = serviceType;
@@ -54,18 +63,28 @@ namespace EasySSA.Services {
             return this;
         }
 
-        public SROServiceComponent SetEndPoint(IPEndPoint endpoint) {
-            this.EndPoint = endpoint;
+        public SROServiceComponent SetLocalEndPoint(IPEndPoint endpoint) {
+            this.LocalEndPoint = endpoint;
             return this;
         }
 
-        public SROServiceComponent SetRedirectPoint(IPEndPoint redirectPoint) {
-            this.RedirectPoint = redirectPoint;
+        public SROServiceComponent SetServiceEndPoint(IPEndPoint redirectPoint) {
+            this.ServiceEndPoint = redirectPoint;
             return this;
         }
 
         public SROServiceComponent SetMaxClientCount(int count) {
-            this.m_maxClientCount = count;
+            this.MaxClientCount = count;
+            return this;
+        }
+
+        public SROServiceComponent SetListenerBindTimeout(int count) {
+            this.ListenerTimeout = count;
+            return this;
+        }
+
+        public SROServiceComponent SetRedirectBindTimeout(int count) {
+            this.RedirectTimeout = count;
             return this;
         }
 
