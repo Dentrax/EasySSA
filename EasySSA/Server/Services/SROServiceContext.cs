@@ -120,9 +120,7 @@ namespace EasySSA.Server.Services {
         }
 
         public void Disconnect(SROServiceContext server, ClientDisconnectType disconnectType) {
-            if (this.ServiceComponent.OnClientDisconnected != null) {
-                this.ServiceComponent.OnClientDisconnected(this.Client, disconnectType);
-            }
+            this.ServiceComponent.OnClientDisconnected?.Invoke(this.Client, disconnectType);
         }
 
         private void HandleAndTransferResult(Packet packet, PacketSocketType direction, PacketResult result) {
@@ -135,8 +133,7 @@ namespace EasySSA.Server.Services {
             switch (operation) {
                 case PacketOperationType.DISCONNECT:
                     if (resultInfo != null) {
-                        PacketResult.PacketDisconnectResultInfo disconnect = resultInfo as PacketResult.PacketDisconnectResultInfo;
-                        if(disconnect != null) {
+                        if (resultInfo is PacketResult.PacketDisconnectResultInfo disconnect) {
                             if (!string.IsNullOrEmpty(disconnect.Notice)) {
                                 this.SendMessage(MessageType.NOTICE, string.Empty, disconnect.Notice.Trim());
                             }
@@ -152,11 +149,9 @@ namespace EasySSA.Server.Services {
                     break;
                 case PacketOperationType.REPLACE:
                     if (resultInfo != null) {
-                        PacketResult.PacketReplaceResultInfo replace = resultInfo as PacketResult.PacketReplaceResultInfo;
-                        if (replace != null) {
+                        if (resultInfo is PacketResult.PacketReplaceResultInfo replace) {
                             if (replace.Packet == packet) {
-                                replace.ReplaceWith.ForEach(packets =>
-                                {
+                                replace.ReplaceWith.ForEach(packets => {
                                     security.Send(packets);
                                 });
                             }
@@ -165,8 +160,7 @@ namespace EasySSA.Server.Services {
                     break;
                 case PacketOperationType.INJECT:
                     if (resultInfo != null) {
-                        PacketResult.PacketInjectResultInfo inject = resultInfo as PacketResult.PacketInjectResultInfo;
-                        if (inject != null) {
+                        if (resultInfo is PacketResult.PacketInjectResultInfo inject) {
                             if (inject.AfterPacket) {
                                 security.Send(packet);
                             }
@@ -396,9 +390,9 @@ namespace EasySSA.Server.Services {
                     this.m_serviceSecurity.Send(packet);
                     this.TransferToService();
                 }
-                if (callback != null) callback(true);
+                callback?.Invoke(true);
             } catch {
-                if (callback != null) callback(false);
+                callback?.Invoke(false);
             }
             
         }

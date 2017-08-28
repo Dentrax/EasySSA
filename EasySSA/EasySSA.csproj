@@ -70,7 +70,6 @@
     <Compile Include="EasySSAComponent.cs" />
     <Compile Include="EasySSASettings.cs" />
     <Compile Include="Extensions\ByteArrayExtensions.cs" />
-    <Compile Include="Extensions\PacketExtensions.cs" />
     <Compile Include="IEasySSAInit.cs" />
     <Compile Include="Packets\ISROPacket.cs" />
     <Compile Include="Packets\PacketDatabase.cs" />

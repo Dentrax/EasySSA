@@ -6,13 +6,13 @@ namespace EasySSA.Core.Network {
     public static class NetworkHelper {
         public static Socket TryConnect(IPEndPoint endpoint, int timeout, Action<SocketError> callback = null) {
             if (endpoint == null || endpoint.Address == null || endpoint.Port <= 0 || endpoint.Port >= 65535 || timeout <= 0) {
-                if (callback != null) callback(SocketError.NotInitialized);
+                callback?.Invoke(SocketError.NotInitialized);
             }
 
-            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-            socket.Blocking = false;
-            socket.NoDelay = true;
+            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) {
+                Blocking = false,
+                NoDelay = true
+            };
 
             try {
                 IAsyncResult iar = socket.BeginConnect(endpoint, null, null);
@@ -20,14 +20,14 @@ namespace EasySSA.Core.Network {
                 if (iar.AsyncWaitHandle.WaitOne(timeout)) {
                     socket.EndConnect(iar);
 
-                    if (callback != null) callback(SocketError.Success);
+                    callback?.Invoke(SocketError.Success);
                     return socket;
                 } else {
                     socket.Close();
                 }
             } catch { }
 
-            if (callback != null) callback(SocketError.Fault);
+            callback?.Invoke(SocketError.Fault);
             return null;
         }
     }

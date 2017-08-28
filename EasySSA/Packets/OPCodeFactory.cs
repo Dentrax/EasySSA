@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 
-using EasySSA.Packets.Messages.Server;
 using System;
 using System.Collections.Generic;
 
@@ -18,12 +17,12 @@ namespace EasySSA.Packets {
 
         static OPCodeFactory() {
 
-            OPCodeFactory.PACKET_LIST = new Dictionary<uint, Type>() {
+            //OPCodeFactory.PACKET_LIST = new Dictionary<uint, Type>() {
 
-                { 0x0000, typeof(ExchangePacket) },
-                { 0x0001, typeof(GuildLimitPacket) },
+            //    { 0x0000, typeof(ExchangePacket) },
+            //    { 0x0001, typeof(GuildLimitPacket) },
 
-            };
+            //};
 
 
         }

@@ -44,12 +44,13 @@ namespace EasySSA.Core.Network {
 
         public TCPServer(SROServiceComponent serviceComponent) {
             this.m_serviceComponent = serviceComponent;
+            this.IsActive = false;
         }
 
 
         public void DOBind(Action<bool> callback = null) {
 
-            if (m_listenerSocket != null) {
+            if (m_listenerSocket != null || IsActive) {
                 throw new Exception("[TCPServer::DOBind()] -> Trying to start server on socket which is already in use!");
             }
 
@@ -62,18 +63,18 @@ namespace EasySSA.Core.Network {
                 m_accepterThread = new Thread(DOBeginAccepter);
                 m_accepterThread.Start();
 
-                if(this.m_serviceComponent.OnLocalSocketStatusChanged != null) {
-                    this.m_serviceComponent.OnLocalSocketStatusChanged(SocketError.Success);
-                }
+                this.IsActive = true;
 
-                if (callback != null) callback(true);
+                this.m_serviceComponent.OnLocalSocketStatusChanged?.Invoke(SocketError.Success);
+                
+                callback?.Invoke(true);
             } catch (SocketException e) {
 
-                if (this.m_serviceComponent.OnLocalSocketStatusChanged != null) {
-                    this.m_serviceComponent.OnLocalSocketStatusChanged(SocketError.Fault);
-                }
+                this.IsActive = false;
 
-                if (callback != null) callback(false);
+                this.m_serviceComponent.OnLocalSocketStatusChanged?.Invoke(SocketError.Fault);
+
+                callback?.Invoke(false);
                 throw new Exception("[TCPServer::DOBind()] -> Could not bind/listen/BeginAccept socket! " + e.ToString());
             }
 
@@ -123,7 +124,7 @@ namespace EasySSA.Core.Network {
 
                 new SROServiceContext(client, this.m_serviceComponent).DOBind(this.m_serviceComponent.OnServiceSocketStatusChanged);
 
-            } catch (SocketException e) {
+            } catch {
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.ResetColor();
             }
