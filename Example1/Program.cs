@@ -7,31 +7,34 @@ using EasySSA.Packets;
 using EasySSA.Server;
 using EasySSA.Services;
 using EasySSA.SSA;
+using EasySSA.Core.Network.Securities;
 
 namespace Example1 {
     class Program {
         static void Main(string[] args) {
 
             SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
-                                        .SetFingerprint(new Fingerprint("SRO_Client", 1, ""))
-                                        .SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15779))
-                                        .SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("192.168.1.1"), 6060))
+                                        .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, "")) 
+                                        .SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0."1), 25800))
+                                        .SetLocalBindTimeout(3)
+                                        .SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("192.168.1.1"), 15779))
+                                        .SetServiceBindTimeout(3)
                                         .SetMaxClientCount(500);
 
             gateway.OnLocalSocketStatusChanged += new Action<SocketError>(delegate (SocketError error) {
-
                 if(error == SocketError.Success) {
-                    Console.WriteLine("Local socket bind success");
+                    Console.WriteLine("EasySSA local socket bind success on : " + gateway.LocalEndPoint.ToString());
+                } else {
+                    Console.WriteLine("EasySSA local socket bind FAILED!!! : " + error);
                 }
-
             });
 
             gateway.OnServiceSocketStatusChanged += new Action<SocketError>(delegate (SocketError error) {
-
                 if (error == SocketError.Success) {
-                    Console.WriteLine("Service socket connect success");
+                    Console.WriteLine("Module service socket connect success on : " + gateway.ServiceEndPoint.ToString());
+                } else { 
+                    Console.WriteLine("Module service socket failed : " + error);
                 }
-
             });
 
             gateway.OnClientConnected += new Func<Client, bool> (delegate (Client client) {

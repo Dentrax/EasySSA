@@ -1,14 +1,16 @@
-﻿using EasySSA.Server;
-using EasySSA.SSA;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+
+using EasySSA.SSA;
+using EasySSA.Server;
+using EasySSA.Packets;
+using EasySSA.Server.Services;
+using EasySSA.Core.Network.Securities;
 
 namespace EasySSA.Common {
     public sealed class Client : IDisposable {
+
+        private SROServiceContext m_owner;
 
         public Socket Socket { get; private set; }
 
@@ -39,8 +41,20 @@ namespace EasySSA.Common {
             Dispose(false);
         }
 
+        public void SetOwner(SROServiceContext context) {
+            if(this.m_owner != null) {
+                this.m_owner = context;
+            }
+        }
+
         public long GetSocketHandle() {
             return m_socketHandle;
+        }
+
+        public void SetFingerprint(Fingerprint fingerprint) {
+            Security = new Security();
+            Security.GenerateSecurity(fingerprint.SecurityFlag.HasFlag(SecurityFlags.Blowfish), fingerprint.SecurityFlag.HasFlag(SecurityFlags.SecurityBytes), fingerprint.SecurityFlag.HasFlag(SecurityFlags.Handshake));
+            Security.ChangeIdentity(fingerprint.IdentityID, fingerprint.IdentityFlag);
         }
 
         public bool IsConnected() {
@@ -83,5 +97,42 @@ namespace EasySSA.Common {
                 this.m_disposed = true;
             }
         }
+
+        public void SendPacket(Packet packet, Action<bool> callback = null) {
+            try {
+                this.m_owner.GetLocalSecurity.Send(packet);
+                this.m_owner.TransferToClient();
+                callback?.Invoke(true);
+            } catch {
+                callback?.Invoke(false);
+            }
+        }
+
+        public void SendMessage(MessageType type, string sender, string message, Action<bool> callback = null) {
+            Packet packet = new Packet(0x3026);
+            switch (type) {
+                case MessageType.PM:
+                    packet.WriteUInt8(2);
+                    packet.WriteAscii(sender);
+                    break;
+                case MessageType.GLOBAL:
+                    packet.WriteUInt8(6);
+                    packet.WriteAscii(sender);
+                    break;
+                case MessageType.NOTICE:
+                    packet.WriteUInt8(7);
+                    break;
+                case MessageType.ACADEMY:
+                    packet.WriteUInt8(0x10);
+                    packet.WriteAscii(sender);
+                    break;
+                default:
+                    break;
+            }
+
+            packet.WriteAscii(message);
+            this.SendPacket(packet, callback);
+        }
+
     }
 }

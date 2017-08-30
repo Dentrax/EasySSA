@@ -57,7 +57,6 @@
     <Compile Include="Core\Database\SQL.cs" />
     <Compile Include="Core\Network\PacketManager.cs" />
     <Compile Include="Core\Network\Securities\SecurityFlags.cs" />
-    <Compile Include="Core\Network\SocketContext.cs" />
     <Compile Include="Core\Network\TCPServer.cs" />
     <Compile Include="Core\Threading\Checkers\CheckerBase.cs" />
     <Compile Include="Core\Threading\Checkers\VersionChecker.cs" />

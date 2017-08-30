@@ -7,6 +7,8 @@
 // ====================================================
 #endregion
 
+using EasySSA.Core.Network.Securities;
+
 namespace EasySSA.SSA {
     public sealed class Fingerprint {
         
@@ -14,11 +16,14 @@ namespace EasySSA.SSA {
 
         public byte IdentityFlag { get; private set; }
 
+        public SecurityFlags SecurityFlag { get; private set; }
+
         public string SHA { get; private set; }
 
-        public Fingerprint(string identityID, byte identityFlag, string sha) {
+        public Fingerprint(string identityID, byte identityFlag, SecurityFlags securityFlag, string sha) {
             this.IdentityID = identityID;
             this.IdentityFlag = identityFlag;
+            this.SecurityFlag = securityFlag;
             this.SHA = sha;
         }
     }

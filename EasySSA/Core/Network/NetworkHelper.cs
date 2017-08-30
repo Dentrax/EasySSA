@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Security;
+using System.Threading;
 
 namespace EasySSA.Core.Network {
     public static class NetworkHelper {
@@ -24,11 +26,28 @@ namespace EasySSA.Core.Network {
                     return socket;
                 } else {
                     socket.Close();
+                    callback?.Invoke(SocketError.HostUnreachable);
+                    return null;
                 }
-            } catch { }
-
-            callback?.Invoke(SocketError.Fault);
-            return null;
+            } catch (AbandonedMutexException) {
+                callback?.Invoke(SocketError.TryAgain);
+                return null;
+            } catch (ArgumentNullException){
+                callback?.Invoke(SocketError.InvalidArgument);
+                return null;
+            } catch (SocketException) {
+                callback?.Invoke(SocketError.HostDown);
+                return null;
+            } catch (ObjectDisposedException) {
+                callback?.Invoke(SocketError.NotSocket);
+                return null;
+            } catch (SecurityException) {
+                callback?.Invoke(SocketError.AccessDenied);
+                return null;
+            } catch (InvalidOperationException) {
+                callback?.Invoke(SocketError.OperationNotSupported);
+                return null;
+            }
         }
     }
 }

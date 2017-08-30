@@ -25,16 +25,7 @@ namespace EasySSA.Core.Network {
 
         private Socket m_listenerSocket;
 
-        private bool m_wasConnectionAllowed;
-
-        private SecurityFlags m_SecurityFlags;
-
-        private ObjectPool<SocketContext> m_SocketContextPool;
-
-
         public volatile int ConnectionCount;
-
-        public ObjectPool<SocketContext> SocketContextPool => m_SocketContextPool;
 
         private readonly ManualResetEvent m_manualResetEvent = new ManualResetEvent(false);
 

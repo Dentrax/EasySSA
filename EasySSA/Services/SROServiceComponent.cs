@@ -46,9 +46,9 @@ namespace EasySSA.Services {
 
         public int MaxClientCount { get; private set; }
 
-        public int ListenerTimeout { get; private set; }
+        public int LocalBindTimeout { get; private set; }
 
-        public int RedirectTimeout { get; private set; }
+        public int ServiceBindTimeout { get; private set; }
 
         public SROServiceComponent(ServerServiceType serviceType, int serviceIndex) {
             this.ServiceType = serviceType;
@@ -78,13 +78,13 @@ namespace EasySSA.Services {
             return this;
         }
 
-        public SROServiceComponent SetListenerBindTimeout(int count) {
-            this.ListenerTimeout = count;
+        public SROServiceComponent SetLocalBindTimeout(int timeout) {
+            this.LocalBindTimeout = timeout;
             return this;
         }
 
-        public SROServiceComponent SetRedirectBindTimeout(int count) {
-            this.RedirectTimeout = count;
+        public SROServiceComponent SetServiceBindTimeout(int timeout) {
+            this.ServiceBindTimeout = timeout;
             return this;
         }
 
