@@ -15,7 +15,7 @@ namespace Example1 {
 
             SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
                                         .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, "")) 
-                                        .SetLocalEndPoint(new IPEndPoint(IPAddress.Any, 25800))
+                                        .SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("192.168.1.111"), 25800))
                                         .SetLocalBindTimeout(10)
                                         .SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("192.168.1.111"), 20002))
                                         .SetServiceBindTimeout(10)

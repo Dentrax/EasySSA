@@ -933,8 +933,8 @@ namespace EasySSA.SSA {
             m_recv_buffer = new TransferBuffer(8192); // must be at minimal 2 bytes!
             m_current_buffer = null;
 
-            m_massive_count = 0;
-            m_massive_packet = null;
+            //m_massive_count = 0;
+            //m_massive_packet = null;
 
             m_class_lock = new object();
         }

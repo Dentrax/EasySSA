@@ -475,7 +475,7 @@ namespace EasySSA.SSA {
             }
         }
 
-        //Removed - bad-design
+        //Removed - endless-recursive
         //public String[] ReadAsciiArray(int count)
         //{
         //    return ReadAsciiArray(1252);

@@ -13,6 +13,8 @@ namespace EasySSA.Core.Network {
             }
 
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            socket.Blocking = false;
+            socket.NoDelay = true;
 
             try {
                 IAsyncResult iar = socket.BeginConnect(endpoint, null, null);

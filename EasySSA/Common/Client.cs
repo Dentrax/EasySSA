@@ -34,6 +34,8 @@ namespace EasySSA.Common {
 
         public Client(Socket socket) {
             this.Socket = socket;
+            Socket.Blocking = false;
+            Socket.NoDelay = true;
             this.m_socketHandle = socket.Handle.ToInt64();
             this.Security = new Security();
             this.TransferBuffer = new TransferBuffer(0x10000, 0, 0);
@@ -103,7 +105,7 @@ namespace EasySSA.Common {
 
         public void SendPacket(Packet packet, Action<bool> callback = null) {
             try {
-                this.m_owner.GetLocalSecurity.Send(packet);
+                this.m_owner.GetClientSecurity.Send(packet);
                 this.m_owner.TransferToClient();
                 callback?.Invoke(true);
             } catch {
