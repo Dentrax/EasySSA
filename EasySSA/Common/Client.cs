@@ -12,6 +12,9 @@ namespace EasySSA.Common {
 
         private SROServiceContext m_owner;
 
+        private readonly Object LOCK = new Object();
+
+
         public Socket Socket { get; private set; }
 
         public Security Security { get; private set; }
@@ -52,8 +55,8 @@ namespace EasySSA.Common {
         }
 
         public void SetFingerprint(Fingerprint fingerprint) {
-            Security = new Security();
-            Security.GenerateSecurity(fingerprint.SecurityFlag.HasFlag(SecurityFlags.Blowfish), fingerprint.SecurityFlag.HasFlag(SecurityFlags.SecurityBytes), fingerprint.SecurityFlag.HasFlag(SecurityFlags.Handshake));
+            //Security.GenerateSecurity(fingerprint.SecurityFlag.HasFlag(SecurityFlags.Blowfish), fingerprint.SecurityFlag.HasFlag(SecurityFlags.SecurityBytes), fingerprint.SecurityFlag.HasFlag(SecurityFlags.Handshake));
+            Security.GenerateSecurity(true, true, true);
             Security.ChangeIdentity(fingerprint.IdentityID, fingerprint.IdentityFlag);
         }
 
@@ -67,7 +70,7 @@ namespace EasySSA.Common {
 
         public void Disconnect() {
             try {
-                lock (this) {
+                lock (LOCK) {
                     if (Socket != null) {
                         if (Socket.Connected) {
                             Socket.Disconnect(true);

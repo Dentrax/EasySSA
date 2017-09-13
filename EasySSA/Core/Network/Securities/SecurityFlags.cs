@@ -7,7 +7,10 @@
 // ====================================================
 #endregion
 
+using System;
+
 namespace EasySSA.Core.Network.Securities {
+    [Flags]
     public enum SecurityFlags {
         None = 0,
         Handshake = 1,

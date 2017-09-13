@@ -16,9 +16,9 @@ namespace Example1 {
             SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
                                         .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, "")) 
                                         .SetLocalEndPoint(new IPEndPoint(IPAddress.Any, 25800))
-                                        .SetLocalBindTimeout(3)
-                                        .SetServiceEndPoint(new IPEndPoint(IPAddress.Any, 15779))
-                                        .SetServiceBindTimeout(3)
+                                        .SetLocalBindTimeout(10)
+                                        .SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("192.168.1.111"), 20002))
+                                        .SetServiceBindTimeout(10)
                                         .SetMaxClientCount(500);
 
             gateway.OnLocalSocketStatusChanged += new Action<SocketError>(delegate (SocketError error) {
@@ -29,7 +29,7 @@ namespace Example1 {
                 }
             });
 
-            gateway.OnServiceSocketStatusChanged += new Action<SocketError>(delegate (SocketError error) {
+            gateway.OnServiceSocketStatusChanged += new Action<Client, SocketError>(delegate (Client client, SocketError error) {
                 if (error == SocketError.Success) {
                     Console.WriteLine("Module service socket connect success on : " + gateway.ServiceEndPoint.ToString());
                 } else { 
@@ -39,14 +39,14 @@ namespace Example1 {
 
             gateway.OnClientConnected += new Func<Client, bool> (delegate (Client client) {
 
-                Console.WriteLine("New client connected : " + client.IPAddress);
+                Console.WriteLine("New client connected : " + client.Socket.RemoteEndPoint);
 
                 return true;
             });
 
             gateway.OnClientDisconnected += new Action<Client, ClientDisconnectType>(delegate (Client client, ClientDisconnectType disconnectType) {
 
-                Console.WriteLine("Client disconnected : " + client.IPAddress);
+                Console.WriteLine("Client disconnected : " + client.IPAddress + " -- Reason : " + disconnectType);
 
             });
 

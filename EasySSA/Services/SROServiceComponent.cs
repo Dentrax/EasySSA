@@ -19,7 +19,7 @@ using EasySSA.Core.Network;
 using System.Net.Sockets;
 
 namespace EasySSA.Services {
-    public sealed class SROServiceComponent {
+    public sealed class SROServiceComponent : IDisposable {
 
         public SROServiceContext ServiceServer { get; private set; }
 
@@ -29,7 +29,7 @@ namespace EasySSA.Services {
 
         public Action<SocketError> OnLocalSocketStatusChanged;
 
-        public Action<SocketError> OnServiceSocketStatusChanged;
+        public Action<Client, SocketError> OnServiceSocketStatusChanged;
 
 
         public Func<Client, bool> OnClientConnected;
@@ -37,6 +37,7 @@ namespace EasySSA.Services {
         public Action<Client, ClientDisconnectType> OnClientDisconnected;
 
         public Func<Client, SROPacket, PacketSocketType, PacketResult> OnPacketReceived;
+       
 
         public Fingerprint Fingerprint { get; private set; }
 
@@ -49,6 +50,8 @@ namespace EasySSA.Services {
         public int LocalBindTimeout { get; private set; }
 
         public int ServiceBindTimeout { get; private set; }
+
+        private bool m_wasDisposed;
 
         public SROServiceComponent(ServerServiceType serviceType, int serviceIndex) {
             this.ServiceType = serviceType;
@@ -90,6 +93,22 @@ namespace EasySSA.Services {
 
         public void DOBind(Action<bool> callback = null) {
             new TCPServer(this).DOBind(callback);
+        }
+
+        public void Dispose() {
+            this.Dispose();
+        }
+
+        private void Dispose(bool disposing) {
+            if (!m_wasDisposed) {
+                if (disposing) {
+                    //
+                }
+                this.ServiceServer.Dispose();
+
+                m_wasDisposed = true;
+            }
+            
         }
 
         #endregion

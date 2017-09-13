@@ -15,6 +15,8 @@ namespace EasySSA.Server {
 
         PACKET_OPERATION_DISCONNECT,
 
+        SERVICE_SOCKET_NULL,
+
         ONRECV_FROM_CLIENT,
         ONRECV_FROM_SERVICE,
 

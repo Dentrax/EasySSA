@@ -58,18 +58,15 @@ namespace EasySSA.Server.Services {
         public SROServiceContext(Client client, SROServiceComponent serviceComponent) {
             this.ServiceComponent = serviceComponent;
             this.Client = client;
-            
+            this.Client.SetFingerprint(serviceComponent.Fingerprint);
+
             this.m_clientSocket = this.Client.Socket;
 
-            this.m_localSecurity = this.Client.Security;
-            this.SetLocalFingerprint(serviceComponent.Fingerprint);
-            this.m_localSecurity.GenerateSecurity(true, true, true);
             this.m_serviceSecurity = new Security();
+            this.m_localSecurity = this.Client.Security;
 
             this.m_localTransferBuffer = this.Client.TransferBuffer;
             this.m_serviceTransferBuffer = new TransferBuffer(0x10000, 0, 0);
-
-            this.m_localSecurity.GenerateSecurity(true, true, true);
 
             this.IsRunning = false;
         }
@@ -78,14 +75,12 @@ namespace EasySSA.Server.Services {
             Dispose(false);
         }
 
-        public void DOBind(Action<SocketError> callback = null) {
-            this.m_serviceSocket = NetworkHelper.TryConnect(this.ServiceComponent.ServiceEndPoint, this.ServiceComponent.ServiceBindTimeout, callback);
-        }
+        public void DOBind(Action<Client, SocketError> callback = null) {
+            this.m_serviceSocket = NetworkHelper.TryConnect(this.ServiceComponent.ServiceEndPoint, this.ServiceComponent.ServiceBindTimeout, delegate(SocketError error) {
+                callback?.Invoke(this.Client, error);
+            });
 
-        private void SetLocalFingerprint(Fingerprint fingerprint) {
-            this.m_localSecurity = new Security();
-            this.m_localSecurity.GenerateSecurity(fingerprint.SecurityFlag.HasFlag(SecurityFlags.Blowfish), fingerprint.SecurityFlag.HasFlag(SecurityFlags.SecurityBytes), fingerprint.SecurityFlag.HasFlag(SecurityFlags.Handshake));
-            this.m_localSecurity.ChangeIdentity(fingerprint.IdentityID, fingerprint.IdentityFlag);
+            this.Start();
         }
 
         public bool Start() {
@@ -96,16 +91,19 @@ namespace EasySSA.Server.Services {
 
             this.IsRunning = true;
 
-            this.DoRecvFromClient();
             this.DoRecvFromModule();
+            this.DoRecvFromClient();
 
             return true;
-
         }
 
         public bool Stop() {
+            if (!IsRunning) return true;
+
             bool flag1 = false;
             bool flag2 = false;
+
+            Console.WriteLine("Stop starting...");
 
             try {
                 this.Client.Disconnect();
@@ -126,6 +124,8 @@ namespace EasySSA.Server.Services {
                 this.IsRunning = false;
                 return true;
             }
+
+            Console.WriteLine("Stopped..!");
 
             return false;
         }
@@ -172,7 +172,7 @@ namespace EasySSA.Server.Services {
                 case PacketOperationType.INJECT:
                     if (resultInfo != null) {
                         if (resultInfo is PacketResult.PacketInjectResultInfo inject) {
-                            if (inject.AfterPacket) {
+                            if (!inject.AfterPacket) {
                                 security.Send(packet);
                             }
 
@@ -182,7 +182,7 @@ namespace EasySSA.Server.Services {
                                 });
                             }
 
-                            if (!inject.AfterPacket) {
+                            if (inject.AfterPacket) {
                                 security.Send(packet);
                             }
                         }
@@ -221,22 +221,28 @@ namespace EasySSA.Server.Services {
                         this.m_localSecurity.Recv(m_localBuffer, 0, recvCount);
 
                         m_localRecevivePackets = this.m_localSecurity.TransferIncoming();
-                        int receiveCount = m_localRecevivePackets.Count;
 
                         if (m_localRecevivePackets != null) {
 
-                            TotalPacketCount += receiveCount;
+                            TotalPacketCount += m_localRecevivePackets.Count;
 
-                            for (int i = 0; i < receiveCount; i++) {
+                            Console.WriteLine("m_localRecevivePackets != null");
+
+                            for (int i = 0; i < m_localRecevivePackets.Count; i++) {
                                 Packet packet = m_localRecevivePackets[i];
 
                                 int packetLenght = packet.GetBytes().Length;
 
                                 if (packet.Opcode == 0x9000 || packet.Opcode == 0x5000 || packet.Opcode == 0x2001) {
+                                    Console.WriteLine("Handshake Client: " + packet.Opcode);
                                     continue;
                                 }
 
+                                Console.WriteLine("1111");
+
                                 if(this.ServiceComponent.OnPacketReceived != null) {
+
+                                    Console.WriteLine("2222");
 
                                     PacketResult result = this.ServiceComponent.OnPacketReceived(this.Client, new SROPacket(packet), PacketSocketType.CLIENT);
 
@@ -267,14 +273,20 @@ namespace EasySSA.Server.Services {
                 try {
                     int recvCount = this.m_serviceSocket.EndReceive(iar);
 
+                    Console.WriteLine("Service 111");
+
                     if (recvCount > 0) {
+                        Console.WriteLine("Service 222");
                         m_serviceRecevivePackets = this.m_serviceSecurity.TransferIncoming();
-                        int receiveCount = m_serviceRecevivePackets.Count;
 
                         if (m_serviceRecevivePackets != null) {
-                            for (int i = 0; i < receiveCount; i++) {
+
+                            Console.WriteLine("Service 333");
+
+                            for (int i = 0; i < m_serviceRecevivePackets.Count; i++) {
                                 Packet packet = m_serviceRecevivePackets[i];
                                 if (packet.Opcode == 0x9000 || packet.Opcode == 0x5000) {
+                                    Console.WriteLine("Handshake Service: " + packet.Opcode);
                                     continue;
                                 }
 
@@ -410,7 +422,7 @@ namespace EasySSA.Server.Services {
         }
 
         public void Dispose() {
-            this.Dispose();
+            this.Dispose(true);
         }
 
         private void Dispose(bool disposing) {
@@ -422,8 +434,9 @@ namespace EasySSA.Server.Services {
                     this.m_clientSocket.Dispose();
                     this.m_clientSocket = null;
                 }
+
+                m_wasDisposed = true;
             }
-            this.Dispose(disposing);
         }
 
         public void SendMessage(MessageType type, string sender, string message) {

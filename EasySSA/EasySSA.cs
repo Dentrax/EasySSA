@@ -8,8 +8,10 @@
 #endregion
 
 using EasySSA.Server;
+using EasySSA.Services;
 using EasySSA.SSA;
 using System;
+using System.Collections.Concurrent;
 using System.Net;
 
 namespace EasySSA
@@ -24,10 +26,14 @@ namespace EasySSA
 
         internal static bool IsDebugBuild;
 
-        
         internal static EasySSAComponent s_instance;
 
-        static EasySSA() {
+        //private ConcurrentBag<SROServiceComponent>
+
+        public EasySSA() {
+            //EasySSA.WasInitialized = false;
+            //EasySSA.IsQuitting = false;
+            //EasySSA.IsDebugBuild = false;
 #if DEBUG
             IsDebugBuild = true;
 #endif

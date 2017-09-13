@@ -9,12 +9,10 @@ namespace EasySSA.Core.Network {
         public static Socket TryConnect(IPEndPoint endpoint, int timeout, Action<SocketError> callback = null) {
             if (endpoint == null || endpoint.Address == null || endpoint.Port <= 0 || endpoint.Port >= 65535 || timeout <= 0) {
                 callback?.Invoke(SocketError.NotInitialized);
+                return null;
             }
 
-            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) {
-                Blocking = false,
-                NoDelay = true
-            };
+            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             try {
                 IAsyncResult iar = socket.BeginConnect(endpoint, null, null);

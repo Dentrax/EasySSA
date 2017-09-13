@@ -800,7 +800,9 @@ namespace EasySSA.SSA {
                     PacketWriter final_data = new PacketWriter();
 
                     byte[] input_data = packet.GetBytes();
-                    PacketReader input_reader = new PacketReader(input_data);
+                    
+                    //Not using?
+                    //PacketReader input_reader = new PacketReader(input_data);
 
                     TransferBuffer workspace = new TransferBuffer(4089, 0, (int)input_data.Length);
 

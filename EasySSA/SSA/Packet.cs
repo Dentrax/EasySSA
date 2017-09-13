@@ -474,10 +474,13 @@ namespace EasySSA.SSA {
                 return values;
             }
         }
-        public String[] ReadAsciiArray(int count)
-        {
-            return ReadAsciiArray(1252);
-        }
+
+        //Removed - bad-design
+        //public String[] ReadAsciiArray(int count)
+        //{
+        //    return ReadAsciiArray(1252);
+        //}
+
         public String[] ReadAsciiArray(int codepage, int count)
         {
             lock (m_lock)

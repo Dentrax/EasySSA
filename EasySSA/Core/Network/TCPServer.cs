@@ -113,7 +113,7 @@ namespace EasySSA.Core.Network {
         private void BindClient(Client client) {
             try {
 
-                new SROServiceContext(client, this.m_serviceComponent).DOBind(this.m_serviceComponent.OnServiceSocketStatusChanged);
+                new SROServiceContext(client, this.m_serviceComponent).DOBind( this.m_serviceComponent.OnServiceSocketStatusChanged);
 
             } catch {
                 Console.ForegroundColor = ConsoleColor.DarkRed;
