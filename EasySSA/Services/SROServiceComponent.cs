@@ -51,11 +51,17 @@ namespace EasySSA.Services {
 
         public int ServiceBindTimeout { get; private set; }
 
+        public bool IsDebugMode { get; private set; }
+
         private bool m_wasDisposed;
 
         public SROServiceComponent(ServerServiceType serviceType, int serviceIndex) {
             this.ServiceType = serviceType;
             this.ServiceIndex = serviceIndex;
+            this.MaxClientCount = 10;
+            this.LocalBindTimeout = 10;
+            this.ServiceBindTimeout = 10;
+            this.IsDebugMode = false;
         }
 
 
@@ -91,8 +97,59 @@ namespace EasySSA.Services {
             return this;
         }
 
-        public void DOBind(Action<bool> callback = null) {
-            new TCPServer(this).DOBind(callback);
+        public SROServiceComponent SetDebugMode(bool debug) {
+            this.IsDebugMode = debug;
+            return this;
+        }
+
+        public void DOBind(Action<bool, BindErrorType> callback = null) {
+            bool flag = true;
+
+            if (this.m_wasDisposed) {
+                callback(false, BindErrorType.COMPONENT_DISPOSED);
+                flag = false;
+                return;
+            }
+
+            if(this.LocalEndPoint == null) {
+                callback(false, BindErrorType.COMPONENT_LOCAL_ENDPOINT_NULL);
+                flag = false;
+            }
+
+            if (this.ServiceEndPoint == null) {
+                callback(false, BindErrorType.COMPONENT_SERVICE_ENDPOINT_NULL);
+                flag = false;
+            }
+
+            if(this.ServiceIndex <= 0) {
+                callback(false, BindErrorType.COMPONENT_SERVICE_INDEX_NULL_OR_ZERO);
+                flag = false;
+            }
+
+            if (this.LocalBindTimeout <= 0) {
+                callback(false, BindErrorType.COMPONENT_LOCAL_BIND_TIMEOUT_NULL_OR_ZERO);
+                flag = false;
+            }
+
+            if (this.ServiceBindTimeout <= 0) {
+                callback(false, BindErrorType.COMPONENT_SERVICE_BIND_TIMEOUT_NULL_OR_ZERO);
+                flag = false;
+            }
+
+            if (this.MaxClientCount <= 0) {
+                callback(false, BindErrorType.COMPONENT_SERVICE_CLIENT_COUNT_NULL_OR_ZERO);
+                flag = false;
+            }
+
+            if (this.Fingerprint == null) {
+                callback(false, BindErrorType.COMPONENT_FINGERPRINT_NULL);
+                flag = false;
+            }
+
+            if (flag) {
+                new TCPServer(this).DOBind(callback);
+            }
+           
         }
 
         public void Dispose() {

@@ -7,10 +7,17 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Core.Utils {
-    public static class SQLUtils {
 
-
-
+namespace EasySSA.Common {
+    public enum LogLevel {
+        Debug,
+        Info,
+        Warning,
+        Error,
+        Failure,
+        Allocation,
+        Reallocation,
+        Deallocation,
+        UNKNOWN
     }
 }

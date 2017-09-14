@@ -62,6 +62,10 @@ namespace EasySSA.Server.Services {
             //this.m_serviceTransferBuffer = new TransferBuffer(0x10000, 0, 0);
 
             this.IsRunning = false;
+
+            if (ServiceComponent.IsDebugMode) {
+                Logger.SERVICE.Print(LogLevel.Allocation, "SROServiceContext created from Client");
+            }
         }
 
         ~SROServiceContext() {
@@ -76,8 +80,16 @@ namespace EasySSA.Server.Services {
             this.Start();
         }
 
+        public bool IsServiceSocketConnected() {
+            try {
+                return !((m_serviceSocket.Poll(1000, SelectMode.SelectRead) && (m_serviceSocket.Available == 0)) || !m_serviceSocket.Connected);
+            } catch {
+                return false;
+            }
+        }
+
         public bool Start() {
-            if (m_serviceSocket == null) {
+            if (m_serviceSocket == null || !IsServiceSocketConnected()) {
                 Stop();
                 return false;
             }
@@ -87,6 +99,10 @@ namespace EasySSA.Server.Services {
             this.DoRecvFromService();
             this.DoRecvFromClient();
 
+            if (ServiceComponent.IsDebugMode) {
+                Logger.SERVICE.Print(LogLevel.Info, "SROServiceContext started...");
+            }
+
             return true;
         }
 
@@ -95,8 +111,6 @@ namespace EasySSA.Server.Services {
 
             bool flag1 = false;
             bool flag2 = false;
-
-            Console.WriteLine("Stop starting...");
 
             try {
                 this.Client.Disconnect();
@@ -115,22 +129,26 @@ namespace EasySSA.Server.Services {
 
             if (flag1 && flag2) {
                 this.IsRunning = false;
-                Console.WriteLine("Stopped..!");
+                if (ServiceComponent.IsDebugMode) {
+                    Logger.SERVICE.Print(LogLevel.Info, "SROServiceContext stopped..!");
+                }
                 return true;
             }
 
-            Console.WriteLine("Non-Stopped..!");
+            if (ServiceComponent.IsDebugMode) {
+                Logger.SERVICE.Print(LogLevel.Info, "SROServiceContext stop error");
+            }
 
             return false;
         }
 
         public void Disconnect(SROServiceContext server, ClientDisconnectType disconnectType) {
-            if (this.Client.IsConnected()) {
+            if (this.IsRunning) {
                 this.ServiceComponent.OnClientDisconnected?.Invoke(this.Client, disconnectType);
             }
         }
 
-        private void HandleAndTransferResult(Packet packet, PacketSocketType direction, PacketResult result) {
+        private void DOPacketTransfer(Packet packet, PacketSocketType direction, PacketResult result) {
 
             Security security = (direction == PacketSocketType.CLIENT) ? this.m_clientSecurity : this.m_serviceSecurity;
 
@@ -149,6 +167,10 @@ namespace EasySSA.Server.Services {
                                 //TODO: Complete
                             }
 
+                            if (ServiceComponent.IsDebugMode) {
+                                Logger.PACKET.Print(LogLevel.Warning, "Packet Operation (DISCONNECT) received : " + packet.HexOpcode);
+                            }
+
                             this.Disconnect(this, ClientDisconnectType.PACKET_OPERATION_DISCONNECT);
                             this.Stop();
                         }
@@ -158,6 +180,11 @@ namespace EasySSA.Server.Services {
                     if (resultInfo != null) {
                         if (resultInfo is PacketResult.PacketReplaceResultInfo replace) {
                             if (replace.Packet == packet) {
+
+                                if (ServiceComponent.IsDebugMode) {
+                                    Logger.PACKET.Print(LogLevel.Warning, "Packet Operation (REPLACE) received : " + packet.HexOpcode);
+                                }
+
                                 replace.ReplaceWith.ForEach(packets => {
                                     security.Send(packets);
                                 });
@@ -168,6 +195,11 @@ namespace EasySSA.Server.Services {
                 case PacketOperationType.INJECT:
                     if (resultInfo != null) {
                         if (resultInfo is PacketResult.PacketInjectResultInfo inject) {
+
+                            if (ServiceComponent.IsDebugMode) {
+                                Logger.PACKET.Print(LogLevel.Warning, "Packet Operation (INJECT) received : " + packet.HexOpcode);
+                            }
+
                             if (!inject.AfterPacket) {
                                 security.Send(packet);
                             }
@@ -185,8 +217,15 @@ namespace EasySSA.Server.Services {
                     }
                     break;
                 case PacketOperationType.IGNORE:
+                    if (ServiceComponent.IsDebugMode) {
+                        Logger.PACKET.Print(LogLevel.Warning, "Packet Operation (IGNORE) received : " + packet.HexOpcode);
+                    }
                     break;
                 case PacketOperationType.BLOCK_IP:
+                    if (ServiceComponent.IsDebugMode) {
+                        Logger.PACKET.Print(LogLevel.Warning, "Packet Operation (BLOCK_IP) received : " + packet.HexOpcode);
+                    }
+                    //TODO: BLOCK_IP
                     this.Disconnect(this, ClientDisconnectType.PACKET_OPERATION_DISCONNECT);
                     this.Stop();
                     break;
@@ -231,15 +270,17 @@ namespace EasySSA.Server.Services {
                             Packet packet = clientRecevivePackets[i];
 
                             if (packet.Opcode == 0x9000 || packet.Opcode == 0x5000 || packet.Opcode == 0x2001) {
-                                Console.WriteLine("[Client] HANDSHAKE : " + packet.Opcode);
+                                if (ServiceComponent.IsDebugMode) {
+                                    Logger.PACKET.Print(LogLevel.Info, "Packet (HANDSHAKE) received from CLIENT : " + packet.HexOpcode);
+                                }
                                 continue;
                             }
 
-                            /*if(this.ServiceComponent.OnPacketReceived != null) {
+                            if(this.ServiceComponent.OnPacketReceived != null) {
                                 PacketResult result = this.ServiceComponent.OnPacketReceived(this.Client, new SROPacket(packet), PacketSocketType.CLIENT);
-                                HandleAndTransferResult(packet, PacketSocketType.SERVER, result);
+                                DOPacketTransfer(packet, PacketSocketType.SERVER, result);
                                    
-                            }*/
+                            }
 
                             m_serviceSecurity.Send(packet);
                         }
@@ -276,14 +317,16 @@ namespace EasySSA.Server.Services {
                             Packet packet = serviceRecevivePackets[i];
 
                             if (packet.Opcode == 0x9000 || packet.Opcode == 0x5000) {
-                                Console.WriteLine("[Service] HANDSHAKE : " + packet.Opcode);
+                                if (ServiceComponent.IsDebugMode) {
+                                    Logger.PACKET.Print(LogLevel.Info, "Packet (HANDSHAKE) received from SERVICE : " + packet.HexOpcode);
+                                }
                                 continue;
                             }
 
-                            /*if (this.ServiceComponent.OnPacketReceived != null) {
+                            if (this.ServiceComponent.OnPacketReceived != null) {
                                 PacketResult result = this.ServiceComponent.OnPacketReceived(this.Client, new SROPacket(packet), PacketSocketType.SERVER);
-                                HandleAndTransferResult(packet, PacketSocketType.CLIENT, result);
-                            }*/
+                                DOPacketTransfer(packet, PacketSocketType.CLIENT, result);
+                            }
 
                             m_clientSecurity.Send(packet);
                         }
@@ -453,6 +496,10 @@ namespace EasySSA.Server.Services {
                 if (this.m_clientSocket != null) {
                     this.m_clientSocket.Dispose();
                     this.m_clientSocket = null;
+                }
+
+                if (ServiceComponent.IsDebugMode) {
+                    Logger.SERVICE.Print(LogLevel.Deallocation, "SROServiceContext disponsed");
                 }
 
                 m_wasDisposed = true;

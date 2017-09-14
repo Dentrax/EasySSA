@@ -7,9 +7,9 @@
 // ====================================================
 #endregion
 
-using System;
 using EasySSA.SSA;
 using EasySSA.Server;
+using System.Linq;
 
 namespace EasySSA.Packets {
     public sealed class SROPacket : Packet, ISROPacket {
@@ -67,6 +67,31 @@ namespace EasySSA.Packets {
             this.m_sendType = sendType;
             this.m_serverType = serverType;
             this.m_socketType = socketType;
+        }
+
+        public override bool Equals(object obj) {
+            if (obj == null || this.GetType() != obj.GetType()) {
+                return false;
+            }
+
+            SROPacket other = obj as SROPacket;
+
+            bool flag1 = this.Opcode == other.Opcode && this.Encrypted == other.Encrypted && this.Massive == other.Massive && this.GetBytes().SequenceEqual(other.GetBytes());
+            bool flag2 = this.m_sendType == other.SendType && this.m_serverType == other.ServerServiceType && this.m_socketType == other.SocketType && this.m_incomingFrom == other.IncomingFrom && this.m_outgoingTo == other.OutgoingTo;
+
+            return flag1 && flag2;
+        }
+
+        public override int GetHashCode() {
+            unchecked {
+                var result = 13;
+                result = (result * 7) ^ m_sendType.GetHashCode();
+                result = (result * 7) ^ m_serverType.GetHashCode();
+                result = (result * 7) ^ m_socketType.GetHashCode();
+                result = (result * 7) ^ m_incomingFrom.GetHashCode();
+                result = (result * 7) ^ m_outgoingTo.GetHashCode();
+                return result;
+            }
         }
 
     }

@@ -7,16 +7,13 @@
 // ====================================================
 #endregion
 
-using EasySSA.Server;
-using EasySSA.Services;
-using EasySSA.SSA;
 using System;
-using System.Collections.Concurrent;
-using System.Net;
 
 namespace EasySSA
 {
     public sealed class EasySSA {
+
+        //TODO: Obsolate
 
         public static readonly Version Version = new Version(1, 0, 0, 0);
 
@@ -24,45 +21,14 @@ namespace EasySSA
 
         internal static bool IsQuitting { get; private set; }
 
-        internal static bool IsDebugBuild;
-
         internal static EasySSAComponent s_instance;
 
-        //private ConcurrentBag<SROServiceComponent>
-
         public EasySSA() {
-            //EasySSA.WasInitialized = false;
-            //EasySSA.IsQuitting = false;
-            //EasySSA.IsDebugBuild = false;
 #if DEBUG
             IsDebugBuild = true;
 #endif
         }
 
-        //EasySSA ssa = new EasySSA();
-        //ssa.Init();
-
-        //ssa.AddServer(ServerType.Gateway, 1)
-        //   .SetFingerprint("f")
-        //   .SetEndPoint("ip", "port")
-        //   .SetRedirect("ip", "port")
-        //   .SetMaxClientCount(500)
-        //   .OnClientConnect()
-        //   .OnClientDisconnect()
-        //   .OnPacketReceived()
-        //   ...
-
-        //ssa.AddServer(ServerType.Agent, 1)
-        //   .SetFingerprint("f")
-        //   .SetEndPoint("ip", "port")
-        //   .SetRedirect("ip", "port")
-        //   .SetMaxClientCount(500)
-        //   .OnClientConnect()
-        //   .OnClientDisconnect()
-        //   .OnPacketReceived()
-        //   ...
-
-        //ssa.DOBind()
 
         #region Initializers
 
@@ -87,21 +53,10 @@ namespace EasySSA
 
         static IEasySSAInit Init(EasySSASettings settings, bool useSafeMode) {
             WasInitialized = true;
-
-
             return s_instance;
         }
 
         #endregion
-
-        //new TestServer().DOBind("ip", "port").SetMaxBindTries(3).SetMaxConnections(300).ONBind(delegate {...}).ONReceiveBytes(delegate {...}).ONSocketStatusChanged(delegate {...}).ONBlaBlaBla...
-
-        public static void Clear(bool destroy = false) {
-            if (!destroy) return;
-
-
-        }
-
 
     }
 }

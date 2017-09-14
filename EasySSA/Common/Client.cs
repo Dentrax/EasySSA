@@ -1,9 +1,17 @@
-﻿using System;
+﻿#region License
+// ====================================================
+// EasySSA Copyright(C) 2017 Furkan Türkal
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+
+using System;
 using System.Net.Sockets;
 
 using EasySSA.SSA;
 using EasySSA.Server;
-using EasySSA.Packets;
 using EasySSA.Server.Services;
 using EasySSA.Core.Network.Securities;
 
@@ -57,8 +65,7 @@ namespace EasySSA.Common {
         }
 
         public void SetFingerprint(Fingerprint fingerprint) {
-            //Security.GenerateSecurity(fingerprint.SecurityFlag.HasFlag(SecurityFlags.Blowfish), fingerprint.SecurityFlag.HasFlag(SecurityFlags.SecurityBytes), fingerprint.SecurityFlag.HasFlag(SecurityFlags.Handshake));
-            Security.GenerateSecurity(true, true, true);
+            Security.GenerateSecurity(fingerprint.SecurityFlag.HasFlag(SecurityFlags.Blowfish), fingerprint.SecurityFlag.HasFlag(SecurityFlags.SecurityBytes), fingerprint.SecurityFlag.HasFlag(SecurityFlags.Handshake));
             Security.ChangeIdentity(fingerprint.IdentityID, fingerprint.IdentityFlag);
         }
 

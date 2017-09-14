@@ -18,6 +18,9 @@ namespace EasySSA.SSA {
         {
             get { return m_opcode; }
         }
+
+        public string HexOpcode => $"0x{Opcode.ToString("x2")}";
+
         public bool Encrypted
         {
             get { return m_encrypted; }

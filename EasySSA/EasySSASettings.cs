@@ -14,10 +14,6 @@ namespace EasySSA {
 
         public static bool USE_DEBUG_MODE = false;
 
-        public const int DEFAULT_MAX_TWEENERS = 200;
-        public const int DEFAULT_MAX_SEQUENCES = 50;
-
-        public bool UseSafeMode = true;
-        public bool DefaultRecyclable;
+        public static bool UseSafeMode = true;
     }
 }

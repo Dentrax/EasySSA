@@ -43,33 +43,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Client.cs" />
+    <Compile Include="Common\Logger.cs" />
+    <Compile Include="Common\LogLevel.cs" />
     <Compile Include="Common\MessageType.cs" />
     <Compile Include="Core\Network\NetworkHelper.cs" />
     <Compile Include="Packets\PacketOperationType.cs" />
     <Compile Include="Packets\PacketResult.cs" />
+    <Compile Include="Server\BindErrorType.cs" />
     <Compile Include="Server\ClientDisconnectType.cs" />
     <Compile Include="Services\SROServiceComponent.cs" />
     <Compile Include="SSA\Fingerprint.cs" />
-    <Compile Include="Common\IProvider.cs" />
-    <Compile Include="Core\Database\Database.cs" />
-    <Compile Include="Core\Database\MSSQL.cs" />
-    <Compile Include="Core\Database\NOSQL.cs" />
-    <Compile Include="Core\Database\SQL.cs" />
     <Compile Include="Core\Network\PacketManager.cs" />
     <Compile Include="Core\Network\Securities\SecurityFlags.cs" />
     <Compile Include="Core\Network\TCPServer.cs" />
-    <Compile Include="Core\Threading\Checkers\CheckerBase.cs" />
-    <Compile Include="Core\Threading\Checkers\VersionChecker.cs" />
-    <Compile Include="Core\Threading\ConsoleThread.cs" />
-    <Compile Include="Core\Threading\MemoryThread.cs" />
-    <Compile Include="Core\Threading\NetworkThread.cs" />
-    <Compile Include="Core\Threading\ThreadBase.cs" />
-    <Compile Include="Core\Utils\ObjectPool.cs" />
-    <Compile Include="Core\Utils\SQLUtils.cs" />
     <Compile Include="EasySSA.cs" />
     <Compile Include="EasySSAComponent.cs" />
     <Compile Include="EasySSASettings.cs" />
-    <Compile Include="Extensions\ByteArrayExtensions.cs" />
     <Compile Include="IEasySSAInit.cs" />
     <Compile Include="Packets\ISROPacket.cs" />
     <Compile Include="Packets\PacketDatabase.cs" />
@@ -78,23 +67,11 @@
     <Compile Include="Packets\SROPacket.cs" />
     <Compile Include="Packets\OPCodeFactory.cs" />
     <Compile Include="Server\ServerServiceType.cs" />
-    <Compile Include="Services\CoreServices.cs" />
-    <Compile Include="Services\IService.cs" />
-    <Compile Include="Services\IServiceProvider.cs" />
-    <Compile Include="Services\PacketService\IPacketProvider.cs" />
-    <Compile Include="Services\ServerService\IServerProvider.cs" />
-    <Compile Include="Services\ServiceProvider.cs" />
-    <Compile Include="Services\PacketService\PacketProvider.cs" />
-    <Compile Include="Services\ServerService\ServerProvider.cs" />
     <Compile Include="Packets\Command.cs" />
-    <Compile Include="Packets\CommandFactory.cs" />
     <Compile Include="Packets\OPCode.cs" />
     <Compile Include="Packets\OPCommand.cs" />
-    <Compile Include="Processor\PacketProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\Services\SROServiceContext.cs" />
-    <Compile Include="Services\ServiceProviderLocator.cs" />
-    <Compile Include="Services\ServiceProviderType.cs" />
     <Compile Include="SSA\Blowfish.cs" />
     <Compile Include="SSA\Packet.cs" />
     <Compile Include="SSA\PacketReader.cs" />
@@ -103,12 +80,7 @@
     <Compile Include="SSA\TransferBuffer.cs" />
     <Compile Include="SSA\Utility.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Client\" />
-    <Folder Include="Core\IO\" />
-    <Folder Include="Packets\Commands\" />
-    <Folder Include="Packets\Messages\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="EasySSA.licenseheader" />
   </ItemGroup>

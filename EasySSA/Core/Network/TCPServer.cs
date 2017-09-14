@@ -7,16 +7,15 @@
 // ====================================================
 #endregion
 
+using System;
+using System.Net.Sockets;
+using System.Security;
+using System.Threading;
+
 using EasySSA.Common;
-using EasySSA.Core.Network.Securities;
-using EasySSA.Core.Utils;
 using EasySSA.Server;
 using EasySSA.Server.Services;
 using EasySSA.Services;
-using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
 
 namespace EasySSA.Core.Network {
     public sealed class TCPServer {
@@ -38,35 +37,59 @@ namespace EasySSA.Core.Network {
             this.IsActive = false;
         }
 
+        public void DOBind(Action<bool, BindErrorType> callback = null) {
 
-        public void DOBind(Action<bool> callback = null) {
-
-            if (m_listenerSocket != null || IsActive) {
-                throw new Exception("[TCPServer::DOBind()] -> Trying to start server on socket which is already in use!");
+            if(m_listenerSocket != null) {
+                callback?.Invoke(false, BindErrorType.SERVER_BIND_SOCKET_NOT_NULL);
+                return;
             }
 
-            m_listenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            if (this.IsActive) {
+                callback?.Invoke(false, BindErrorType.SERVER_BIND_SOCKET_ALREADY_ACTIVE);
+                return;
+            }
+
+            this.m_listenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             try {
-                m_listenerSocket.Bind(m_serviceComponent.LocalEndPoint);
-                m_listenerSocket.Listen(100);
 
-                m_accepterThread = new Thread(DOBeginAccepter);
-                m_accepterThread.Start();
+                this.m_listenerSocket.Bind(m_serviceComponent.LocalEndPoint);
+                this.m_listenerSocket.Listen(100);
+              
+                this.m_accepterThread = new Thread(DOBeginAccepter);
+                this.m_accepterThread.Start();
 
-                this.IsActive = true;
+                bool flag1 = m_listenerSocket.Poll(1000, SelectMode.SelectRead);
+                bool flag2 = m_listenerSocket.Available == 0;
 
-                this.m_serviceComponent.OnLocalSocketStatusChanged?.Invoke(SocketError.Success);
+                if (flag1 && flag2) {
+                    this.IsActive = false;
+                    this.m_serviceComponent.OnLocalSocketStatusChanged?.Invoke(SocketError.HostUnreachable);
+                    callback?.Invoke(false, BindErrorType.SERVER_BIND_SOCKET_NON_AVAILABLE);
+                } else {
+                    this.IsActive = true;
+                    this.m_serviceComponent.OnLocalSocketStatusChanged?.Invoke(SocketError.Success);
+                    callback?.Invoke(true, BindErrorType.SUCCESS);
+                }
                 
-                callback?.Invoke(true);
+                return;
+
+            } catch (ArgumentNullException e) {
+                Logger.TCP.Print(LogLevel.Error, e.ToString());
+                this.m_serviceComponent.OnLocalSocketStatusChanged?.Invoke(SocketError.InvalidArgument);
+                callback?.Invoke(false, BindErrorType.SERVER_BIND_ARGUMENT_NULL_EXCEPTION);
             } catch (SocketException e) {
-
-                this.IsActive = false;
-
-                this.m_serviceComponent.OnLocalSocketStatusChanged?.Invoke(SocketError.Fault);
-
-                callback?.Invoke(false);
-                throw new Exception("[TCPServer::DOBind()] -> Could not bind/listen/BeginAccept socket! " + e.ToString());
+                Logger.TCP.Print(LogLevel.Error, e.ToString());
+                this.m_serviceComponent.OnLocalSocketStatusChanged?.Invoke(SocketError.SocketNotSupported);
+                callback?.Invoke(false, BindErrorType.SERVER_BIND_SOCKET_EXCEPTION);
+            } catch (ObjectDisposedException e) {
+                Logger.TCP.Print(LogLevel.Error, e.ToString());
+                this.m_serviceComponent.OnLocalSocketStatusChanged?.Invoke(SocketError.NotSocket);
+                callback?.Invoke(false, BindErrorType.SERVER_BIND_OBJECT_DISPOSED_EXCEPTION);
+            } catch (SecurityException e) {
+                Logger.TCP.Print(LogLevel.Error, e.ToString());
+                this.m_serviceComponent.OnLocalSocketStatusChanged?.Invoke(SocketError.AccessDenied);
+                callback?.Invoke(false, BindErrorType.SERVER_BIND_SECURITY_EXCEPTION);
             }
 
         }
@@ -112,13 +135,8 @@ namespace EasySSA.Core.Network {
 
         private void BindClient(Client client) {
             try {
-
                 new SROServiceContext(client, this.m_serviceComponent).DOBind( this.m_serviceComponent.OnServiceSocketStatusChanged);
-
-            } catch {
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.ResetColor();
-            }
+            } catch { }
         }
     }
 }

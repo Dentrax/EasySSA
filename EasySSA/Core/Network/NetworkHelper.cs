@@ -1,4 +1,14 @@
-﻿using System;
+﻿#region License
+// ====================================================
+// EasySSA Copyright(C) 2017 Furkan Türkal
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+
+using EasySSA.Common;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Security;
@@ -13,38 +23,55 @@ namespace EasySSA.Core.Network {
             }
 
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.Blocking = false;
-            socket.NoDelay = true;
+            //socket.Blocking = false;
+            //socket.NoDelay = true;
 
             try {
-                IAsyncResult iar = socket.BeginConnect(endpoint, null, null);
 
+                socket.Connect(endpoint);
+
+                if (socket.Connected) {
+                    callback?.Invoke(SocketError.Success);
+                    return socket;
+                } else {
+                    callback?.Invoke(SocketError.HostUnreachable);
+                    return null;
+                }
+
+                //TODO: Async connect ?
+                /*IAsyncResult iar = socket.BeginConnect(endpoint, null, null);
                 if (iar.AsyncWaitHandle.WaitOne(timeout)) {
                     socket.EndConnect(iar);
-
                     callback?.Invoke(SocketError.Success);
                     return socket;
                 } else {
                     socket.Close();
                     callback?.Invoke(SocketError.HostUnreachable);
                     return null;
-                }
-            } catch (AbandonedMutexException) {
+                }*/
+
+            } catch (AbandonedMutexException e) {
+                Logger.NETWORK.Print(LogLevel.Error, e.ToString());
                 callback?.Invoke(SocketError.TryAgain);
                 return null;
-            } catch (ArgumentNullException){
+            } catch (ArgumentNullException e){
+                Logger.NETWORK.Print(LogLevel.Error, e.ToString());
                 callback?.Invoke(SocketError.InvalidArgument);
                 return null;
-            } catch (SocketException) {
-                callback?.Invoke(SocketError.HostDown);
+            } catch (SocketException e) {
+                Logger.NETWORK.Print(LogLevel.Error, e.ToString());
+                callback?.Invoke(SocketError.SocketNotSupported);
                 return null;
-            } catch (ObjectDisposedException) {
+            } catch (ObjectDisposedException e) {
+                Logger.NETWORK.Print(LogLevel.Error, e.ToString());
                 callback?.Invoke(SocketError.NotSocket);
                 return null;
-            } catch (SecurityException) {
+            } catch (SecurityException e) {
+                Logger.NETWORK.Print(LogLevel.Error, e.ToString());
                 callback?.Invoke(SocketError.AccessDenied);
                 return null;
-            } catch (InvalidOperationException) {
+            } catch (InvalidOperationException e) {
+                Logger.NETWORK.Print(LogLevel.Error, e.ToString());
                 callback?.Invoke(SocketError.OperationNotSupported);
                 return null;
             }
