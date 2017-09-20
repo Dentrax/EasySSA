@@ -148,6 +148,18 @@ namespace EasySSA.SSA {
             }
         }
 
+        public int Length {
+            get {
+                lock (m_lock) {
+                    if (!m_locked) {
+                        throw new Exception("Cannot read Length from an unlocked Packet.");
+                    }
+                    return (int)(m_reader.BaseStream.Length);
+                }
+            }
+        }
+
+
         public long SeekRead(long offset, SeekOrigin orgin)
         {
             lock (m_lock)

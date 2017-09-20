@@ -65,7 +65,6 @@
     <Compile Include="Packets\PacketSendType.cs" />
     <Compile Include="Packets\PacketSocketType.cs" />
     <Compile Include="Packets\SROPacket.cs" />
-    <Compile Include="Packets\OPCodeFactory.cs" />
     <Compile Include="Server\ServerServiceType.cs" />
     <Compile Include="Packets\Command.cs" />
     <Compile Include="Packets\OPCode.cs" />

@@ -18,9 +18,5 @@ namespace EasySSA.Packets {
 
         PacketSocketType SocketType { get; }
 
-        ServerServiceType IncomingFrom { get; }
-
-        ServerServiceType OutgoingTo { get; }
-
     }
 }

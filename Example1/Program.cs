@@ -64,7 +64,11 @@ namespace Example1 {
 
             gateway.OnPacketReceived += new Func<Client, SROPacket, PacketSocketType, PacketResult>(delegate (Client client, SROPacket packet, PacketSocketType socketType) {
 
-                Console.WriteLine("Packet received : " + packet.HexOpcode);
+                //SROPacket p = PacketDatabase.GetPacketFrom(packet, socketType);
+                //p.Lock();
+                //Console.WriteLine(p.Dump());
+
+                Console.WriteLine(packet.Dump());
 
                 return new PacketResult(PacketOperationType.NOTHING);
             });

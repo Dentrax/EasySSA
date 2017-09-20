@@ -13,7 +13,7 @@ namespace EasySSA
 {
     public sealed class EasySSA {
 
-        //TODO: Obsolate
+        //TODO: Do Obsolate?
 
         public static readonly Version Version = new Version(1, 0, 0, 0);
 
@@ -24,9 +24,6 @@ namespace EasySSA
         internal static EasySSAComponent s_instance;
 
         public EasySSA() {
-#if DEBUG
-            IsDebugBuild = true;
-#endif
         }
 
 
