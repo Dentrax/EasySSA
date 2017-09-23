@@ -13,12 +13,11 @@ using System.Collections.Generic;
 
 using EasySSA.SSA;
 using EasySSA.Common;
-using EasySSA.Services;
 using EasySSA.Packets;
+using EasySSA.Component;
 using EasySSA.Core.Network;
-using EasySSA.Core.Network.Securities;
 
-namespace EasySSA.Server.Services {
+namespace EasySSA.Context {
     public sealed class SROServiceContext : IDisposable {
 
         public bool IsRunning { get; private set; }
@@ -47,6 +46,14 @@ namespace EasySSA.Server.Services {
         public Security GetClientSecurity { get { return this.m_clientSecurity; } }
 
         public SROServiceContext(Client client, SROServiceComponent serviceComponent) {
+            if(client == null || serviceComponent == null) {
+                if (ServiceComponent.IsDebugMode) {
+                    Logger.SERVICE.Print(LogLevel.Allocation, "SROServiceContext or client null");
+                }
+                this.IsRunning = false;
+                return;
+            }
+
             this.ServiceComponent = serviceComponent;
             this.Client = client;
             this.Client.SetFingerprint(serviceComponent.Fingerprint);
@@ -268,21 +275,12 @@ namespace EasySSA.Server.Services {
 
                         for (int i = 0; i < clientRecevivePackets.Count; i++) {
                             Packet packet = clientRecevivePackets[i];
-
-                            if (packet.Opcode == 0x9000 || packet.Opcode == 0x5000 || packet.Opcode == 0x2001) {
-                                if (ServiceComponent.IsDebugMode) {
-                                    Logger.PACKET.Print(LogLevel.Info, "Packet (HANDSHAKE) received from CLIENT : " + packet.HexOpcode);
+                            if (this.ServiceComponent.OnPacketReceived != null) {
+                                PacketResult result = this.ServiceComponent.OnPacketReceived(this.Client, PacketDatabase.GetPacketFrom(packet, PacketSocketType.CLIENT), PacketSocketType.CLIENT);
+                                if (packet.Opcode != 0x9000 && packet.Opcode != 0x5000 && packet.Opcode != 0x2001) {
+                                    DOPacketTransfer(packet, PacketSocketType.SERVER, result);
                                 }
-                                continue;
                             }
-
-                            if(this.ServiceComponent.OnPacketReceived != null) {
-                                PacketResult result = this.ServiceComponent.OnPacketReceived(this.Client, new SROPacket(packet), PacketSocketType.CLIENT);
-                                DOPacketTransfer(packet, PacketSocketType.SERVER, result);
-                                   
-                            }
-
-                            m_serviceSecurity.Send(packet);
                         }
 
                     }
@@ -315,20 +313,12 @@ namespace EasySSA.Server.Services {
 
                         for (int i = 0; i < serviceRecevivePackets.Count; i++) {
                             Packet packet = serviceRecevivePackets[i];
-
-                            if (packet.Opcode == 0x9000 || packet.Opcode == 0x5000) {
-                                if (ServiceComponent.IsDebugMode) {
-                                    Logger.PACKET.Print(LogLevel.Info, "Packet (HANDSHAKE) received from SERVICE : " + packet.HexOpcode);
-                                }
-                                continue;
-                            }
-
                             if (this.ServiceComponent.OnPacketReceived != null) {
-                                PacketResult result = this.ServiceComponent.OnPacketReceived(this.Client, new SROPacket(packet), PacketSocketType.SERVER);
-                                DOPacketTransfer(packet, PacketSocketType.CLIENT, result);
+                                PacketResult result = this.ServiceComponent.OnPacketReceived(this.Client, PacketDatabase.GetPacketFrom(packet, PacketSocketType.SERVER), PacketSocketType.SERVER);
+                                if (packet.Opcode != 0x9000 && packet.Opcode != 0x5000) {
+                                    DOPacketTransfer(packet, PacketSocketType.CLIENT, result);
+                                }
                             }
-
-                            m_clientSecurity.Send(packet);
                         }
                            
                     }

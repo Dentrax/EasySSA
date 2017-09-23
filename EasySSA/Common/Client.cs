@@ -11,8 +11,7 @@ using System;
 using System.Net.Sockets;
 
 using EasySSA.SSA;
-using EasySSA.Server;
-using EasySSA.Server.Services;
+using EasySSA.Context;
 using EasySSA.Core.Network.Securities;
 
 namespace EasySSA.Common {

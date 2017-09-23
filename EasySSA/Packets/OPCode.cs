@@ -59,8 +59,8 @@ namespace EasySSA.Packets {
                 SERVERLIST = 0x6101,
                 SERVERLIST_PING = 0x6106,
                 LOGIN = 0x6102,
+                LOGIN_IBUV = 0x6323,
                 LOGIN_IBUV_CHALLENGE = 0x2322,
-                LOGIN_IBUV_CONFIRM = 0x6323,
             }
 
             public enum Response : ushort {
@@ -70,6 +70,7 @@ namespace EasySSA.Packets {
                 SERVERLIST_PING = 0xA106,
                 LOGIN = 0xA102,
                 LOGIN_IBUV_CONFIRM = 0xA323,
+                LOGIN_IBUV_CHALLENGE = 0x2322,
                 NEWS = 0xA104,
             }
         }

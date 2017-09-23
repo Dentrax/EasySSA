@@ -9,16 +9,15 @@
 
 using System;
 using System.Net;
+using System.Net.Sockets;
 
-using EasySSA.Server;
 using EasySSA.SSA;
 using EasySSA.Common;
 using EasySSA.Packets;
-using EasySSA.Server.Services;
+using EasySSA.Context;
 using EasySSA.Core.Network;
-using System.Net.Sockets;
 
-namespace EasySSA.Services {
+namespace EasySSA.Component {
     public sealed class SROServiceComponent : IDisposable {
 
         public SROServiceContext ServiceServer { get; private set; }

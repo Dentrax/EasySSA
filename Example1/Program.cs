@@ -9,32 +9,38 @@
 
 using System;
 using System.Net;
+using System.Threading;
+using System.Reflection;
 using System.Net.Sockets;
 
+using EasySSA.SSA;
 using EasySSA.Common;
 using EasySSA.Packets;
-using EasySSA.Server;
-using EasySSA.Services;
-using EasySSA.SSA;
+using EasySSA.Component;
 using EasySSA.Core.Network.Securities;
-using System.Reflection;
 
 namespace Example1 {
     class Program {
         static void Main(string[] args) {
             InitConsole();
+            new Thread(new ThreadStart(StartGateway)).Start();
+            Console.ReadLine();
+        }
+
+        private static void StartGateway() {
+            //Burak 145.239.106.209
 
             SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
-                                        .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
-                                        .SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15779))
-                                        .SetLocalBindTimeout(10)
-                                        .SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("37.187.151.145"), 15779))
-                                        .SetServiceBindTimeout(100)
-                                        .SetMaxClientCount(500)
-                                        .SetDebugMode(true);
+                            .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
+                            .SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15779))
+                            .SetLocalBindTimeout(10)
+                            .SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("145.239.106.209"), 15779))
+                            .SetServiceBindTimeout(100)
+                            .SetMaxClientCount(500)
+                            .SetDebugMode(false);
 
             gateway.OnLocalSocketStatusChanged += new Action<SocketError>(delegate (SocketError error) {
-                if(error == SocketError.Success) {
+                if (error == SocketError.Success) {
                     Console.WriteLine("LOCAL socket bind SUCCESS! : " + gateway.LocalEndPoint.ToString());
                 } else {
                     Console.WriteLine("LOCAL socket bind FAILED!  : " + error);
@@ -44,12 +50,12 @@ namespace Example1 {
             gateway.OnServiceSocketStatusChanged += new Action<Client, SocketError>(delegate (Client client, SocketError error) {
                 if (error == SocketError.Success) {
                     Console.WriteLine("SERVICE socket connect SUCCESS! : " + gateway.ServiceEndPoint.ToString());
-                } else { 
+                } else {
                     Console.WriteLine("SERVICE socket connect FAILED!  : " + error);
                 }
             });
 
-            gateway.OnClientConnected += new Func<Client, bool> (delegate (Client client) {
+            gateway.OnClientConnected += new Func<Client, bool>(delegate (Client client) {
 
                 Console.WriteLine("New client connected : " + client.Socket.RemoteEndPoint);
 
@@ -63,13 +69,10 @@ namespace Example1 {
             });
 
             gateway.OnPacketReceived += new Func<Client, SROPacket, PacketSocketType, PacketResult>(delegate (Client client, SROPacket packet, PacketSocketType socketType) {
+                //Console.WriteLine(packet.Dump(true));
+                DumpPacket(packet);
 
-                //SROPacket p = PacketDatabase.GetPacketFrom(packet, socketType);
-                //p.Lock();
-                //Console.WriteLine(p.Dump());
-
-                Console.WriteLine(packet.Dump());
-
+                //Console.Clear();
                 return new PacketResult(PacketOperationType.NOTHING);
             });
 
@@ -80,12 +83,54 @@ namespace Example1 {
                     Console.WriteLine("EasySSA bind FAILED -- Reason : " + error);
                 }
             });
+        }
 
-            Console.ReadLine();
+        static int tableWidth = 140;
+        static bool first = true;
+        private static void FirstPacketGrid() {
+            Console.WriteLine(new string('-', tableWidth));
+            PrintRow(new string[] { "DIRECTION", "NAME", "OPCODE", "ENCRYPTED", "MASSIVE" });
+            Console.WriteLine(new string('-', tableWidth));
+        }
 
+        static void PrintRow(params string[] columns) {
+            int width = (tableWidth - columns.Length) / columns.Length;
+            string row = "|";
+            foreach (string column in columns) {
+                row += AlignCentre(column, width) + "|";
+            }
+            Console.WriteLine(row);
+        }
+
+        static string AlignCentre(string text, int width) {
+            text = text.Length > width ? text.Substring(0, width - 3) + "..." : text;
+            if (string.IsNullOrEmpty(text)) {
+                return new string(' ', width);
+            } else {
+                return text.PadRight(width - (width - text.Length) / 2).PadLeft(width);
+            }
+        }
+
+        private static void DumpPacket(SROPacket packet) {
+            if (first) {
+                FirstPacketGrid();
+                first = false;
+            }
+            string direction;
+            if (packet.SendType == PacketSendType.REQUEST) {
+                direction = string.Format("[CLIENT->{0}]", packet.ServerServiceType);
+            } else if (packet.SendType == PacketSendType.RESPONSE) {
+                direction = string.Format("[{0}->CLIENT]", packet.ServerServiceType);
+            } else {
+                direction = "[?->?]";
+            }
+            string id = string.Format("[{0}]", packet.PacketID);
+            string opcode = string.Format("[{0:X4}]", packet.Opcode);
+            PrintRow(new string[] { direction, id, opcode, packet.Encrypted.ToString(), packet.Massive.ToString() });
         }
 
         private static void InitConsole() {
+            Console.Clear();
             Console.WindowWidth = 150;
             Console.BufferHeight = 5000;
 

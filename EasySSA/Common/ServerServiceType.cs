@@ -7,16 +7,16 @@
 // ====================================================
 #endregion
 
-using EasySSA.Common;
-
-namespace EasySSA.Packets {
-    public interface ISROPacket {
-
-        ServerServiceType ServerServiceType { get; }
-
-        PacketSendType SendType { get; }
-
-        PacketSocketType SocketType { get; }
-
+namespace EasySSA.Common {
+    public enum ServerServiceType {
+        GATEWAY,
+        AGENT,
+        SR_GAME,
+        DOWNLOAD,
+        SR_SHARD,
+        GLOBAL,
+        FARM,
+        MACHINE,
+        UNKNOWN
     }
 }

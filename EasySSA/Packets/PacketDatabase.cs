@@ -8,7 +8,7 @@
 #endregion
 
 using EasySSA.SSA;
-using EasySSA.Server;
+using EasySSA.Common;
 
 namespace EasySSA.Packets {
     public static class PacketDatabase {
@@ -28,15 +28,15 @@ namespace EasySSA.Packets {
                     #region GLOBAL-RESPONSE
 
                     case (ushort)OPCode.Global.Response.HANDSHAKE_SETUP_CHALLENGE:
-                        return new SROPacket("HANDSHAKE_SETUP_CHALLENGE", packet, PacketSendType.REQUEST, ServerServiceType.GLOBAL, PacketSocketType.SERVER);
+                        return new SROPacket("HANDSHAKE_SETUP_CHALLENGE", packet, PacketSendType.RESPONSE, ServerServiceType.GLOBAL, PacketSocketType.SERVER);
                     case (ushort)OPCode.Global.Response.MODULE_IDENTIFICATION:
-                        return new SROPacket("MODULE_IDENTIFICATION", packet, PacketSendType.REQUEST, ServerServiceType.GLOBAL, PacketSocketType.SERVER);
+                        return new SROPacket("MODULE_IDENTIFICATION", packet, PacketSendType.RESPONSE, ServerServiceType.GLOBAL, PacketSocketType.SERVER);
                     case (ushort)OPCode.Global.Response.NODE_STATUS1: //massive
-                        return new SROPacket("NODE_STATUS1", packet, PacketSendType.REQUEST, ServerServiceType.GLOBAL, PacketSocketType.SERVER);
+                        return new SROPacket("NODE_STATUS1", packet, PacketSendType.RESPONSE, ServerServiceType.GLOBAL, PacketSocketType.SERVER);
                     case (ushort)OPCode.Global.Response.NODE_STATUS2: //massive
-                        return new SROPacket("NODE_STATUS2", packet, PacketSendType.REQUEST, ServerServiceType.GLOBAL, PacketSocketType.SERVER);
+                        return new SROPacket("NODE_STATUS2", packet, PacketSendType.RESPONSE, ServerServiceType.GLOBAL, PacketSocketType.SERVER);
                     case (ushort)OPCode.Global.Response.MASSIVE_MESSAGE:
-                        return new SROPacket("MASSIVE_MESSAGE", packet, PacketSendType.REQUEST, ServerServiceType.GLOBAL, PacketSocketType.SERVER);
+                        return new SROPacket("MASSIVE_MESSAGE", packet, PacketSendType.RESPONSE, ServerServiceType.GLOBAL, PacketSocketType.SERVER);
 
                     #endregion
 
@@ -61,6 +61,8 @@ namespace EasySSA.Packets {
                         return new SROPacket("LOGIN", packet, PacketSendType.RESPONSE, ServerServiceType.GATEWAY, PacketSocketType.SERVER);
                     case (ushort)OPCode.Gateway.Response.LOGIN_IBUV_CONFIRM:
                         return new SROPacket("LOGIN_IBUV_CONFIRM", packet, PacketSendType.RESPONSE, ServerServiceType.GATEWAY, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Gateway.Response.LOGIN_IBUV_CHALLENGE:
+                        return new SROPacket("LOGIN_IBUV_CHALLENGE", packet, PacketSendType.RESPONSE, ServerServiceType.GATEWAY, PacketSocketType.SERVER);
                     case (ushort)OPCode.Gateway.Response.NEWS:
                         return new SROPacket("NEWS", packet, PacketSendType.RESPONSE, ServerServiceType.GATEWAY, PacketSocketType.SERVER);
 
@@ -767,8 +769,8 @@ namespace EasySSA.Packets {
                         return new SROPacket("LOGIN", packet, PacketSendType.REQUEST, ServerServiceType.GATEWAY, PacketSocketType.CLIENT);
                     case (ushort)OPCode.Gateway.Request.LOGIN_IBUV_CHALLENGE:
                         return new SROPacket("LOGIN_IBUV_CHALLENGE", packet, PacketSendType.REQUEST, ServerServiceType.GATEWAY, PacketSocketType.CLIENT);
-                    case (ushort)OPCode.Gateway.Request.LOGIN_IBUV_CONFIRM:
-                        return new SROPacket("LOGIN_IBUV_CONFIRM", packet, PacketSendType.REQUEST, ServerServiceType.GATEWAY, PacketSocketType.CLIENT);
+                    case (ushort)OPCode.Gateway.Request.LOGIN_IBUV:
+                        return new SROPacket("LOGIN_IBUV", packet, PacketSendType.REQUEST, ServerServiceType.GATEWAY, PacketSocketType.CLIENT);
 
                     #endregion
 

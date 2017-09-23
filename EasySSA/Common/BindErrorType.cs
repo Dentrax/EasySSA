@@ -7,7 +7,7 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Server {
+namespace EasySSA.Common {
     public enum BindErrorType {
         SUCCESS,
 

@@ -13,9 +13,8 @@ using System.Security;
 using System.Threading;
 
 using EasySSA.Common;
-using EasySSA.Server;
-using EasySSA.Server.Services;
-using EasySSA.Services;
+using EasySSA.Context;
+using EasySSA.Component;
 
 namespace EasySSA.Core.Network {
     public sealed class TCPServer {

@@ -7,16 +7,17 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Server {
-    public enum ServerServiceType {
-        GATEWAY,
-        AGENT,
-        SR_GAME,
-        DOWNLOAD,
-        SR_SHARD,
-        GLOBAL,
-        FARM,
-        MACHINE,
-        UNKNOWN
+namespace EasySSA.Common {
+    public struct Account {
+
+        public string Username { get; private set; }
+
+        public string Password { get; private set; }
+
+        public Account(string username, string password) {
+            this.Username = username;
+            this.Password = password;
+        }
+
     }
 }

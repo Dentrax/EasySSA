@@ -7,12 +7,12 @@
 // ====================================================
 #endregion
 
+using System;
 using System.Text;
 using System.Linq;
 
 using EasySSA.SSA;
-using EasySSA.Server;
-using System;
+using EasySSA.Common;
 
 namespace EasySSA.Packets {
     public sealed class SROPacket : Packet, ISROPacket {
@@ -69,26 +69,85 @@ namespace EasySSA.Packets {
             this.m_socketType = socketType;
         }
 
-        public string Dump() {
+        public string Dump(bool setLock = false) {
             StringBuilder sb = new StringBuilder();
 
-            if(this.m_sendType == PacketSendType.REQUEST) {
+            if (this.m_sendType == PacketSendType.REQUEST) {
                 sb.Append(string.Format("[CLIENT->{0}]", this.m_serverType));
             } else if (this.m_sendType == PacketSendType.RESPONSE) {
                 sb.Append(string.Format("[{0}->CLIENT]", this.m_serverType));
             } else {
                 sb.Append("[?->?]");
             }
-            
+
+            sb.Append("\t\t");
+
             sb.Append(string.Format("[{0}]", this.m_packetID));
+
+            sb.Append("\t\t");
+
             sb.Append(string.Format("[{0:X4}]", this.Opcode));
-            //sb.Append(string.Format("[{0} bytes]", this.Length));
 
-            if (this.Encrypted) sb.Append("[Encrypted]");
-            if (this.Massive) sb.Append("[Massive]");
+            if (setLock) {
+                this.Lock();
+                sb.Append("\t\t");
+                sb.Append(string.Format("[{0} bytes]", this.Length));
+            }
 
+
+            if (this.Encrypted) {
+                sb.Append("\t\t");
+                sb.Append("[Encrypted]");
+            }
+
+            if (this.Massive) {
+                sb.Append("\t\t");
+                sb.Append("[Massive]");
+            }
+
+            //sb.AppendLine(Environment.NewLine);
+
+            //sb.Append(HexDump(this.GetBytes()));
 
             return sb.ToString();
+        }
+
+        private string HexDump(byte[] buffer) {
+            return HexDump(buffer, 0, buffer.Length);
+        }
+
+        private string HexDump(byte[] buffer, int offset, int count) {
+            const int bytesPerLine = 16;
+            StringBuilder output = new StringBuilder();
+            StringBuilder ascii_output = new StringBuilder();
+            int length = count;
+            if (length % bytesPerLine != 0) {
+                length += bytesPerLine - length % bytesPerLine;
+            }
+            for (int x = 0; x <= length; ++x) {
+                if (x % bytesPerLine == 0) {
+                    if (x > 0) {
+                        output.AppendFormat("  {0}{1}", ascii_output.ToString(), Environment.NewLine);
+                        ascii_output.Clear();
+                    }
+                    if (x != length) {
+                        output.AppendFormat("{0:d10}   ", x);
+                    }
+                }
+                if (x < count) {
+                    output.AppendFormat("{0:X2} ", buffer[offset + x]);
+                    char ch = (char)buffer[offset + x];
+                    if (!Char.IsControl(ch)) {
+                        ascii_output.AppendFormat("{0}", ch);
+                    } else {
+                        ascii_output.Append(".");
+                    }
+                } else {
+                    output.Append("   ");
+                    ascii_output.Append(".");
+                }
+            }
+            return output.ToString();
         }
 
         public override bool Equals(object obj) {
