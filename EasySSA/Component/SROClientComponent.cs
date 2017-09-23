@@ -17,6 +17,14 @@ using EasySSA.Common;
 namespace EasySSA.Component {
     public sealed class SROClientComponent : IDisposable {
 
+        public Action<Client, bool> OnClientStarted;
+
+        public Action<Client, bool> OnAccountLogin;
+
+        public Action<Client, bool> OnCaptchaPassed;
+
+        public Action<Client, bool> OnCharacterLogin;
+
         public int ClientIndex { get; private set; }
 
         public Account Account { get; private set; }

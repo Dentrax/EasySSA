@@ -48,6 +48,7 @@
     <Compile Include="Common\LogLevel.cs" />
     <Compile Include="Common\MessageType.cs" />
     <Compile Include="Component\SROClientComponent.cs" />
+    <Compile Include="Context\SROClientContext.cs" />
     <Compile Include="Core\Network\NetworkHelper.cs" />
     <Compile Include="Packets\PacketOperationType.cs" />
     <Compile Include="Packets\PacketResult.cs" />

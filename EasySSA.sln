@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example1", "Example1\Exampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example2", "Example2\Example2.csproj", "{3F6F1E76-6293-4ACD-AE38-386DEB98DD0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySSA.Tests", "EasySSA.Tests\EasySSA.Tests.csproj", "{BAE78BF8-76E1-4137-88E9-B402551BC95C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{3F6F1E76-6293-4ACD-AE38-386DEB98DD0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F6F1E76-6293-4ACD-AE38-386DEB98DD0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F6F1E76-6293-4ACD-AE38-386DEB98DD0B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BAE78BF8-76E1-4137-88E9-B402551BC95C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BAE78BF8-76E1-4137-88E9-B402551BC95C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BAE78BF8-76E1-4137-88E9-B402551BC95C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BAE78BF8-76E1-4137-88E9-B402551BC95C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
