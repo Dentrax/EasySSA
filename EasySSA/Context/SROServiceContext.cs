@@ -47,9 +47,7 @@ namespace EasySSA.Context {
 
         public SROServiceContext(Client client, SROServiceComponent serviceComponent) {
             if(client == null || serviceComponent == null) {
-                if (ServiceComponent.IsDebugMode) {
-                    Logger.SERVICE.Print(LogLevel.Allocation, "SROServiceContext or client null");
-                }
+                Logger.SERVICE.Print(LogLevel.Allocation, "SROServiceContext or client null");
                 this.IsRunning = false;
                 return;
             }

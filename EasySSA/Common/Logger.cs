@@ -145,7 +145,6 @@ namespace EasySSA.Common {
         private void Initialize() {
             if (this.WasInitialized) return;
 
-            this.m_fileWriter = null;
             string dir = OUTPUT_DEBUG_DIRECTORY_NAME;
             bool firstTime = false;
 

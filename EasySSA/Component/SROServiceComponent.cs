@@ -152,7 +152,7 @@ namespace EasySSA.Component {
         }
 
         public void Dispose() {
-            this.Dispose();
+            this.Dispose(true);
         }
 
         private void Dispose(bool disposing) {
