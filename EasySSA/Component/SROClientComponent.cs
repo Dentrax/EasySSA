@@ -13,6 +13,7 @@ using System.Net;
 
 using EasySSA.SSA;
 using EasySSA.Common;
+using EasySSA.Context;
 
 namespace EasySSA.Component {
     public sealed class SROClientComponent : IDisposable {

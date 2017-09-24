@@ -20,8 +20,6 @@ using EasySSA.Core.Network;
 namespace EasySSA.Component {
     public sealed class SROServiceComponent : IDisposable {
 
-        public SROServiceContext ServiceServer { get; private set; }
-
         public ServerServiceType ServiceType { get; private set; }
 
         public int ServiceIndex { get; private set; }
@@ -160,7 +158,6 @@ namespace EasySSA.Component {
                 if (disposing) {
                     //
                 }
-                this.ServiceServer.Dispose();
 
                 m_wasDisposed = true;
             }
