@@ -117,7 +117,7 @@ DOBind Error Types
 Example Usage
 --------------------------
 ```csharp
-	SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
+SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
 	.SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
 	.SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15779))
 	.SetLocalBindTimeout(10)
