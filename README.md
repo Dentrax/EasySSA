@@ -117,14 +117,14 @@ DOBind Error Types
 Example Usage
 --------------------------
 ```csharp
-SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
-	.SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
-	.SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15779))
-	.SetLocalBindTimeout(10)
-	.SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("111.111.111.111"), 15779))
-	.SetServiceBindTimeout(100)
-	.SetMaxClientCount(500)
-	.SetDebugMode(false);
+	SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
+			.SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
+			.SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15779))
+			.SetLocalBindTimeout(10)
+			.SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("111.111.111.111"), 15779))
+			.SetServiceBindTimeout(100)
+			.SetMaxClientCount(500)
+			.SetDebugMode(false);
 
     gateway.OnLocalSocketStatusChanged += new Action<SocketError>(delegate (SocketError error) {
 
@@ -165,7 +165,6 @@ SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY,
     });
 
     gateway.OnPacketReceived += new Func<Client, SROPacket, PacketSocketType, PacketResult>(delegate (Client client, SROPacket packet, PacketSocketType socketType) {
-
 
         switch (packet.Opcode) {
             case 0x1111:
