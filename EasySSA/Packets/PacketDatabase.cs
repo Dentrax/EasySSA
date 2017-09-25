@@ -5,14 +5,14 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-#endregion
-
-using EasySSA.SSA;
-using EasySSA.Common;
 
 //Reference -> http://www.elitepvpers.com/forum/sro-coding-corner/3034938-release-silkroad-packet-documentation.html
 //Reference -> https://github.com/tanisman/SilkroadProject/blob/master/SCommon/Opcode.cs
 //Reference -> https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/Packets
+#endregion
+
+using EasySSA.SSA;
+using EasySSA.Common;
 
 namespace EasySSA.Packets {
     public static class PacketDatabase {
