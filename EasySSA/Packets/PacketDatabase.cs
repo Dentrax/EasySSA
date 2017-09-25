@@ -10,6 +10,10 @@
 using EasySSA.SSA;
 using EasySSA.Common;
 
+//Reference -> http://www.elitepvpers.com/forum/sro-coding-corner/3034938-release-silkroad-packet-documentation.html
+//Reference -> https://github.com/tanisman/SilkroadProject/blob/master/SCommon/Opcode.cs
+//Reference -> https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/Packets
+
 namespace EasySSA.Packets {
     public static class PacketDatabase {
 

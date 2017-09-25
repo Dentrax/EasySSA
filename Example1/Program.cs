@@ -18,6 +18,7 @@ using EasySSA.Common;
 using EasySSA.Packets;
 using EasySSA.Component;
 using EasySSA.Core.Network.Securities;
+using System.Collections.Generic;
 
 namespace Example1 {
     class Program {
@@ -40,26 +41,35 @@ namespace Example1 {
                             .SetDebugMode(false);
 
             gateway.OnLocalSocketStatusChanged += new Action<SocketError>(delegate (SocketError error) {
+
                 if (error == SocketError.Success) {
                     Console.WriteLine("LOCAL socket bind SUCCESS! : " + gateway.LocalEndPoint.ToString());
                 } else {
                     Console.WriteLine("LOCAL socket bind FAILED!  : " + error);
                 }
+
             });
 
             gateway.OnServiceSocketStatusChanged += new Action<Client, SocketError>(delegate (Client client, SocketError error) {
+
                 if (error == SocketError.Success) {
                     Console.WriteLine("SERVICE socket connect SUCCESS! : " + gateway.ServiceEndPoint.ToString());
                 } else {
                     Console.WriteLine("SERVICE socket connect FAILED!  : " + error);
                 }
+
             });
 
             gateway.OnClientConnected += new Func<Client, bool>(delegate (Client client) {
 
                 Console.WriteLine("New client connected : " + client.Socket.RemoteEndPoint);
 
-                return true;
+                if (string.IsNullOrEmpty(client.IPAddress)) { //Example
+                    return false; //Decline client
+                } else {
+                    return true; //Accept client
+                }
+
             });
 
             gateway.OnClientDisconnected += new Action<Client, ClientDisconnectType>(delegate (Client client, ClientDisconnectType disconnectType) {
@@ -69,19 +79,35 @@ namespace Example1 {
             });
 
             gateway.OnPacketReceived += new Func<Client, SROPacket, PacketSocketType, PacketResult>(delegate (Client client, SROPacket packet, PacketSocketType socketType) {
-                //Console.WriteLine(packet.Dump(true));
-                DumpPacket(packet);
 
-                //Console.Clear();
-                return new PacketResult(PacketOperationType.NOTHING);
+
+                switch (packet.Opcode) {
+                    case 0x1111:
+                        return new PacketResult(PacketOperationType.DISCONNECT, new PacketResult.PacketDisconnectResultInfo("DC Reason : 0x5555 received"));
+
+                    case 0x2222:
+                        return new PacketResult(PacketOperationType.IGNORE);
+
+                    case 0x3333:
+                        return new PacketResult(PacketOperationType.INJECT, new PacketResult.PacketInjectResultInfo(packet, new List<Packet> { new Packet(0x3334), new Packet(0x3335) }, true));
+
+                    case 0x4444:
+                        return new PacketResult(PacketOperationType.REPLACE, new PacketResult.PacketReplaceResultInfo(packet, new List<Packet> { new Packet(0x4445) }));
+
+                    default:
+                        return new PacketResult(PacketOperationType.NOTHING);
+                }
+
             });
 
             gateway.DOBind(delegate (bool success, BindErrorType error) {
+
                 if (success) {
                     Console.WriteLine("EasySSA bind SUCCESS");
                 } else {
                     Console.WriteLine("EasySSA bind FAILED -- Reason : " + error);
                 }
+
             });
         }
 
