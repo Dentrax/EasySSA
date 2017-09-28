@@ -6,6 +6,8 @@
 
 Don't repeat yourself every time!
 
+Click here for **[Guide & Theory](https://goo.gl/w9uJjw)**
+
 [What It Is](#what-it-is)
 
 [How To Use](#how-to-use)
