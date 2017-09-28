@@ -13,14 +13,18 @@ using System.Net.Sockets;
 using EasySSA.SSA;
 using EasySSA.Context;
 using EasySSA.Core.Network.Securities;
+using System.Collections.Generic;
 
 namespace EasySSA.Common {
-    public sealed class Client : IDisposable {
+    public sealed class SROClient : IDisposable {
 
         private SROServiceContext m_owner;
 
         private readonly Object LOCK = new Object();
 
+        private bool m_disposed;
+
+        #region Variables-Network
 
         public Socket Socket { get; private set; }
 
@@ -30,26 +34,58 @@ namespace EasySSA.Common {
 
         public ServerServiceType ServerServiceType { get; private set; }
 
-        //TODO: Implement this
         public bool HasSendingPackets { get; set; }
 
         public string IPAddress { get; private set; }
 
         private readonly long m_socketHandle;
 
-        private bool m_disposed;
+        #endregion
 
-        public Client(Socket socket) {
+        public Account Account { get; private set; }
+
+        public List<Character> Characters { get; private set; }
+
+        public bool IsWaitingForData { get; set; }
+        public bool IsWatingForFinish { get; set; }
+
+        public bool IsClientless { get; set; }
+        public bool CanSwitchClient { get; set; }
+
+        public bool CanAccountLogin { get; set; }
+        public bool CanCaptchaCheck { get; set; }
+        public bool CanCharacterSelection { get; set; }
+        public bool CanClientlessSwitchToClient { get; set; }
+
+        public uint SessionID { get; set; }
+        public ushort ServerID { get; set; }
+        public byte LocaleID { get; set; }
+        public byte VersionID { get; set; }
+
+        public ushort LocalPort { get; set; }
+
+        public bool IsConnectedToAgent { get; set; }
+        public string AgentIP { get; set; }
+        public ushort AgentPort { get; set; }
+
+        public byte AgentLoginFixCounter { get; set; }
+
+
+        public bool ClientConnected { get; set; }
+
+
+        public SROClient(Socket socket) {
             this.Socket = socket;
             Socket.Blocking = false;
             Socket.NoDelay = true;
             this.m_socketHandle = socket.Handle.ToInt64();
             this.Security = new Security();
             this.TransferBuffer = new TransferBuffer(0x10000, 0, 0);
+            this.Characters = new List<Character>();
             this.HasSendingPackets = false;
         }
 
-        ~Client() {
+        ~SROClient() {
             Dispose(false);
         }
 
@@ -81,9 +117,10 @@ namespace EasySSA.Common {
                 lock (LOCK) {
                     if (Socket != null) {
                         if (Socket.Connected) {
-                            Socket.Disconnect(true);
-                            Socket.Close();
+                            Socket.Shutdown(SocketShutdown.Both);
                         }
+                        Socket.Close();
+                        Socket = null;
                     }
                 }
             } catch { }
@@ -110,6 +147,7 @@ namespace EasySSA.Common {
         }
 
         public void SendPacket(Packet packet, Action<bool> callback = null) {
+            //TODO: Fix callback
             try {
                 this.m_owner.GetClientSecurity.Send(packet);
                 this.m_owner.TransferToClient();

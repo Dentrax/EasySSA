@@ -7,13 +7,14 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets {
-    public enum PacketOperationType {
-        RESPONSE,
-        DISCONNECT,
-        REPLACE,
-        INJECT,
-        IGNORE,
-        NOTHING
+namespace EasySSA.Common {
+    public enum ClientStatusType {
+        STARTED,
+        SHUTDOWN,
+        SWITCH_TO_CLIENT_SUCCESS,
+        SWITCH_TO_CLIENT_FAILED,
+        SWITCH_TO_CLIENTLESS_SUCCESS,
+        SWITCH_TO_CLIENTLESS_FAILED,
+        READY
     }
 }

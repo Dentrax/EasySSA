@@ -16,6 +16,8 @@ using EasySSA.SSA;
 using EasySSA.Common;
 using EasySSA.Component;
 using EasySSA.Core.Network.Securities;
+using EasySSA.Packets;
+using System.Net.Sockets;
 
 namespace Example2 {
     class Program {
@@ -26,17 +28,71 @@ namespace Example2 {
         }
 
         private static void StartClient() {
-            SROClientComponent gateway = new SROClientComponent(1)
-                           .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
-                           .SetAccount(new Account("furkan", "1"))
+            SROClientComponent clientComponent = new SROClientComponent(1)
+                           .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, string.Empty))
+                           .SetAccount(new Account("furkan", "1"), "Dentrax")
                            .SetCaptcha(string.Empty)
-                           .SetClientPath("")
-                           .SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15779))
-                           .SetGatewayEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15779))
-                           .SetAgentEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15779))
-                           .SetDownloadEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15779))
+                           .SetVersionID(191)
+                           .SetLocaleID(22)
+                           .SetClientless(false)
+                           .SetClientPath("D:\\_Coding-Corner_\\vSRO\\vSRO Client")
+                           .SetLocalAgentEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 25880))
+                           .SetLocalGatewayEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 25779))
+                           .SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("145.239.106.209"), 15779))
                            .SetBindTimeout(100)
                            .SetDebugMode(false);
+
+            clientComponent.OnClientStatusChanged += new Action<SROClient, ClientStatusType>(delegate (SROClient client, ClientStatusType status) {
+
+            });
+
+            clientComponent.OnAccountStatusChanged += new Action<SROClient, AccountStatusType>(delegate (SROClient client, AccountStatusType status) {
+
+            });
+
+            clientComponent.OnCaptchaStatusChanged += new Action<SROClient, bool>(delegate (SROClient client, bool status) {
+
+            });
+
+            clientComponent.OnCharacterLogin += new Action<SROClient, bool>(delegate (SROClient client, bool started) {
+
+            });
+
+            clientComponent.OnLocalSocketStatusChanged += new Action<SocketError>(delegate (SocketError error) {
+                if (error == SocketError.Success) {
+                    Console.WriteLine("LOCAL socket bind SUCCESS! : " + clientComponent.LocalGatewayEndPoint.ToString());
+                } else {
+                    Console.WriteLine("LOCAL socket bind FAILED!  : " + error);
+                }
+            });
+
+            clientComponent.OnServiceSocketStatusChanged += new Action<SROClient, SocketError>(delegate (SROClient client, SocketError error) {
+                if (error == SocketError.Success) {
+                    Console.WriteLine("SERVICE socket connect SUCCESS! : " + clientComponent.ServiceEndPoint.ToString());
+                } else {
+                    Console.WriteLine("SERVICE socket connect FAILED!  : " + error);
+                }
+            });
+
+            clientComponent.OnSocketConnected += new Action<SROClient, bool>(delegate (SROClient client, bool connected) {
+                Console.WriteLine("New client connected : " + client.Socket.RemoteEndPoint);
+            });
+
+            clientComponent.OnSocketDisconnected += new Action<SROClient, ClientDisconnectType>(delegate (SROClient client, ClientDisconnectType disconnectType) {
+                Console.WriteLine("Client disconnected : " + client.IPAddress + " -- Reason : " + disconnectType);
+            });
+
+            clientComponent.OnPacketReceived += new Func<SROClient, SROPacket, PacketSocketType, PacketResult>(delegate (SROClient client, SROPacket packet, PacketSocketType socketType) {
+                return new PacketResult(PacketOperationType.NOTHING);
+            });
+
+            clientComponent.DOBind(delegate (bool success, BindErrorType error) {
+                if (success) {
+                    Console.WriteLine("EasySSA bind SUCCESS");
+                } else {
+                    Console.WriteLine("EasySSA bind FAILED -- Reason : " + error);
+                }
+            });
         }
 
         private static void InitConsole() {

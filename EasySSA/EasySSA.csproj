@@ -43,10 +43,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Account.cs" />
-    <Compile Include="Common\Client.cs" />
+    <Compile Include="Common\AccountStatusType.cs" />
+    <Compile Include="Common\Character.cs" />
+    <Compile Include="Common\ClientStatusType.cs" />
+    <Compile Include="Common\SROClient.cs" />
     <Compile Include="Common\Logger.cs" />
     <Compile Include="Common\LogLevel.cs" />
     <Compile Include="Common\MessageType.cs" />
+    <Compile Include="Common\Shard.cs" />
+    <Compile Include="Common\SROClientLoader.cs" />
     <Compile Include="Component\SROClientComponent.cs" />
     <Compile Include="Context\SROClientContext.cs" />
     <Compile Include="Core\Network\NetworkHelper.cs" />

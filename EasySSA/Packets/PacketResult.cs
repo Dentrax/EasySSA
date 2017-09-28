@@ -37,6 +37,17 @@ namespace EasySSA.Packets {
             }
         }
 
+        public sealed class PacketResponseResultInfo : PacketResultInfo {
+            public List<Packet> Packets { get; private set; }
+            public PacketResponseResultInfo(Packet packet) {
+                this.Packets = new List<Packet>();
+                this.Packets.Add(packet);
+            }
+            public PacketResponseResultInfo(List<Packet> packets) {
+                Packets = packets;
+            }
+        }
+
         public sealed class PacketInjectResultInfo : PacketResultInfo {
             public Packet Packet { get; private set; }
             public List<Packet> InjectWith { get; private set; }

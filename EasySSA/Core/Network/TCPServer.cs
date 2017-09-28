@@ -117,7 +117,7 @@ namespace EasySSA.Core.Network {
                 throw new Exception("[TCPServer::DOConnectionAccepter()] -> ObjectDisposedException while EndAccept " + e.ToString());
             }
 
-            Client client = new Client(socket);
+            SROClient client = new SROClient(socket);
 
             if(this.m_serviceComponent.OnClientConnected != null) {
                 bool result = this.m_serviceComponent.OnClientConnected(client);
@@ -132,7 +132,7 @@ namespace EasySSA.Core.Network {
            
         }
 
-        private void BindClient(Client client) {
+        private void BindClient(SROClient client) {
             try {
                 new SROServiceContext(client, this.m_serviceComponent).DOBind( this.m_serviceComponent.OnServiceSocketStatusChanged);
             } catch { }

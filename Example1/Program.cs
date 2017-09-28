@@ -50,7 +50,7 @@ namespace Example1 {
 
             });
 
-            gateway.OnServiceSocketStatusChanged += new Action<Client, SocketError>(delegate (Client client, SocketError error) {
+            gateway.OnServiceSocketStatusChanged += new Action<SROClient, SocketError>(delegate (SROClient client, SocketError error) {
 
                 if (error == SocketError.Success) {
                     Console.WriteLine("SERVICE socket connect SUCCESS! : " + gateway.ServiceEndPoint.ToString());
@@ -60,7 +60,7 @@ namespace Example1 {
 
             });
 
-            gateway.OnClientConnected += new Func<Client, bool>(delegate (Client client) {
+            gateway.OnClientConnected += new Func<SROClient, bool>(delegate (SROClient client) {
 
                 Console.WriteLine("New client connected : " + client.Socket.RemoteEndPoint);
 
@@ -72,13 +72,13 @@ namespace Example1 {
 
             });
 
-            gateway.OnClientDisconnected += new Action<Client, ClientDisconnectType>(delegate (Client client, ClientDisconnectType disconnectType) {
+            gateway.OnClientDisconnected += new Action<SROClient, ClientDisconnectType>(delegate (SROClient client, ClientDisconnectType disconnectType) {
 
                 Console.WriteLine("Client disconnected : " + client.IPAddress + " -- Reason : " + disconnectType);
 
             });
 
-            gateway.OnPacketReceived += new Func<Client, SROPacket, PacketSocketType, PacketResult>(delegate (Client client, SROPacket packet, PacketSocketType socketType) {
+            gateway.OnPacketReceived += new Func<SROClient, SROPacket, PacketSocketType, PacketResult>(delegate (SROClient client, SROPacket packet, PacketSocketType socketType) {
 
 
                 switch (packet.Opcode) {

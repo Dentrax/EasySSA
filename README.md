@@ -2,6 +2,8 @@
 
 **SilkroadSecurityApi improvement and more features by 'Dentrax'**
 
+Ultra simple <sup>Proxy Library!</sup>
+
 Don't repeat yourself every time!
 
 [What It Is](#what-it-is)
@@ -83,6 +85,7 @@ OnPacketReceived Operations
 
 | PacketOperationType  | PacketResult Type                         | PacketResult Parameter				                        | Explanation										                                               |
 | -------------------- |:-----------------------------------------:|:----------------------------------------------------------:|:------------------------------------------------------------------------------------------------:|
+| `RESPONSE`		   | PacketResult.PacketResponseResultInfo	   | List<Packet> packet or Packet packet						| Send packet response list to ServiceContext where the packet comes from.						   |
 | `DISCONNECT`		   | PacketResult.PacketDisconnectResultInfo   | string notice, Enum disconnectReason						| Send **notice** to client before disconnect if possible.                                         |
 | `REPLACE`			   | PacketResult.PacketReplaceResultInfo	   | Packet packet, List<Packet> replaceWith					| Replace current packet with **replaceWith** array if current packet == packet.				   |
 | `INJECT`			   | PacketResult.PacketInjectResultInfo	   | Packet packet, List<Packet> injectWith, bool afterPacket 	| Inject **injectWith** packets if current packet == packet. Inject after if **afterPacket** true. |
@@ -114,7 +117,32 @@ DOBind Error Types
 | `UNKNOWN`										| Trigger if a unexcepted error handled.									|
 
 
-Example Usage
+AccountStatusType Types
+--------------------------
+
+| AccountStatusType | Explanation				                                        |
+| ----------------- |:-----------------------------------------------------------------:|
+| `LOGIN_SUCCESS`	| Trigger if account login success. 								|
+| `LOGIN_FAILED`	| Trigger if account login failed. Wrong (ID, PW).					|
+| `BLOCKED`			| Trigger if account login blocked when over captcha or login try.	|
+| `BANNED`			| Trigger if account login banned from GM.			             	|
+
+
+ClientStatusType Types
+--------------------------
+
+| ClientStatusType				 | Explanation																|
+| ------------------------------ |:------------------------------------------------------------------------:|
+| `STARTED`						 | Trigger if sro_client started successfully. 								|
+| `SHUTDOWN`					 | Trigger if sro_client closed or crashed some reason.						|
+| `SWITCH_TO_CLIENT_SUCCESS`	 | Trigger if clientless to client switch successfully.						|
+| `SWITCH_TO_CLIENT_FAILED`		 | Trigger if clientless to client switch failed.			             	|
+| `SWITCH_TO_CLIENTLESS_SUCCESS` | Trigger if client to clientless switch successfully.						|
+| `SWITCH_TO_CLIENTLESS_FAILED`  | Trigger if client to clientless switch failed.					        |
+| `READY`						 | Trigger if sro_client fully ready up when the character enters the game. |
+
+
+Example SROServiceComponent Usage
 --------------------------
 ```csharp
    SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
@@ -194,6 +222,77 @@ Example Usage
         }
 
     });
+```
+
+
+Example SROClientComponent Usage
+--------------------------
+```csharp
+   SROClientComponent clientComponent = new SROClientComponent(1)
+			.SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, string.Empty))
+            .SetAccount(new Account("furkan", "1"), "Dentrax")
+            .SetCaptcha(string.Empty)
+            .SetVersionID(191)
+            .SetLocaleID(22)
+            .SetClientless(false)
+            .SetClientPath("D:\\vSRO\\vSRO Client")
+            .SetLocalAgentEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 25880))
+            .SetLocalGatewayEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 25779))
+            .SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("111.111.111.111"), 15779))
+            .SetBindTimeout(100)
+            .SetDebugMode(false);
+
+    clientComponent.OnClientStatusChanged += new Action<SROClient, ClientStatusType>(delegate (SROClient client, ClientStatusType status) {
+
+	});
+
+	clientComponent.OnAccountStatusChanged += new Action<SROClient, AccountStatusType>(delegate (SROClient client, AccountStatusType status) {
+
+	});
+
+	clientComponent.OnCaptchaStatusChanged += new Action<SROClient, bool>(delegate (SROClient client, bool status) {
+
+	});
+
+	clientComponent.OnCharacterLogin += new Action<SROClient, bool>(delegate (SROClient client, bool started) {
+
+	});
+
+	clientComponent.OnLocalSocketStatusChanged += new Action<SocketError>(delegate (SocketError error) {
+		if (error == SocketError.Success) {
+			Console.WriteLine("LOCAL socket bind SUCCESS! : " + clientComponent.LocalGatewayEndPoint.ToString());
+		} else {
+			Console.WriteLine("LOCAL socket bind FAILED!  : " + error);
+		}
+	});
+
+	clientComponent.OnServiceSocketStatusChanged += new Action<SROClient, SocketError>(delegate (SROClient client, SocketError error) {
+		if (error == SocketError.Success) {
+			Console.WriteLine("SERVICE socket connect SUCCESS! : " + clientComponent.ServiceEndPoint.ToString());
+		} else {
+			Console.WriteLine("SERVICE socket connect FAILED!  : " + error);
+		}
+	});
+
+	clientComponent.OnSocketConnected += new Action<SROClient, bool>(delegate (SROClient client, bool connected) {
+		Console.WriteLine("New client connected : " + client.Socket.RemoteEndPoint);
+	});
+
+	clientComponent.OnSocketDisconnected += new Action<SROClient, ClientDisconnectType>(delegate (SROClient client, ClientDisconnectType disconnectType) {
+		Console.WriteLine("Client disconnected : " + client.IPAddress + " -- Reason : " + disconnectType);
+	});
+
+	clientComponent.OnPacketReceived += new Func<SROClient, SROPacket, PacketSocketType, PacketResult>(delegate (SROClient client, SROPacket packet, PacketSocketType socketType) {
+		return new PacketResult(PacketOperationType.NOTHING);
+	});
+
+	clientComponent.DOBind(delegate (bool success, BindErrorType error) {
+		if (success) {
+			Console.WriteLine("EasySSA bind SUCCESS");
+		} else {
+			Console.WriteLine("EasySSA bind FAILED -- Reason : " + error);
+		}
+	});
 ```
 
 ## About

@@ -14,17 +14,29 @@ using System.Net;
 using EasySSA.SSA;
 using EasySSA.Common;
 using EasySSA.Context;
+using EasySSA.Packets;
+using System.Net.Sockets;
 
 namespace EasySSA.Component {
     public sealed class SROClientComponent : IDisposable {
 
-        public Action<Client, bool> OnClientStarted;
+        public Action<SROClient, ClientStatusType> OnClientStatusChanged;
 
-        public Action<Client, bool> OnAccountLogin;
+        public Action<SROClient, AccountStatusType> OnAccountStatusChanged;
 
-        public Action<Client, bool> OnCaptchaPassed;
+        public Action<SROClient, bool> OnCaptchaStatusChanged;
 
-        public Action<Client, bool> OnCharacterLogin;
+        public Action<SROClient, bool> OnCharacterLogin;
+
+        public Action<SROClient, bool> OnSocketConnected;
+
+        public Action<SROClient, ClientDisconnectType> OnSocketDisconnected;
+
+        public Action<SocketError> OnLocalSocketStatusChanged;
+
+        public Action<SROClient, SocketError> OnServiceSocketStatusChanged;
+
+        public Func<SROClient, SROPacket, PacketSocketType, PacketResult> OnPacketReceived;
 
         public int ClientIndex { get; private set; }
 
@@ -34,12 +46,21 @@ namespace EasySSA.Component {
 
         public string Captcha { get; private set; }
 
+        public byte LocaleID { get; private set; }
+
+        public byte VersionID { get; private set; }
+
+        public ushort ServerID { get; private set; }
+
+        public bool IsClientless { get; private set; }
+        public string CharacterName { get; private set; }
+
         public Fingerprint Fingerprint { get; private set; }
 
-        public IPEndPoint LocalEndPoint { get; private set; }
-        public IPEndPoint GatewayEndPoint { get; private set; }
-        public IPEndPoint DownloadEndPoint { get; private set; }
-        public IPEndPoint AgentEndPoint { get; private set; }
+        public IPEndPoint LocalAgentEndPoint { get; private set; }
+        public IPEndPoint LocalGatewayEndPoint { get; private set; }
+
+        public IPEndPoint ServiceEndPoint { get; private set; }
 
         public int BindTimeout { get; private set; }
 
@@ -60,33 +81,49 @@ namespace EasySSA.Component {
             return this;
         }
 
+        public SROClientComponent SetClientless(bool clientless) {
+            this.IsClientless = clientless;
+            return this;
+        }
+
         public SROClientComponent SetCaptcha(string captcha) {
             this.Captcha = captcha;
             return this;
         }
 
-        public SROClientComponent SetLocalEndPoint(IPEndPoint endpoint) {
-            this.LocalEndPoint = endpoint;
+        public SROClientComponent SetLocaleID(byte locale) {
+            this.LocaleID = locale;
             return this;
         }
 
-        public SROClientComponent SetGatewayEndPoint(IPEndPoint endpoint) {
-            this.GatewayEndPoint = endpoint;
+        public SROClientComponent SetVersionID(byte version) {
+            this.VersionID = version;
             return this;
         }
 
-        public SROClientComponent SetDownloadEndPoint(IPEndPoint endpoint) {
-            this.DownloadEndPoint = endpoint;
+        public SROClientComponent SetServerID(ushort server) {
+            this.ServerID = server;
             return this;
         }
 
-        public SROClientComponent SetAgentEndPoint(IPEndPoint endpoint) {
-            this.AgentEndPoint = endpoint;
+        public SROClientComponent SetLocalAgentEndPoint(IPEndPoint endpoint) {
+            this.LocalAgentEndPoint = endpoint;
             return this;
         }
 
-        public SROClientComponent SetAccount(Account account) {
+        public SROClientComponent SetLocalGatewayEndPoint(IPEndPoint endpoint) {
+            this.LocalGatewayEndPoint = endpoint;
+            return this;
+        }
+
+        public SROClientComponent SetServiceEndPoint(IPEndPoint endpoint) {
+            this.ServiceEndPoint = endpoint;
+            return this;
+        }
+
+        public SROClientComponent SetAccount(Account account, string characterName) {
             this.Account = account;
+            this.CharacterName = characterName;
             return this;
         }
 
@@ -124,6 +161,34 @@ namespace EasySSA.Component {
                 m_wasDisposed = true;
             }
 
+        }
+
+        #endregion
+
+        #region Packets
+
+        public Packet GetCaptchaPacket() {
+            Packet packet = new Packet(0x6323);
+            packet.WriteAscii(Captcha);
+            packet.Lock();
+            return packet;
+        }
+
+        public Packet GetLoginPacket() {
+            Packet packet = new Packet(0x6102, true);
+            packet.WriteByte(this.LocaleID);
+            packet.WriteAscii(this.Account.Username);
+            packet.WriteAscii(this.Account.Password);
+            packet.WriteUShort(this.ServerID);
+            packet.Lock();
+            return packet;
+        }
+
+        public Packet GetCharacterSelectionPacket() {
+            Packet packet = new Packet(0x7001);
+            packet.WriteAscii(this.CharacterName);
+            packet.Lock();
+            return packet;
         }
 
         #endregion

@@ -15,7 +15,7 @@ using EasySSA.SSA;
 using EasySSA.Common;
 
 namespace EasySSA.Packets {
-    public sealed class SROPacket : Packet, ISROPacket {
+    public sealed class SROPacket : Packet, ISROPacket, IEquatable<Packet>, IEquatable<SROPacket> {
 
         private string m_packetID;
 
@@ -150,7 +150,7 @@ namespace EasySSA.Packets {
             return output.ToString();
         }
 
-        public override bool Equals(object obj) {
+        public bool Equals(SROPacket obj) {
             if (obj == null || this.GetType() != obj.GetType()) {
                 return false;
             }
@@ -161,6 +161,18 @@ namespace EasySSA.Packets {
             bool flag2 = this.m_sendType == other.SendType && this.m_serverType == other.ServerServiceType && this.m_socketType == other.SocketType;
 
             return flag1 && flag2;
+        }
+
+        public bool Equals(Packet obj) {
+            if (obj == null || this.GetType() != obj.GetType()) {
+                return false;
+            }
+
+            Packet other = obj as Packet;
+
+            bool flag1 = this.Opcode == other.Opcode && this.Encrypted == other.Encrypted && this.Massive == other.Massive && this.GetBytes().SequenceEqual(other.GetBytes());
+
+            return flag1;
         }
 
         public override int GetHashCode() {

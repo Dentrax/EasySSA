@@ -26,14 +26,14 @@ namespace EasySSA.Component {
 
         public Action<SocketError> OnLocalSocketStatusChanged;
 
-        public Action<Client, SocketError> OnServiceSocketStatusChanged;
+        public Action<SROClient, SocketError> OnServiceSocketStatusChanged;
 
 
-        public Func<Client, bool> OnClientConnected;
+        public Func<SROClient, bool> OnClientConnected;
 
-        public Action<Client, ClientDisconnectType> OnClientDisconnected;
+        public Action<SROClient, ClientDisconnectType> OnClientDisconnected;
 
-        public Func<Client, SROPacket, PacketSocketType, PacketResult> OnPacketReceived;
+        public Func<SROClient, SROPacket, PacketSocketType, PacketResult> OnPacketReceived;
        
 
         public Fingerprint Fingerprint { get; private set; }
@@ -147,6 +147,10 @@ namespace EasySSA.Component {
                 new TCPServer(this).DOBind(callback);
             }
            
+        }
+
+        public void UNBind() {
+
         }
 
         public void Dispose() {

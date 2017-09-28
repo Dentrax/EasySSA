@@ -7,13 +7,11 @@
 // ====================================================
 #endregion
 
-namespace EasySSA.Packets {
-    public enum PacketOperationType {
-        RESPONSE,
-        DISCONNECT,
-        REPLACE,
-        INJECT,
-        IGNORE,
-        NOTHING
+namespace EasySSA.Common {
+    public enum AccountStatusType {
+        LOGIN_SUCCESS,
+        LOGIN_FAILED,
+        BLOCKED,
+        BANNED
     }
 }

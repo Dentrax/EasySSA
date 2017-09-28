@@ -26,7 +26,7 @@ namespace EasySSA.Context {
 
         private SROServiceComponent ServiceComponent;
 
-        private Client Client;
+        private SROClient Client;
 
         private Socket m_clientSocket;
         private Socket m_serviceSocket;
@@ -40,12 +40,14 @@ namespace EasySSA.Context {
         byte[] m_serviceBuffer = new byte[4096];
 
         private bool m_wasDisposed = false;
+        private bool m_isDisconnecting = false;
+        private bool m_canPacketProcess = false;
 
         private readonly object LOCK = new object();
 
         public Security GetClientSecurity { get { return this.m_clientSecurity; } }
 
-        public SROServiceContext(Client client, SROServiceComponent serviceComponent) {
+        public SROServiceContext(SROClient client, SROServiceComponent serviceComponent) {
             if(client == null || serviceComponent == null) {
                 Logger.SERVICE.Print(LogLevel.Allocation, "SROServiceContext or client null");
                 this.IsRunning = false;
@@ -77,7 +79,7 @@ namespace EasySSA.Context {
             Dispose(false);
         }
 
-        public void DOBind(Action<Client, SocketError> callback = null) {
+        public void DOBind(Action<SROClient, SocketError> callback = null) {
             this.m_serviceSocket = NetworkHelper.TryConnect(this.ServiceComponent.ServiceEndPoint, this.ServiceComponent.ServiceBindTimeout, delegate(SocketError error) {
                 callback?.Invoke(this.Client, error);
             });
@@ -99,16 +101,21 @@ namespace EasySSA.Context {
                 return false;
             }
 
-            this.IsRunning = true;
+            if (this.m_serviceSocket.Connected) {
+                this.m_canPacketProcess = true;
+                this.IsRunning = true;
 
-            this.DoRecvFromService();
-            this.DoRecvFromClient();
+                this.DoRecvFromService();
+                this.DoRecvFromClient();
 
-            if (ServiceComponent.IsDebugMode) {
-                Logger.SERVICE.Print(LogLevel.Info, "SROServiceContext started...");
+                if (ServiceComponent.IsDebugMode) {
+                    Logger.SERVICE.Print(LogLevel.Info, "SROServiceContext started...");
+                }
+
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         public bool Stop() {
@@ -116,6 +123,9 @@ namespace EasySSA.Context {
 
             bool flag1 = false;
             bool flag2 = false;
+
+            this.m_canPacketProcess = false;
+            this.m_isDisconnecting = true;
 
             try {
                 this.Client.Disconnect();
@@ -126,8 +136,12 @@ namespace EasySSA.Context {
             } catch { }
 
             try {
-                this.m_serviceSocket.Close();
-                if (!this.m_serviceSocket.Connected) {
+                if (this.m_serviceSocket != null) {
+                    if (this.m_serviceSocket.Connected) {
+                        this.m_serviceSocket.Shutdown(SocketShutdown.Both);
+                    }
+                    this.m_serviceSocket.Close();
+                    this.m_serviceSocket = null;
                     flag2 = true;
                 }
             } catch { }
@@ -137,6 +151,7 @@ namespace EasySSA.Context {
                 if (ServiceComponent.IsDebugMode) {
                     Logger.SERVICE.Print(LogLevel.Info, "SROServiceContext stopped..!");
                 }
+                this.m_isDisconnecting = false;
                 return true;
             }
 
@@ -226,13 +241,19 @@ namespace EasySSA.Context {
                         Logger.PACKET.Print(LogLevel.Warning, "Packet Operation (IGNORE) received : " + packet.HexOpcode);
                     }
                     break;
-                case PacketOperationType.BLOCK_IP:
-                    if (ServiceComponent.IsDebugMode) {
-                        Logger.PACKET.Print(LogLevel.Warning, "Packet Operation (BLOCK_IP) received : " + packet.HexOpcode);
+                case PacketOperationType.RESPONSE:
+                    if (resultInfo != null) {
+                        if (resultInfo is PacketResult.PacketResponseResultInfo response) {
+                            if (ServiceComponent.IsDebugMode) {
+                                Logger.PACKET.Print(LogLevel.Warning, "Packet Operation (SEND) received : " + packet.HexOpcode);
+                            }
+
+                            response.Packets.ForEach(packets => {
+                                security.Send(packets);
+                            });
+                        }
                     }
-                    //TODO: BLOCK_IP
-                    this.Disconnect(this, ClientDisconnectType.PACKET_OPERATION_DISCONNECT);
-                    this.Stop();
+                    security.Send(packet);
                     break;
                 case PacketOperationType.NOTHING:
                     security.Send(packet);
@@ -254,77 +275,81 @@ namespace EasySSA.Context {
 
         private void OnRecvFromClient(IAsyncResult iar) {
             lock (this.LOCK) {
-                try {
-                    int recvCount = this.m_clientSocket.EndReceive(iar);
+                if (!this.m_isDisconnecting && this.m_canPacketProcess) {
+                    try {
+                        int recvCount = this.m_clientSocket.EndReceive(iar);
 
-                    if (recvCount == 0) {
-                        this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_CLIENT_SIZE_ZERO);
-                        this.Stop();
-                        return;
-                    }
-
-                    this.m_clientSecurity.Recv(m_clientBuffer, 0, recvCount);
-
-                    List<Packet> clientRecevivePackets = this.m_clientSecurity.TransferIncoming();
-
-                    if (clientRecevivePackets != null) {
-
-                        TotalPacketCount += clientRecevivePackets.Count;
-
-                        for (int i = 0; i < clientRecevivePackets.Count; i++) {
-                            Packet packet = clientRecevivePackets[i];
-                            if (this.ServiceComponent.OnPacketReceived != null) {
-                                PacketResult result = this.ServiceComponent.OnPacketReceived(this.Client, PacketDatabase.GetPacketFrom(packet, PacketSocketType.CLIENT), PacketSocketType.CLIENT);
-                                if (packet.Opcode != 0x9000 && packet.Opcode != 0x5000 && packet.Opcode != 0x2001) {
-                                    DOPacketTransfer(packet, PacketSocketType.SERVER, result);
-                                }
-                            }
+                        if (recvCount == 0) {
+                            this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_CLIENT_SIZE_ZERO);
+                            this.Stop();
+                            return;
                         }
 
-                    }
+                        this.m_clientSecurity.Recv(m_clientBuffer, 0, recvCount);
 
-                    this.TransferToService();
-                    this.DoRecvFromClient();
-                } catch {
-                    this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_CLIENT);
-                    this.Stop();
+                        List<Packet> clientRecevivePackets = this.m_clientSecurity.TransferIncoming();
+
+                        if (clientRecevivePackets != null) {
+
+                            TotalPacketCount += clientRecevivePackets.Count;
+
+                            for (int i = 0; i < clientRecevivePackets.Count; i++) {
+                                Packet packet = clientRecevivePackets[i];
+                                if (this.ServiceComponent.OnPacketReceived != null) {
+                                    PacketResult result = this.ServiceComponent.OnPacketReceived(this.Client, PacketDatabase.GetPacketFrom(packet, PacketSocketType.CLIENT), PacketSocketType.CLIENT);
+                                    if (packet.Opcode != 0x9000 && packet.Opcode != 0x5000 && packet.Opcode != 0x2001) {
+                                        DOPacketTransfer(packet, PacketSocketType.SERVER, result);
+                                    }
+                                }
+                            }
+
+                        }
+
+                        this.TransferToService();
+                        this.DoRecvFromClient();
+                    } catch {
+                        this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_CLIENT);
+                        this.Stop();
+                    }
                 }
             }
         }
 
         private void OnRecvFromService(IAsyncResult iar) {
             lock (this.LOCK) {
-                try {
-                    int recvCount = this.m_serviceSocket.EndReceive(iar);
+                if (!this.m_isDisconnecting && this.m_canPacketProcess) {
+                    try {
+                        int recvCount = this.m_serviceSocket.EndReceive(iar);
 
-                    if (recvCount == 0) {
-                        this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_SERVICE_SIZE_ZERO);
-                        this.Stop();
-                        return;
-                    }
+                        if (recvCount == 0) {
+                            this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_SERVICE_SIZE_ZERO);
+                            this.Stop();
+                            return;
+                        }
 
-                    this.m_serviceSecurity.Recv(m_serviceBuffer, 0, recvCount);
+                        this.m_serviceSecurity.Recv(m_serviceBuffer, 0, recvCount);
 
-                    List<Packet> serviceRecevivePackets = this.m_serviceSecurity.TransferIncoming();
+                        List<Packet> serviceRecevivePackets = this.m_serviceSecurity.TransferIncoming();
 
-                    if (serviceRecevivePackets != null) {
+                        if (serviceRecevivePackets != null) {
 
-                        for (int i = 0; i < serviceRecevivePackets.Count; i++) {
-                            Packet packet = serviceRecevivePackets[i];
-                            if (this.ServiceComponent.OnPacketReceived != null) {
-                                PacketResult result = this.ServiceComponent.OnPacketReceived(this.Client, PacketDatabase.GetPacketFrom(packet, PacketSocketType.SERVER), PacketSocketType.SERVER);
-                                if (packet.Opcode != 0x9000 && packet.Opcode != 0x5000) {
-                                    DOPacketTransfer(packet, PacketSocketType.CLIENT, result);
+                            for (int i = 0; i < serviceRecevivePackets.Count; i++) {
+                                Packet packet = serviceRecevivePackets[i];
+                                if (this.ServiceComponent.OnPacketReceived != null) {
+                                    PacketResult result = this.ServiceComponent.OnPacketReceived(this.Client, PacketDatabase.GetPacketFrom(packet, PacketSocketType.SERVER), PacketSocketType.SERVER);
+                                    if (packet.Opcode != 0x9000 && packet.Opcode != 0x5000) {
+                                        DOPacketTransfer(packet, PacketSocketType.CLIENT, result);
+                                    }
                                 }
                             }
-                        }
                            
+                        }
+                        this.TransferToClient();
+                        this.DoRecvFromService();
+                    } catch {
+                        this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_SERVICE);
+                        this.Stop();
                     }
-                    this.TransferToClient();
-                    this.DoRecvFromService();
-                } catch {
-                    this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_SERVICE);
-                    this.Stop();
                 }
             }
         }
@@ -377,13 +402,18 @@ namespace EasySSA.Context {
         }
 
         private void DoSendToClient(byte[] buffer, int len) {
-            try {
-                SocketError error;
-                this.m_clientSocket.BeginSend(buffer, 0, len, SocketFlags.None, out error, new AsyncCallback(RaiseOnClientSendCompleteCallBack), null);
-            } catch {
-                this.Disconnect(this, ClientDisconnectType.SENDTO_CLIENT_BEGINSEND);
-                this.Stop();
+            if (!this.m_isDisconnecting && this.m_canPacketProcess) {
+                if (this.m_clientSocket.Connected) {
+                    try {
+                        SocketError error;
+                        this.m_clientSocket.BeginSend(buffer, 0, len, SocketFlags.None, out error, new AsyncCallback(RaiseOnClientSendCompleteCallBack), null);
+                    } catch {
+                        this.Disconnect(this, ClientDisconnectType.SENDTO_CLIENT_BEGINSEND);
+                        this.Stop();
+                    }
+                }
             }
+                
         }
 
         private void RaiseOnClientSendCompleteCallBack(IAsyncResult iar) {
@@ -397,12 +427,16 @@ namespace EasySSA.Context {
         }
 
         private void DoSendToService(byte[] buffer, int len) {
-            try {
-                SocketError error;
-                this.m_serviceSocket.BeginSend(buffer, 0, len, SocketFlags.None, out error, new AsyncCallback(RaiseOnServiceSendCompleteCallBack), null);
-            } catch {
-                this.Disconnect(this, ClientDisconnectType.SENDTO_SERVICE_BEGINSEND);
-                this.Stop();
+            if (!this.m_isDisconnecting && this.m_canPacketProcess) {
+                if (this.m_serviceSocket.Connected) {
+                    try {
+                        SocketError error;
+                        this.m_serviceSocket.BeginSend(buffer, 0, len, SocketFlags.None, out error, new AsyncCallback(RaiseOnServiceSendCompleteCallBack), null);
+                    } catch {
+                        this.Disconnect(this, ClientDisconnectType.SENDTO_SERVICE_BEGINSEND);
+                        this.Stop();
+                    }
+                }
             }
         }
 
