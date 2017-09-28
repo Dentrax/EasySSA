@@ -242,7 +242,7 @@ Example SROClientComponent Usage
             .SetBindTimeout(100)
             .SetDebugMode(false);
 
-    clientComponent.OnClientStatusChanged += new Action<SROClient, ClientStatusType>(delegate (SROClient client, ClientStatusType status) {
+	clientComponent.OnClientStatusChanged += new Action<SROClient, ClientStatusType>(delegate (SROClient client, ClientStatusType status) {
 
 	});
 
