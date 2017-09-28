@@ -2,7 +2,7 @@
 
 **SilkroadSecurityApi improvement and more features by 'Dentrax'**
 
-Ultra simple <sup>Proxy Library!</sup>
+**Ultra simple Silkroad <sup>Proxy</sup> Library Ever!**
 
 Don't repeat yourself every time!
 
