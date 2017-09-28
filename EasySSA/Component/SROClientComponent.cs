@@ -26,7 +26,7 @@ namespace EasySSA.Component {
 
         public Action<SROClient, bool> OnCaptchaStatusChanged;
 
-        public Action<SROClient, bool> OnCharacterLogin;
+        public Action<SROClient, CharacterStatusType> OnCharacterStatusChanged;
 
         public Action<SROClient, bool> OnSocketConnected;
 

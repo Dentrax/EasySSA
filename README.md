@@ -142,6 +142,22 @@ ClientStatusType Types
 | `READY`						 | Trigger if sro_client fully ready up when the character enters the game. |
 
 
+CharacterStatusType Types
+--------------------------
+
+| CharacterStatusType	| Explanation												|
+| --------------------- |:---------------------------------------------------------:|
+| `NAME_NOT_FOUND`		| Trigger if no character found with name. 					|
+| `SELECT_SUCCESS`		| Trigger if character selected successfully.				|
+| `SELECT_FAILED`		| Trigger if character select failed.						|
+| `LOGIN_SUCCESS`		| Trigger if character login success to GameWorld.			|
+| `LOGIN_FAILED`		| Trigger if character login failed to GameWorld.			|
+| `SPAWN_SUCCESS`		| Trigger if character spawned and ready up to GameWorld.   |
+| `SPAWN_FAILED`        | Trigger if character spawn failed.					    |
+| `NO_CHARACTERS_FOUND`	| Trigger if there is no character available. (Count == 0)	|
+
+
+
 Example SROServiceComponent Usage
 --------------------------
 ```csharp
@@ -254,7 +270,7 @@ Example SROClientComponent Usage
 
 	});
 
-	clientComponent.OnCharacterLogin += new Action<SROClient, bool>(delegate (SROClient client, bool started) {
+	clientComponent.OnCharacterStatusChanged += new Action<SROClient, CharacterStatusType>(delegate (SROClient client, CharacterStatusType status) {
 
 	});
 

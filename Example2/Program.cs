@@ -54,7 +54,7 @@ namespace Example2 {
 
             });
 
-            clientComponent.OnCharacterLogin += new Action<SROClient, bool>(delegate (SROClient client, bool started) {
+            clientComponent.OnCharacterStatusChanged += new Action<SROClient, CharacterStatusType>(delegate (SROClient client, CharacterStatusType status) {
 
             });
 

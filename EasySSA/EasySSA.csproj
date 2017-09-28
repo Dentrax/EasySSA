@@ -45,6 +45,7 @@
     <Compile Include="Common\Account.cs" />
     <Compile Include="Common\AccountStatusType.cs" />
     <Compile Include="Common\Character.cs" />
+    <Compile Include="Common\CharacterStatusType.cs" />
     <Compile Include="Common\ClientStatusType.cs" />
     <Compile Include="Common\SROClient.cs" />
     <Compile Include="Common\Logger.cs" />
