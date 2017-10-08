@@ -334,7 +334,7 @@ EasySSA was created to serve three purposes:
 
 ## Collaborators
 
-**Project Manager** - Furkan Türkal (GitHub: dentrax)
+**Project Manager** - Furkan Türkal (GitHub: **[dentrax](https://github.com/dentrax)**)
 
 ## Branches
 
