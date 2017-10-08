@@ -37,7 +37,7 @@ Controls and wizards are available for users to:
 
 > * Detect, block, replace, ignore features to incoming-outgoing packets
 > * Analyze server-side or client-side packets with details more details
-> * Replace, Inject, Response and Ingore incoming-outgoing packets and accept/deny or disconnect client with one line code only. **[See here](https://github.com/Dentrax/EasySSA#example-sroservicecomponent-usage)**
+> * Replace, Inject, Response and Ingore incoming-outgoing packets and accept/deny or disconnect client with one line code only. **[See here](https://github.com/Dentrax/EasySSA#example-sroservicecomponent-usage)** for example.
 > * Advanced packet database library. **[Click here to see PacketDatabase.cs](https://github.com/Dentrax/EasySSA/blob/master/EasySSA/Packets/PacketDatabase.cs)**
 > * **[Packet.cs](https://github.com/Dentrax/EasySSA/blob/master/EasySSA/SSA/Packet.cs)** is obsolete! The new **[SROPacket.cs](https://github.com/Dentrax/EasySSA/blob/master/EasySSA/Packets/SROPacket.cs)** is overriding now.
 > * Not complex, not hard, dont repeat yourself.
