@@ -41,6 +41,11 @@ Controls and wizards are available for users to:
 > * **[Packet.cs](https://github.com/Dentrax/EasySSA/blob/master/EasySSA/SSA/Packet.cs)** is obsolete! The new **[SROPacket.cs](https://github.com/Dentrax/EasySSA/blob/master/EasySSA/Packets/SROPacket.cs)** is overriding now.
 > * Not complex, not hard, dont repeat yourself.
 
+EasySSA vs Security API
+--------------------------
+
+![Preview Thumbnail](https://raw.githubusercontent.com/Dentrax/EasySSA/master/easyssa-pattern.png)
+
 
 ## How To Use
 
