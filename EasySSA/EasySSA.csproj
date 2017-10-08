@@ -62,7 +62,6 @@
     <Compile Include="Common\ClientDisconnectType.cs" />
     <Compile Include="Component\SROServiceComponent.cs" />
     <Compile Include="SSA\Fingerprint.cs" />
-    <Compile Include="Core\Network\PacketManager.cs" />
     <Compile Include="Core\Network\Securities\SecurityFlags.cs" />
     <Compile Include="Core\Network\TCPServer.cs" />
     <Compile Include="EasySSA.cs" />

@@ -8,8 +8,11 @@
 #endregion
 
 //Reference -> http://www.elitepvpers.com/forum/sro-coding-corner/3034938-release-silkroad-packet-documentation.html
+//Reference -> https://www.elitepvpers.com/forum/sro-coding-corner/3686653-isro-opcodes.html#post31675881
+//Reference -> https://www.maxigame.org/forum/t/249290-client-server-opcode-adresleri
 //Reference -> https://github.com/tanisman/SilkroadProject/blob/master/SCommon/Opcode.cs
 //Reference -> https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/Packets
+//Reference -> https://github.com/florian0/swiftness/wiki/Most-of-the-client-to-server-opcodes
 
 
 namespace EasySSA.Packets {
@@ -77,6 +80,11 @@ namespace EasySSA.Packets {
 
         public struct Agent {
             public enum Request : ushort {
+                //TEMP
+                CHAR_MOVEMENT = 0x7021,
+                CHAR_MOVEMENT_ANGLE = 0x7024,
+                CHAR_MAINACTION = 0x7074,
+
                 //ACADEMY
                 ACADEMY_CREATE = 0x7470,
                 ACADEMY_DISBAND = 0x7471,
@@ -154,6 +162,9 @@ namespace EasySSA.Packets {
                 COS_UNKNOWN1 = 0x70C7,
 
                 //ENTITY - IN [W.I.P] ?
+                ENTITY_SELECT_OBJECT = 0x7045,
+                ENTITY_NPC_OPEN = 0x7046,
+                ENTITY_NPC_CLOSE = 0x704B,
 
                 //ENVIRONMENT -- ONLY SERVER
 
@@ -291,6 +302,27 @@ namespace EasySSA.Packets {
             }
 
             public enum Response : ushort {
+                //TEMP
+                CHAR_MOVEMENT = 0xB021,
+                CHAR_MOVEMENT_ANGLE = 0xB024,
+                CHAR_STAT = 0x303D,
+                CHAR_SPEED = 0x30D0,
+                CHAR_LEVELUP_EFFECT = 0x3054,
+                CHAR_CHANGE_STATUS = 0x30BF,
+                CHAR_SKILL_EFFECTS = 0x3057,
+                CHAR_INFO_UPDATE = 0x304E,
+                CHAR_GET_EXP = 0x3056,
+                CHAR_STAT_UPDATE_STR = 0xB050,
+                CHAR_STAT_UPDATE_INT = 0xB051,
+                CHAR_ACTION_DATA = 0xB070,
+                CHAR_ACTION_STATE = 0xB074,
+                CHAR_DATA = 0x3013,
+                CHAR_DATA_START = 0x34A5,
+                CHAR_DATA_END = 0x34A6,
+                CHAR_CELESTIAL_POS = 0x3020,
+                CHAR_HANDLE_EFFECT = 0x305C,
+                CHAR_HANDLE_UPDATE_SLOT = 0xB04C,
+
                 //ACADEMY
                 ACADEMY_CREATE = 0xB470,
                 ACADEMY_DISBAND = 0xB471,
@@ -383,11 +415,27 @@ namespace EasySSA.Packets {
                 COS_UNKNOWN1 = 0xB0C7,
 
                 //ENTITY - IN [W.I.P] ?
+                ENTITY_GROUPSPAWN_START = 0x3017,
+                ENTITY_GROUPSPAWN_DATA = 0x3019,
+                ENTITY_GROUPSPAWN_END = 0x3018,
+                ENTITY_SOLO_SPAWN = 0x3015,
+                ENTITY_SOLO_DESPAWN = 0x3016,
+
+                ENTITY_PICKUPITEM_MOVE = 0xB023,
+                ENTITY_PICKUPITEM_ANIM = 0x3036,
+
+                ENTITY_SELECT_OBJECT = 0xB045,
+
+                ENTITY_NPC_OPEN = 0xB046,
+                ENTITY_NPC_CLOSE = 0xB04B,
+
+                ENTITY_TICKET = 0x3206,
 
                 //ENVIRONMENT
                 ENVIRONMENT_CELESTIAL_POSITION = 0x30C8,
                 ENVIRONMENT_CELESTIAL_UPDATE = 0x30C9,
                 ENVIRONMENT_WEATHER_UPDATE = 0x30CA,
+                ENVIRONMENT_WEATHER = 0x3809,
 
                 //EXCHANGE
                 EXCHANGE_START = 0xB081,
@@ -575,6 +623,9 @@ namespace EasySSA.Packets {
                 SKILL_WITHDRAW = 0xB202,
                 SKILL_MASTERY_WITHDRAW = 0xB203,
                 SKILL_WITHDRAW_INFO_WND = 0x3204,
+                SKILL_DATA = 0xB071,
+                SKILL_ICON = 0xB0BD,
+                SKILL_ENDBUFF = 0xB072,
 
                 //STALL
                 STALL_CREATE = 0xB0B1,

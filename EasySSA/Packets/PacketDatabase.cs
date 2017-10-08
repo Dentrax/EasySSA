@@ -7,8 +7,11 @@
 // ====================================================
 
 //Reference -> http://www.elitepvpers.com/forum/sro-coding-corner/3034938-release-silkroad-packet-documentation.html
+//Reference -> https://www.elitepvpers.com/forum/sro-coding-corner/3686653-isro-opcodes.html#post31675881
+//Reference -> https://www.maxigame.org/forum/t/249290-client-server-opcode-adresleri
 //Reference -> https://github.com/tanisman/SilkroadProject/blob/master/SCommon/Opcode.cs
 //Reference -> https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/Packets
+//Reference -> https://github.com/florian0/swiftness/wiki/Most-of-the-client-to-server-opcodes
 #endregion
 
 using EasySSA.SSA;
@@ -73,6 +76,50 @@ namespace EasySSA.Packets {
                     #endregion
 
                     #region AGENT-RESPONSE
+
+                    case (ushort)OPCode.Agent.Response.CHAR_MOVEMENT:
+                        return new SROPacket("CHAR_MOVEMENT", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_MOVEMENT_ANGLE:
+                        return new SROPacket("CHAR_MOVEMENT_ANGLE", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+
+                    case (ushort)OPCode.Agent.Response.CHAR_STAT:
+                        return new SROPacket("CHAR_PLAYER_STAT", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_SPEED:
+                        return new SROPacket("CHAR_PLAYER_SPEED", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_LEVELUP_EFFECT:
+                        return new SROPacket("CHAR_LEVELUP_EFFECT", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_CHANGE_STATUS:
+                        return new SROPacket("CHAR_CHANGE_STATUS", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_SKILL_EFFECTS:
+                        return new SROPacket("CHAR_SKILL_EFFECTS", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_INFO_UPDATE:
+                        return new SROPacket("CHAR_INFO_UPDATE", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_GET_EXP:
+                        return new SROPacket("CHAR_GET_EXP", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+
+                    case (ushort)OPCode.Agent.Response.CHAR_STAT_UPDATE_STR:
+                        return new SROPacket("CHAR_STAT_UPDATE_STR", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_STAT_UPDATE_INT:
+                        return new SROPacket("CHAR_STAT_UPDATE_INT", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+
+                    case (ushort)OPCode.Agent.Response.CHAR_ACTION_DATA:
+                        return new SROPacket("CHAR_ACTION_DATA", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_ACTION_STATE:
+                        return new SROPacket("CHAR_ACTION_STATE", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+
+                    case (ushort)OPCode.Agent.Response.CHAR_DATA:
+                        return new SROPacket("CHAR_DATA", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_DATA_START:
+                        return new SROPacket("CHAR_DATA_START", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_DATA_END:
+                        return new SROPacket("CHAR_DATA_END", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_CELESTIAL_POS:
+                        return new SROPacket("CHAR_CELESTIAL_POS", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+
+                    case (ushort)OPCode.Agent.Response.CHAR_HANDLE_EFFECT:
+                        return new SROPacket("CHAR_HANDLE_EFFECT", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.CHAR_HANDLE_UPDATE_SLOT:
+                        return new SROPacket("CHAR_HANDLE_UPDATE_SLOT", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
 
                     #region ACADEMY
 
@@ -262,7 +309,42 @@ namespace EasySSA.Packets {
 
                     #endregion
 
+                    #region ENTITY
+
+                    case (ushort)OPCode.Agent.Response.ENTITY_GROUPSPAWN_START:
+                        return new SROPacket("ENTITY_GROUPSPAWN_START", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.ENTITY_GROUPSPAWN_DATA:
+                        return new SROPacket("ENTITY_GROUPSPAWN_DATA", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.ENTITY_GROUPSPAWN_END:
+                        return new SROPacket("ENTITY_GROUPSPAWN_END", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+
+                    case (ushort)OPCode.Agent.Response.ENTITY_SOLO_SPAWN:
+                        return new SROPacket("ENTITY_SOLO_SPAWN", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.ENTITY_SOLO_DESPAWN:
+                        return new SROPacket("ENTITY_SOLO_DESPAWN", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+
+                    case (ushort)OPCode.Agent.Response.ENTITY_PICKUPITEM_MOVE:
+                        return new SROPacket("ENTITY_PICKUPITEM_MOVE", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.ENTITY_PICKUPITEM_ANIM:
+                        return new SROPacket("ENTITY_PICKUPITEM_ANIM", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+
+                    case (ushort)OPCode.Agent.Response.ENTITY_SELECT_OBJECT:
+                        return new SROPacket("ENTITY_SELECT_OBJECT", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+
+                    case (ushort)OPCode.Agent.Response.ENTITY_NPC_OPEN:
+                        return new SROPacket("ENTITY_NPC_OPEN", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.ENTITY_NPC_CLOSE:
+                        return new SROPacket("ENTITY_NPC_CLOSE", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+
+                    case (ushort)OPCode.Agent.Response.ENTITY_TICKET:
+                        return new SROPacket("ENTITY_TICKET", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+
+                    #endregion
+
                     #region ENVIRONMENT
+
+                    case (ushort)OPCode.Agent.Response.ENVIRONMENT_WEATHER:
+                        return new SROPacket("ENVIRONMENT_WEATHER", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
 
                     //Obsolote - Overridden from COS
 
@@ -483,8 +565,8 @@ namespace EasySSA.Packets {
                         return new SROPacket("INVENTORY_ITEM_REPAIR", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
                     case (ushort)OPCode.Agent.Response.INVENTORY_CLIENT_UNKNOWN:
                         return new SROPacket("INVENTORY_CLIENT_UNKNOWN", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
-                    case (ushort)OPCode.Agent.Response.INVENTORY_ITEM_USE:
-                        return new SROPacket("INVENTORY_ITEM_USE", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    //case (ushort)OPCode.Agent.Response.INVENTORY_ITEM_USE:
+                    //    return new SROPacket("INVENTORY_ITEM_USE", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
 
                     #endregion
 
@@ -663,6 +745,12 @@ namespace EasySSA.Packets {
                         return new SROPacket("SKILL_MASTERY_WITHDRAW", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
                     case (ushort)OPCode.Agent.Response.SKILL_WITHDRAW_INFO_WND:
                         return new SROPacket("SKILL_WITHDRAW_INFO_WND", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.SKILL_DATA:
+                        return new SROPacket("SKILL_DATA", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.SKILL_ICON:
+                        return new SROPacket("SKILL_ICON", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
+                    case (ushort)OPCode.Agent.Response.SKILL_ENDBUFF:
+                        return new SROPacket("SKILL_ENDBUFF", packet, PacketSendType.RESPONSE, ServerServiceType.AGENT, PacketSocketType.SERVER);
 
                     #endregion
 
@@ -779,7 +867,14 @@ namespace EasySSA.Packets {
                     #endregion
 
                     #region AGENT-REQUEST
-                   
+
+                    case (ushort)OPCode.Agent.Request.CHAR_MOVEMENT:
+                        return new SROPacket("CHAR_MOVEMENT", packet, PacketSendType.REQUEST, ServerServiceType.AGENT, PacketSocketType.CLIENT);
+                    case (ushort)OPCode.Agent.Request.CHAR_MOVEMENT_ANGLE:
+                        return new SROPacket("CHAR_MOVEMENT_ANGLE", packet, PacketSendType.REQUEST, ServerServiceType.AGENT, PacketSocketType.CLIENT);
+                    case (ushort)OPCode.Agent.Request.CHAR_MAINACTION:
+                        return new SROPacket("CHAR_MAINACTION", packet, PacketSendType.REQUEST, ServerServiceType.AGENT, PacketSocketType.CLIENT);
+
                     #region ACADEMY
 
                     case (ushort)OPCode.Agent.Request.ACADEMY_CREATE:
@@ -940,6 +1035,18 @@ namespace EasySSA.Packets {
                         return new SROPacket("COS_UPDATE_SETTINGS", packet, PacketSendType.REQUEST, ServerServiceType.AGENT, PacketSocketType.CLIENT);
                     case (ushort)OPCode.Agent.Request.COS_UNKNOWN1:
                         return new SROPacket("COS_UNKNOWN1", packet, PacketSendType.REQUEST, ServerServiceType.AGENT, PacketSocketType.CLIENT);
+
+                    #endregion
+
+                    #region ENTITY
+
+                    case (ushort)OPCode.Agent.Request.ENTITY_SELECT_OBJECT:
+                        return new SROPacket("ENTITY_SELECT_OBJECT", packet, PacketSendType.REQUEST, ServerServiceType.AGENT, PacketSocketType.CLIENT);
+
+                    case (ushort)OPCode.Agent.Request.ENTITY_NPC_OPEN:
+                        return new SROPacket("ENTITY_NPC_OPEN", packet, PacketSendType.REQUEST, ServerServiceType.AGENT, PacketSocketType.CLIENT);
+                    case (ushort)OPCode.Agent.Request.ENTITY_NPC_CLOSE:
+                        return new SROPacket("ENTITY_NPC_CLOSE", packet, PacketSendType.REQUEST, ServerServiceType.AGENT, PacketSocketType.CLIENT);
 
                     #endregion
 
