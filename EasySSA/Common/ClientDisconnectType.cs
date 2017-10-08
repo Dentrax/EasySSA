@@ -12,6 +12,8 @@ namespace EasySSA.Common {
         MAX_CONNECTION_REACHED,
         TIMEOUT,
         DISPOSED,
+        CLIENT_DISCONNECTED,
+        SERVICE_DISCONNECTED,
 
         PACKET_OPERATION_DISCONNECT,
 

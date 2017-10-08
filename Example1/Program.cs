@@ -31,14 +31,16 @@ namespace Example1 {
         private static void StartGateway() {
             //Burak 145.239.106.209
 
+            IPEndPoint service = new IPEndPoint(IPAddress.Parse("145.239.106.209"), 15779);
+
             SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
                             .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
-                            .SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15779))
+                            .SetLocalEndPoint(new IPEndPoint(IPAddress.Loopback, 25779))
                             .SetLocalBindTimeout(10)
-                            .SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("145.239.106.209"), 15779))
+                            .SetServiceEndPoint(service)
                             .SetServiceBindTimeout(100)
                             .SetMaxClientCount(500)
-                            .SetDebugMode(false);
+                            .SetDebugMode(true);
 
             gateway.OnLocalSocketStatusChanged += new Action<SocketError>(delegate (SocketError error) {
 
@@ -64,12 +66,13 @@ namespace Example1 {
 
                 Console.WriteLine("New client connected : " + client.Socket.RemoteEndPoint);
 
-                if (string.IsNullOrEmpty(client.IPAddress)) { //Example
-                    return false; //Decline client
-                } else {
-                    return true; //Accept client
-                }
+                //if (string.IsNullOrEmpty(client.IPAddress)) { //Example
+                //    return false; //Decline client
+                //} else {
+                //    //Accept client
+                //}
 
+                return true;
             });
 
             gateway.OnClientDisconnected += new Action<SROClient, ClientDisconnectType>(delegate (SROClient client, ClientDisconnectType disconnectType) {
@@ -80,30 +83,33 @@ namespace Example1 {
 
             gateway.OnPacketReceived += new Func<SROClient, SROPacket, PacketSocketType, PacketResult>(delegate (SROClient client, SROPacket packet, PacketSocketType socketType) {
 
+                DumpPacket(packet);
 
-                switch (packet.Opcode) {
-                    case 0x1111:
-                        return new PacketResult(PacketOperationType.DISCONNECT, new PacketResult.PacketDisconnectResultInfo("DC Reason : 0x5555 received"));
+                //switch (packet.Opcode) {
+                //    case 0x1111:
+                //        return new PacketResult(PacketOperationType.DISCONNECT, new PacketResult.PacketDisconnectResultInfo("DC Reason : 0x5555 received"));
 
-                    case 0x2222:
-                        return new PacketResult(PacketOperationType.IGNORE);
+                //    case 0x2222:
+                //        return new PacketResult(PacketOperationType.IGNORE);
 
-                    case 0x3333:
-                        return new PacketResult(PacketOperationType.INJECT, new PacketResult.PacketInjectResultInfo(packet, new List<Packet> { new Packet(0x3334), new Packet(0x3335) }, true));
+                //    case 0x3333:
+                //        return new PacketResult(PacketOperationType.INJECT, new PacketResult.PacketInjectResultInfo(packet, new List<Packet> { new Packet(0x3334), new Packet(0x3335) }, true));
 
-                    case 0x4444:
-                        return new PacketResult(PacketOperationType.REPLACE, new PacketResult.PacketReplaceResultInfo(packet, new List<Packet> { new Packet(0x4445) }));
+                //    case 0x4444:
+                //        return new PacketResult(PacketOperationType.REPLACE, new PacketResult.PacketReplaceResultInfo(packet, new List<Packet> { new Packet(0x4445) }));
 
-                    default:
-                        return new PacketResult(PacketOperationType.NOTHING);
-                }
+                //    default:
+                //        return new PacketResult(PacketOperationType.NOTHING);
+                //}
 
+                return new PacketResult(PacketOperationType.NOTHING);
             });
 
             gateway.DOBind(delegate (bool success, BindErrorType error) {
 
                 if (success) {
                     Console.WriteLine("EasySSA bind SUCCESS");
+                    Console.WriteLine("Waiting connection on port : " + service.ToString());
                 } else {
                     Console.WriteLine("EasySSA bind FAILED -- Reason : " + error);
                 }

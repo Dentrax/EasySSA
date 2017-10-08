@@ -99,6 +99,10 @@ namespace EasySSA.Component {
             return this;
         }
 
+        public void DOConnect(IPEndPoint endpoint, Action<bool, BindErrorType> callback = null) {
+
+        }
+
         public void DOBind(Action<bool, BindErrorType> callback = null) {
             bool flag = true;
 

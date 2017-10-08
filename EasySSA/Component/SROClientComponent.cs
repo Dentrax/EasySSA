@@ -142,7 +142,30 @@ namespace EasySSA.Component {
             return this;
         }
 
-        public void DOBind(Action<bool, BindErrorType> callback = null) {
+        public void DOConnect(Action<bool, BindErrorType> callback = null) {
+            bool flag = true;
+
+            if (this.m_wasDisposed) {
+                callback(false, BindErrorType.COMPONENT_DISPOSED);
+                flag = false;
+                return;
+            }
+
+            if (this.LocalGatewayEndPoint == null) {
+                callback(false, BindErrorType.COMPONENT_LOCAL_ENDPOINT_NULL);
+                flag = false;
+            }
+
+            if (flag) {
+                //try {
+                    SROClientContext context = new SROClientContext(this);
+                    context.Initialize();
+                    context.Connect();
+                //} catch {
+                    //callback(false, BindErrorType.UNKNOWN);
+                //}
+            }
+           
 
 
         }

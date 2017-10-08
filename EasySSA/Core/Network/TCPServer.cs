@@ -15,6 +15,7 @@ using System.Threading;
 using EasySSA.Common;
 using EasySSA.Context;
 using EasySSA.Component;
+using System.Net;
 
 namespace EasySSA.Core.Network {
     public sealed class TCPServer {
@@ -79,7 +80,7 @@ namespace EasySSA.Core.Network {
                 callback?.Invoke(false, BindErrorType.SERVER_BIND_ARGUMENT_NULL_EXCEPTION);
             } catch (SocketException e) {
                 Logger.TCP.Print(LogLevel.Error, e.ToString());
-                this.m_serviceComponent.OnLocalSocketStatusChanged?.Invoke(SocketError.SocketNotSupported);
+                this.m_serviceComponent.OnLocalSocketStatusChanged?.Invoke(SocketError.AddressNotAvailable);
                 callback?.Invoke(false, BindErrorType.SERVER_BIND_SOCKET_EXCEPTION);
             } catch (ObjectDisposedException e) {
                 Logger.TCP.Print(LogLevel.Error, e.ToString());

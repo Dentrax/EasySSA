@@ -76,9 +76,10 @@ namespace EasySSA.Common {
 
         public SROClient(Socket socket) {
             this.Socket = socket;
+            this.m_socketHandle = socket.Handle.ToInt64();
             Socket.Blocking = false;
             Socket.NoDelay = true;
-            this.m_socketHandle = socket.Handle.ToInt64();
+
             this.Security = new Security();
             this.TransferBuffer = new TransferBuffer(0x10000, 0, 0);
             this.Characters = new List<Character>();
@@ -145,6 +146,12 @@ namespace EasySSA.Common {
                 this.m_disposed = true;
             }
         }
+
+        #region MAIN_RECEIVE_LOOP
+
+
+
+        #endregion
 
         public void SendPacket(Packet packet, Action<bool> callback = null) {
             //TODO: Fix callback

@@ -16,6 +16,7 @@ using EasySSA.Common;
 using EasySSA.Packets;
 using EasySSA.Component;
 using EasySSA.Core.Network;
+using System.Net;
 
 namespace EasySSA.Context {
     public sealed class SROServiceContext : IDisposable {
@@ -79,12 +80,22 @@ namespace EasySSA.Context {
             Dispose(false);
         }
 
-        public void DOBind(Action<SROClient, SocketError> callback = null) {
+        public void DOBind(Action<SROClient, SocketError> callback = null, EndPoint clientEndPoint = null) {
             this.m_serviceSocket = NetworkHelper.TryConnect(this.ServiceComponent.ServiceEndPoint, this.ServiceComponent.ServiceBindTimeout, delegate(SocketError error) {
                 callback?.Invoke(this.Client, error);
             });
 
+            if (!this.Client.IsConnected() && clientEndPoint != null) {
+                this.Client.Socket.Connect(clientEndPoint);
+            }
+
             this.Start();
+        }
+
+        public void DOConnect() {
+
+
+
         }
 
         public bool IsServiceSocketConnected() {
@@ -307,6 +318,10 @@ namespace EasySSA.Context {
 
                         this.TransferToService();
                         this.DoRecvFromClient();
+
+                    } catch (SocketException) {
+                        this.Disconnect(this, ClientDisconnectType.CLIENT_DISCONNECTED);
+                        this.Stop();
                     } catch {
                         this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_CLIENT);
                         this.Stop();
@@ -342,10 +357,13 @@ namespace EasySSA.Context {
                                     }
                                 }
                             }
-                           
+
                         }
                         this.TransferToClient();
                         this.DoRecvFromService();
+                    } catch (SocketException) {
+                        this.Disconnect(this, ClientDisconnectType.SERVICE_DISCONNECTED);
+                        this.Stop();
                     } catch {
                         this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_SERVICE);
                         this.Stop();

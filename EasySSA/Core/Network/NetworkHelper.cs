@@ -76,5 +76,23 @@ namespace EasySSA.Core.Network {
                 return null;
             }
         }
+
+        public static ushort TryGetRandomValidPort() {
+            ushort port = 25000;
+            ushort currentPort = port;
+            bool isValidPort = false;
+            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            do {
+                try {
+                    socket.Bind(new IPEndPoint(IPAddress.Loopback, currentPort));
+                    port = currentPort;
+                    isValidPort = true;
+                } catch { currentPort++; }
+
+            } while (!isValidPort);
+            socket.Close();
+            socket = null;
+            return port;
+        }
     }
 }

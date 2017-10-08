@@ -19,6 +19,8 @@ using EasySSA.Common;
 using EasySSA.Packets;
 using EasySSA.Component;
 using EasySSA.Core.Network.Securities;
+using System.Threading.Tasks;
+using EasySSA.Core.Network;
 
 namespace EasySSA.Context {
     public sealed class SROClientContext {
@@ -52,11 +54,10 @@ namespace EasySSA.Context {
                             .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
                             .SetLocalEndPoint(this.ClientComponent.LocalGatewayEndPoint)
                             .SetLocalBindTimeout(10)
-                            .SetServiceEndPoint(new IPEndPoint(IPAddress.Parse("145.239.106.209"), 15779))
+                            .SetServiceEndPoint(this.ClientComponent.ServiceEndPoint)
                             .SetServiceBindTimeout(100)
                             .SetMaxClientCount(500)
                             .SetDebugMode(false);
-
             this.m_agentComponent = new SROServiceComponent(ServerServiceType.AGENT, 1)
                             .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
                             .SetLocalEndPoint(this.ClientComponent.LocalAgentEndPoint)
@@ -70,51 +71,53 @@ namespace EasySSA.Context {
             if(this.m_gatewayComponent != null) {
                 this.m_gatewayComponent.OnLocalSocketStatusChanged += new Action<SocketError>(delegate (SocketError error) {
                     if (error == SocketError.Success) {
-                        Console.WriteLine("LOCAL socket bind SUCCESS! : " + this.m_gatewayComponent.LocalEndPoint.ToString());
+                        Console.WriteLine("[GATEWAY LISTENER] LOCAL socket bind SUCCESS! : " + this.m_gatewayComponent.LocalEndPoint.ToString());
                     } else {
-                        Console.WriteLine("LOCAL socket bind FAILED!  : " + error);
+                        Console.WriteLine("[GATEWAY LISTENER] LOCAL socket bind FAILED!  : " + error);
                     }
                 });
                 this.m_gatewayComponent.OnServiceSocketStatusChanged += new Action<SROClient, SocketError>(delegate (SROClient client, SocketError error) {
                     if (error == SocketError.Success) {
-                        Console.WriteLine("SERVICE socket connect SUCCESS! : " + this.m_gatewayComponent.ServiceEndPoint.ToString());
+                        Console.WriteLine("[GATEWAY LISTENER] REMOTE service socket connect SUCCESS! : " + this.m_gatewayComponent.ServiceEndPoint.ToString());
                     } else {
-                        Console.WriteLine("SERVICE socket connect FAILED!  : " + error);
+                        Console.WriteLine("[GATEWAY LISTENER] REMOTE service socket connect FAILED!  : " + error);
                     }
                 });
                 this.m_gatewayComponent.OnClientConnected += new Func<SROClient, bool>(delegate (SROClient client) {
-                    Console.WriteLine("New client connected : " + client.Socket.RemoteEndPoint);
+                    Console.WriteLine("[GATEWAY LISTENER] New client connected : " + client.Socket.RemoteEndPoint);
+                    this.m_client = client;
+                    this.m_client.IsClientless = this.ClientComponent.IsClientless;
                     return true;
                 });
                 this.m_gatewayComponent.OnClientDisconnected += new Action<SROClient, ClientDisconnectType>(delegate (SROClient client, ClientDisconnectType disconnectType) {
-                    Console.WriteLine("Client disconnected : " + client.IPAddress + " -- Reason : " + disconnectType);
+                    Console.WriteLine("[GATEWAY LISTENER] Client disconnected : " + client.IPAddress + " -- Reason : " + disconnectType);
                 });
             }
 
             if(m_agentComponent != null){
                 this.m_agentComponent.OnLocalSocketStatusChanged += new Action<SocketError>(delegate (SocketError error) {
                     if (error == SocketError.Success) {
-                        Console.WriteLine("LOCAL socket bind SUCCESS! : " + this.m_agentComponent.LocalEndPoint.ToString());
+                        Console.WriteLine("[AGENT LISTENER] LOCAL socket bind SUCCESS! : " + this.m_agentComponent.LocalEndPoint.ToString());
                     } else {
-                        Console.WriteLine("LOCAL socket bind FAILED!  : " + error);
+                        Console.WriteLine("[AGENT LISTENER] LOCAL socket bind FAILED!  : " + error);
                     }
                 });
 
                 this.m_agentComponent.OnServiceSocketStatusChanged += new Action<SROClient, SocketError>(delegate (SROClient client, SocketError error) {
                     if (error == SocketError.Success) {
-                        Console.WriteLine("SERVICE socket connect SUCCESS! : " + this.m_agentComponent.ServiceEndPoint.ToString());
+                        Console.WriteLine("[AGENT LISTENER] REMOTE service socket connect SUCCESS! : " + this.m_agentComponent.ServiceEndPoint.ToString());
                     } else {
-                        Console.WriteLine("SERVICE socket connect FAILED!  : " + error);
+                        Console.WriteLine("[AGENT LISTENER] REMOTE service socket connect FAILED!  : " + error);
                     }
                 });
 
                 this.m_agentComponent.OnClientConnected += new Func<SROClient, bool>(delegate (SROClient client) {
-                    Console.WriteLine("New client connected : " + client.Socket.RemoteEndPoint);
+                    Console.WriteLine("[AGENT LISTENER] New client connected : " + client.Socket.RemoteEndPoint);
                     return true;
                 });
 
                 this.m_agentComponent.OnClientDisconnected += new Action<SROClient, ClientDisconnectType>(delegate (SROClient client, ClientDisconnectType disconnectType) {
-                    Console.WriteLine("Client disconnected : " + client.IPAddress + " -- Reason : " + disconnectType);
+                    Console.WriteLine("[AGENT LISTENER] Client disconnected : " + client.IPAddress + " -- Reason : " + disconnectType);
                 });
             }
         }
@@ -122,7 +125,10 @@ namespace EasySSA.Context {
         private void RegisterGatewayPacketListener() {
             if(this.m_gatewayComponent != null){
                 this.m_gatewayComponent.OnPacketReceived += new Func<SROClient, SROPacket, PacketSocketType, PacketResult>(delegate (SROClient client, SROPacket packet, PacketSocketType socketType) {
-                    Console.WriteLine("GATEWAY -> " + packet.Dump());
+
+                    this.ClientComponent.OnPacketReceived?.Invoke(client, packet, socketType);
+
+                    //Console.WriteLine("GATEWAY -> " + packet.Dump());
 
                     //OnRecvFromClient
                     if (socketType == PacketSocketType.CLIENT) {
@@ -133,11 +139,14 @@ namespace EasySSA.Context {
 
                                 //Request Patch
                                 if (packet.Opcode == 0x2001) {
-                                    Packet response = new Packet(0x6100, true);
-                                    response.WriteByte(this.m_client.LocaleID);
-                                    response.WriteAscii("SR_Client");
-                                    response.WriteUInt(this.m_client.VersionID);
-                                    return new PacketResult(PacketOperationType.RESPONSE, new PacketResult.PacketResponseResultInfo(response));
+                                    if (packet.ReadAscii() == "GatewayServer") {
+                                        Packet response = new Packet(0x6100, true);
+                                        response.WriteByte(this.m_client.LocaleID);
+                                        response.WriteAscii("SR_Client");
+                                        response.WriteUInt(this.m_client.VersionID);
+                                        return new PacketResult(PacketOperationType.RESPONSE, new PacketResult.PacketResponseResultInfo(response));
+                                    }
+                                        
                                 }
 
                                 //Request Server List
@@ -155,21 +164,31 @@ namespace EasySSA.Context {
                                 //Reconnect to AgentServer on successfull login
                                 if (packet.Opcode == 0xA100) {
                                     byte result = packet.ReadByte();
+                                    Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@ RE BIND RESULT : " + result);
                                     if (result == 1) {
                                         this.m_client.SessionID = packet.ReadUInt();
                                         this.m_client.AgentIP = packet.ReadAscii();
                                         this.m_client.AgentPort = packet.ReadUShort();
-                                        //doAgentServerConnect = true;                        
 
-                                        this.m_gatewayComponent.UNBind();
-                                        this.m_agentComponent.SetServiceEndPoint(new IPEndPoint(IPAddress.Parse(this.m_client.AgentIP), this.m_client.AgentPort));
-                                        this.m_agentComponent.DOBind(delegate (bool success, BindErrorType error) {
-                                            if (success) {
-                                                Console.WriteLine("EasySSA GATEWAY bind SUCCESS");
-                                            } else {
-                                                Console.WriteLine("EasySSA GATEWAY bind FAILED -- Reason : " + error);
-                                            }
-                                        });
+                                        Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@ RE BIND 111111111111111111");
+                                        //CanDoAgentServerConnect = true;                        
+
+                                        //this.m_agentComponent.DOConnect(new IPEndPoint(IPAddress.Parse(this.m_client.AgentIP), this.m_client.AgentPort), delegate (bool status, BindErrorType error) {
+
+                                        //    Console.WriteLine("m_agentComponent DOConnect status : " + status);
+                                        //    Console.WriteLine("m_agentComponent DOConnect error : " + error);
+
+                                        //});
+
+                                        //this.m_gatewayComponent.UNBind();
+                                        //this.m_agentComponent.SetServiceEndPoint(new IPEndPoint(IPAddress.Parse(this.m_client.AgentIP), this.m_client.AgentPort));
+                                        //this.m_agentComponent.DOBind(delegate (bool success, BindErrorType error) {
+                                        //    if (success) {
+                                        //        Console.WriteLine("CONTEXT.Connect() AGENT PROXY bind SUCCESS");
+                                        //    } else {
+                                        //        Console.WriteLine("AGENT bind FAILED -- Reason : " + error);
+                                        //    }
+                                        //});
                                     }
                                 }
 
@@ -204,7 +223,15 @@ namespace EasySSA.Context {
                                 if (packet.Opcode == 0xA323) {
                                     var result = packet.ReadByte();
                                     if (result != 1) {
+                                        //Get captcha image ?
                                         this.m_client.CanCaptchaCheck = true;
+
+                                        Packet response = this.ClientComponent.GetCaptchaPacket();
+                                        return new PacketResult(PacketOperationType.RESPONSE, new PacketResult.PacketResponseResultInfo(response));
+
+                                    } else if (result == 2) {
+                                        //Wrong Captcha
+                                        this.m_client.CanCaptchaCheck = false;
                                     }
                                 }
 
@@ -224,21 +251,32 @@ namespace EasySSA.Context {
                                     SROPacket response = new SROPacket(0xA102, true);
                                     response.WriteByte(result);
                                     response.WriteUInt(this.m_client.SessionID);
-                                    response.WriteAscii(System.Net.IPAddress.Loopback.ToString());
-                                    response.WriteUShort(this.m_client.LocalPort);
+                                    response.WriteAscii(this.ClientComponent.LocalAgentEndPoint.Address.ToString());
+                                    response.WriteUShort((ushort)this.ClientComponent.LocalAgentEndPoint.Port);
+                                    //response.WriteAscii(System.Net.IPAddress.Loopback.ToString());
+                                    //response.WriteUShort(this.m_client.LocalPort);
                                     response.Lock();
                                     this.m_client.IsConnectedToAgent = true;
-                                    packet = response;
+                                    this.m_agentComponent.SetServiceEndPoint(new IPEndPoint(IPAddress.Parse(this.m_client.AgentIP), this.m_client.AgentPort));
+                                    this.m_agentComponent.DOBind(delegate (bool success, BindErrorType error) {
+                                        if (success) {
+                                            Console.WriteLine("[AGENT LISTENER] PROXY bind SUCCESS");
+                                        } else {
+                                            Console.WriteLine("[AGENT LISTENER] PROXY bind FAILED -- Reason : " + error);
+                                        }
+                                    });
+
+                                    return new PacketResult(PacketOperationType.RESPONSE, new PacketResult.PacketResponseResultInfo(response));
+                                    //packet = response;
                                 } else {
                                     this.m_client.CanAccountLogin = true;
                                 }
+
+                                client.SendPacket(packet);
                             }
 
                             #endregion
-
-                            client.SendPacket(packet);
                         }
-
                     }
 
                     return new PacketResult(PacketOperationType.NOTHING);
@@ -249,7 +287,12 @@ namespace EasySSA.Context {
         private void RegisterAgentPacketListener() {
             if(this.m_agentComponent != null) {
                 this.m_agentComponent.OnPacketReceived += new Func<SROClient, SROPacket, PacketSocketType, PacketResult>(delegate (SROClient client, SROPacket packet, PacketSocketType socketType) {
-                    Console.WriteLine("AGENT -> " + packet.Dump());
+                    this.ClientComponent.OnPacketReceived?.Invoke(client, packet, socketType);
+
+                    //Console.WriteLine("AGENT -> " + packet.Dump());
+
+                    //7001
+                    //B001
 
                     //OnRecvFromClient
                     if (socketType == PacketSocketType.CLIENT) {
@@ -556,14 +599,47 @@ namespace EasySSA.Context {
             }
         }
 
-        public void BindGateway() {
+        public bool DOLogin(IPEndPoint bind, uint localeID, uint versionID, uint shardID, string captcha, Account account, string CharName) {
+
+            //if(bind == null)
+            //if (Gateway != null || Agent != null)
+            //    return;
+            //i++;
+            //int x = i;
+            //waiter.Set();
+            //await Task.Factory.StartNew(async () => {
+            //    while (true) {
+            //        waiter.WaitOne();
+            //        if (x == i)
+            //            new Gateway(IP, Port, Version, Locale, ID, PW, CharName, ImageCode);
+            //        else
+            //            break;
+            //        await Task.Delay(1000);
+            //    }
+            //});
+            return true;
+        }
+
+        public void Connect() {
             this.m_gatewayComponent.DOBind(delegate (bool success, BindErrorType error) {
                 if (success) {
-                    Console.WriteLine("EasySSA GATEWAY bind SUCCESS");
+                    Console.WriteLine("[GATEWAY LISTENER] PROXY bind SUCCESS");
+
+                    if (this.ClientComponent.IsClientless) {
+                        Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        socket.Blocking = false;
+                        socket.NoDelay = true;
+
+                        SROClient client = new SROClient(socket);
+                        new SROServiceContext(client, this.m_gatewayComponent).DOBind(this.m_gatewayComponent.OnServiceSocketStatusChanged, this.ClientComponent.LocalGatewayEndPoint);
+                    }
+
                 } else {
-                    Console.WriteLine("EasySSA GATEWAY bind FAILED -- Reason : " + error);
+                    Console.WriteLine("[GATEWAY LISTENER] PROXY bind FAILED -- Reason : " + error);
                 }
             });
+
+           
         }
 
     }

@@ -12,21 +12,32 @@ using EasySSA.SSA;
 
 namespace EasySSA.Common {
     public struct Character {
+
         public string Name { get; private set; }
 
         public byte Level { get; private set; }
+
+        public ulong EXP { get; private set; }
+
+        public ushort STR { get; private set; }
+
+        public ushort INT { get; private set; }
+
+        public uint HP { get; private set; }
+
+        public uint MP { get; private set; }
 
         public Character(Packet packet) {
             packet.ReadUInt(); //Model
             this.Name = packet.ReadAscii();
             packet.ReadByte(); //Volume
             this.Level = packet.ReadByte(); //Level
-            packet.ReadULong(); //EXP
-            packet.ReadUShort(); //STR
-            packet.ReadUShort(); //INT
+            this.EXP = packet.ReadULong(); //EXP
+            this.STR = packet.ReadUShort(); //STR
+            this.INT = packet.ReadUShort(); //INT
             packet.ReadUShort(); //STAT
-            packet.ReadUInt(); //HP
-            packet.ReadUInt(); //MP
+            this.HP = packet.ReadUInt(); //HP
+            this.MP = packet.ReadUInt(); //MP
             var restoreFlag = packet.ReadBool();
             if (restoreFlag)
                 packet.ReadUInt(); //Delete Time
