@@ -55,6 +55,8 @@ Example Usage
 
 ![Preview Thumbnail](https://raw.githubusercontent.com/Dentrax/EasySSA/master/Example1/Thumbnail.png)
 
+![Preview Thumbnail](https://raw.githubusercontent.com/Dentrax/EasySSA/master/Example2/Thumbnail.png)
+
 Create Server-Side Proxy
 =============
 ```csharp
@@ -373,3 +375,5 @@ EasySQLITE was created by Furkan 'Dentrax' Türkal
  
 You can contact EasySSA by URL:
     **[CONTACT](https://github.com/dentrax)**
+
+<kbd>Best Regards</kbd>
