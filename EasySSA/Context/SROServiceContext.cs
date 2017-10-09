@@ -87,6 +87,8 @@ namespace EasySSA.Context {
 
             if (!this.Client.IsConnected() && clientEndPoint != null) {
                 this.Client.Socket.Connect(clientEndPoint);
+                this.Client.Socket.Blocking = false;
+                this.Client.Socket.NoDelay = true;
             }
 
             this.Start();
@@ -374,7 +376,8 @@ namespace EasySSA.Context {
 
         private void DoRecvFromClient() {
             try {
-                this.m_clientSocket.BeginReceive(m_clientBuffer, 0, m_clientBuffer.Length, SocketFlags.None, new AsyncCallback(OnRecvFromClient), null);
+                SocketError error;
+                this.m_clientSocket.BeginReceive(m_clientBuffer, 0, m_clientBuffer.Length, SocketFlags.None, out error, new AsyncCallback(OnRecvFromClient), null);
             } catch {
                 this.Disconnect(this, ClientDisconnectType.DORECV_FROM_CLIENT);
                 this.Stop();
@@ -383,7 +386,8 @@ namespace EasySSA.Context {
 
         private void DoRecvFromService() {
             try {
-                this.m_serviceSocket.BeginReceive(m_serviceBuffer, 0, m_serviceBuffer.Length, SocketFlags.None, new AsyncCallback(OnRecvFromService), null);
+                SocketError error;
+                this.m_serviceSocket.BeginReceive(m_serviceBuffer, 0, m_serviceBuffer.Length, SocketFlags.None, out error, new AsyncCallback(OnRecvFromService), null);
             } catch {
                 this.Disconnect(this, ClientDisconnectType.DORECV_FROM_SERVICE);
                 this.Stop();

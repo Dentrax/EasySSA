@@ -152,6 +152,16 @@ ClientStatusType Types
 | `READY`						 | Trigger if sro_client fully ready up when the character enters the game. |
 
 
+CaptchaStatusType Types
+--------------------------
+
+| ClientStatusType		 | Explanation								      |
+| ---------------------- |:----------------------------------------------:|
+| `FETCH`				 | Trigger if captcha code fetched successfully.  |
+| `SUCCESS`				 | Trigger if captcha code entered successfully.  |
+| `FAILED`	             | Trigger if captcha code entered wrong.		  |
+
+
 CharacterStatusType Types
 --------------------------
 
@@ -276,7 +286,7 @@ Example SROClientComponent Usage
 
 	});
 
-	clientComponent.OnCaptchaStatusChanged += new Action<SROClient, bool>(delegate (SROClient client, bool status) {
+	clientComponent.OnCaptchaStatusChanged += new Action<SROClient, CaptchaStatusType>(delegate (SROClient client, CaptchaStatusType status) {
 
 	});
 

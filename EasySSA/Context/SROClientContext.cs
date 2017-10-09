@@ -128,9 +128,6 @@ namespace EasySSA.Context {
 
                     this.ClientComponent.OnPacketReceived?.Invoke(client, packet, socketType);
 
-                    //Console.WriteLine("GATEWAY -> " + packet.Dump());
-
-                    //OnRecvFromClient
                     if (socketType == PacketSocketType.CLIENT) {
                         return GetPacketResultOnClientPacketReceived(client, packet);
                     } else if (socketType == PacketSocketType.SERVER) {
@@ -213,6 +210,7 @@ namespace EasySSA.Context {
 
                                 //ImageCode/Login
                                 if (packet.Opcode == 0x2322) {
+                                    this.ClientComponent.OnCaptchaStatusChanged?.Invoke()
                                     //var captcha = Captcha.GeneratePacketCaptcha(packet);
                                     //Captcha.SaveCaptchaToBMP(captcha, Environment.CurrentDirectory + "\\captcha.bmp");
                                     //Program.main.picCaptcha.Image = Bitmap.FromFile(Environment.CurrentDirectory + "\\captcha.bmp");
@@ -289,12 +287,6 @@ namespace EasySSA.Context {
                 this.m_agentComponent.OnPacketReceived += new Func<SROClient, SROPacket, PacketSocketType, PacketResult>(delegate (SROClient client, SROPacket packet, PacketSocketType socketType) {
                     this.ClientComponent.OnPacketReceived?.Invoke(client, packet, socketType);
 
-                    //Console.WriteLine("AGENT -> " + packet.Dump());
-
-                    //7001
-                    //B001
-
-                    //OnRecvFromClient
                     if (socketType == PacketSocketType.CLIENT) {
                         return GetPacketResultOnClientPacketReceived(client, packet);
                     } else if (socketType == PacketSocketType.SERVER) {
@@ -334,8 +326,8 @@ namespace EasySSA.Context {
                                 if (packet.Opcode == 0xB007) {
                                     byte type = packet.ReadByte();
                                     if (type == 2) {
-                                        byte sucess = packet.ReadByte();
-                                        if (sucess == 1) {
+                                        byte success = packet.ReadByte();
+                                        if (success == 1) {
 
                                             this.m_client.CanCharacterSelection = true;
 
@@ -444,7 +436,6 @@ namespace EasySSA.Context {
 
                     client.SendPacket(response);
 
-                    //S->P:2005 Data:01 00 01 BA 02 05 00 00 00 02
                     response = new Packet(0x2005, false, true);
                     response.WriteByte(0x01);
                     response.WriteByte(0x00);
@@ -460,7 +451,6 @@ namespace EasySSA.Context {
 
                     client.SendPacket(response);
 
-                    //S->P:6005 Data:03 00 02 00 02
                     response = new Packet(0x6005, false, true);
                     response.WriteByte(0x03);
                     response.WriteByte(0x00);
@@ -483,16 +473,16 @@ namespace EasySSA.Context {
                     Packet response = new Packet(0xA100, false, true);
 
                     if (local != this.m_client.LocaleID) {
-                        response.WriteByte(0x02); //Faild
-                        response.WriteByte(0x01); //Faild to connect to server.(C4)                   
+                        response.WriteByte(0x02);
+                        response.WriteByte(0x01); //(C4)                   
                     } else if (identity != "SR_Client") {
-                        response.WriteByte(0x02); //Faild
-                        response.WriteByte(0x03); //Faild to connect to server.(C4)                 
+                        response.WriteByte(0x02); 
+                        response.WriteByte(0x03); //(C4)                 
                     } else if (version != this.m_client.VersionID) {
-                        response.WriteByte(0x02); //Faild
-                        response.WriteByte(0x02); //Update - Missing bytes but still trigger update message on Client, launcher will crash :/
+                        response.WriteByte(0x02);
+                        response.WriteByte(0x02);
                     } else {
-                        response.WriteByte(0x01); //Sucess
+                        response.WriteByte(0x01); //Success
                     }
 
                     response.Lock();
@@ -504,7 +494,7 @@ namespace EasySSA.Context {
 
                 if (packet.Opcode == 0x6101 && this.m_client.IsConnectedToAgent == false) {
                     Packet response = new Packet(0xA102);
-                    response.WriteByte(0x01); //Sucess
+                    response.WriteByte(0x01); //Success
                     response.WriteUInt(uint.MaxValue); //SessionID
                     response.WriteAscii("127.0.0.1"); //AgentIP
                     response.WriteUShort(this.m_client.LocalPort);
@@ -519,7 +509,6 @@ namespace EasySSA.Context {
                 #region 0x6103
 
                 if (packet.Opcode == 0x6103) {
-                    //FF FF FF FF 00 00 00 00 16 00 00 9D 53 84 00
                     uint sessionID = packet.ReadUInt();
                     string username = packet.ReadAscii();
                     string password = packet.ReadAscii();
@@ -540,7 +529,7 @@ namespace EasySSA.Context {
                         response.WriteByte(0x02);
                         response.WriteByte(0x02);
                     } else {
-                        response.WriteByte(0x01); //Sucess
+                        response.WriteByte(0x01); //Success
                     }
                     response.Lock();
                     client.SendPacket(response);
@@ -604,19 +593,7 @@ namespace EasySSA.Context {
             //if(bind == null)
             //if (Gateway != null || Agent != null)
             //    return;
-            //i++;
-            //int x = i;
-            //waiter.Set();
-            //await Task.Factory.StartNew(async () => {
-            //    while (true) {
-            //        waiter.WaitOne();
-            //        if (x == i)
-            //            new Gateway(IP, Port, Version, Locale, ID, PW, CharName, ImageCode);
-            //        else
-            //            break;
-            //        await Task.Delay(1000);
-            //    }
-            //});
+
             return true;
         }
 

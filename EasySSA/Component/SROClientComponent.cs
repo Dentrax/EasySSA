@@ -24,7 +24,7 @@ namespace EasySSA.Component {
 
         public Action<SROClient, AccountStatusType> OnAccountStatusChanged;
 
-        public Action<SROClient, bool> OnCaptchaStatusChanged;
+        public Action<SROClient, CaptchaStatusType> OnCaptchaStatusChanged;
 
         public Action<SROClient, CharacterStatusType> OnCharacterStatusChanged;
 

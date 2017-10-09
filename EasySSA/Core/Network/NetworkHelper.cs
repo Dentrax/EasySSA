@@ -23,12 +23,12 @@ namespace EasySSA.Core.Network {
             }
 
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            //socket.Blocking = false;
-            //socket.NoDelay = true;
 
             try {
 
                 socket.Connect(endpoint);
+                socket.Blocking = false;
+                socket.NoDelay = true;
 
                 if (socket.Connected) {
                     callback?.Invoke(SocketError.Success);

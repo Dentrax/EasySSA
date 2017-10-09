@@ -35,7 +35,7 @@ namespace Example2 {
                            .SetCaptcha(string.Empty)
                            .SetVersionID(189)
                            .SetLocaleID(22)
-                           .SetClientless(false)
+                           .SetClientless(true)
                            .SetClientPath("D:\\_Coding-Corner_\\vSRO\\vSRO Client")
                            .SetLocalAgentEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 25880))
                            .SetLocalGatewayEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 25779))
@@ -51,7 +51,7 @@ namespace Example2 {
                 Console.WriteLine("OnAccountStatusChanged : " + status);
             });
 
-            clientComponent.OnCaptchaStatusChanged += new Action<SROClient, bool>(delegate (SROClient client, bool status) {
+            clientComponent.OnCaptchaStatusChanged += new Action<SROClient, CaptchaStatusType>(delegate (SROClient client, CaptchaStatusType status) {
                 Console.WriteLine("OnCaptchaStatusChanged : " + status);
             });
 
