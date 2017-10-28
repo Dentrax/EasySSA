@@ -19,9 +19,14 @@ using EasySSA.Packets;
 using EasySSA.Component;
 using EasySSA.Core.Network.Securities;
 using System.Collections.Generic;
+using System.Security.Principal;
+using System.Diagnostics;
 
 namespace Example1 {
     class Program {
+
+        public static bool HaveAdminRights => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+
         static void Main(string[] args) {
             InitConsole();
             new Thread(new ThreadStart(StartGateway)).Start();
@@ -35,7 +40,7 @@ namespace Example1 {
 
             SROServiceComponent gateway = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
                             .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
-                            .SetLocalEndPoint(new IPEndPoint(IPAddress.Loopback, 25779))
+                            .SetLocalEndPoint(new IPEndPoint(IPAddress.Parse("145.239.106.209"), 25779))
                             .SetLocalBindTimeout(10)
                             .SetServiceEndPoint(service)
                             .SetServiceBindTimeout(100)
@@ -64,7 +69,9 @@ namespace Example1 {
 
             gateway.OnClientConnected += new Func<SROClient, bool>(delegate (SROClient client) {
 
-                Console.WriteLine("New client connected : " + client.Socket.RemoteEndPoint);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Client connection established : " + client.Socket.RemoteEndPoint);
+                Console.ResetColor();
 
                 //if (string.IsNullOrEmpty(client.IPAddress)) { //Example
                 //    return false; //Decline client
@@ -77,7 +84,9 @@ namespace Example1 {
 
             gateway.OnClientDisconnected += new Action<SROClient, ClientDisconnectType>(delegate (SROClient client, ClientDisconnectType disconnectType) {
 
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Client disconnected : " + client.IPAddress + " -- Reason : " + disconnectType);
+                Console.ResetColor();
 
             });
 
@@ -109,7 +118,7 @@ namespace Example1 {
 
                 if (success) {
                     Console.WriteLine("EasySSA bind SUCCESS");
-                    Console.WriteLine("Waiting connection on port : " + service.ToString());
+                    Console.WriteLine("Waiting client connection on : " + service.ToString());
                 } else {
                     Console.WriteLine("EasySSA bind FAILED -- Reason : " + error);
                 }
@@ -175,8 +184,16 @@ namespace Example1 {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(attributeCopyright);
             Console.WriteLine();
-            Console.ResetColor();
 
+            if (HaveAdminRights) {
+                Console.WriteLine("Running as Administrator privileges");
+                using (Process p = Process.GetCurrentProcess()) {
+                    p.PriorityClass = ProcessPriorityClass.High;
+                    Console.WriteLine($"Process Priority = {p.PriorityClass}");
+                }
+            }
+
+            Console.ResetColor();
             Console.Beep();
         }
     }

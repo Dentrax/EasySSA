@@ -77,10 +77,13 @@ namespace EasySSA.Common {
         public SROClient(Socket socket) {
             this.Socket = socket;
             this.m_socketHandle = socket.Handle.ToInt64();
-            Socket.Blocking = false;
-            Socket.NoDelay = true;
+            //Socket.Blocking = false;
+            //Socket.NoDelay = true;
 
             this.Security = new Security();
+            this.Security.ChangeIdentity("SR_Client", 0);
+            this.Security.GenerateSecurity(true, true, true);
+
             this.TransferBuffer = new TransferBuffer(0x10000, 0, 0);
             this.Characters = new List<Character>();
             this.HasSendingPackets = false;

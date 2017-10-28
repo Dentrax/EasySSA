@@ -18,10 +18,14 @@ using EasySSA.Component;
 using EasySSA.Core.Network.Securities;
 using EasySSA.Packets;
 using System.Net.Sockets;
-using System.Collections.Generic;
+using System.Diagnostics;
+using System.Security.Principal;
 
 namespace Example2 {
     class Program {
+
+        public static bool HaveAdminRights => new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+
         static void Main(string[] args) {
             InitConsole();
             new Thread(new ThreadStart(StartClient)).Start();
@@ -111,8 +115,16 @@ namespace Example2 {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(attributeCopyright);
             Console.WriteLine();
-            Console.ResetColor();
 
+            if (HaveAdminRights) {
+                Console.WriteLine("Running as Administrator privileges");
+                using (Process p = Process.GetCurrentProcess()) {
+                    p.PriorityClass = ProcessPriorityClass.High;
+                    Console.WriteLine($"Process Priority = {p.PriorityClass}");
+                }
+            }
+
+            Console.ResetColor();
             Console.Beep();
         }
 

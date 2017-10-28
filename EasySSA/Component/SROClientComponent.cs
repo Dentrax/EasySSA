@@ -53,13 +53,13 @@ namespace EasySSA.Component {
         public ushort ServerID { get; private set; }
 
         public bool IsClientless { get; private set; }
+
         public string CharacterName { get; private set; }
 
         public Fingerprint Fingerprint { get; private set; }
 
         public IPEndPoint LocalAgentEndPoint { get; private set; }
         public IPEndPoint LocalGatewayEndPoint { get; private set; }
-
         public IPEndPoint ServiceEndPoint { get; private set; }
 
         public int BindTimeout { get; private set; }

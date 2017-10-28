@@ -21,6 +21,7 @@ using EasySSA.Component;
 using EasySSA.Core.Network.Securities;
 using System.Threading.Tasks;
 using EasySSA.Core.Network;
+using System.Threading;
 
 namespace EasySSA.Context {
     public sealed class SROClientContext {
@@ -51,7 +52,7 @@ namespace EasySSA.Context {
 
         private void SetupComponents() {
             this.m_gatewayComponent = new SROServiceComponent(ServerServiceType.GATEWAY, 1)
-                            .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
+                            .SetFingerprint(new Fingerprint("GatewayServer", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
                             .SetLocalEndPoint(this.ClientComponent.LocalGatewayEndPoint)
                             .SetLocalBindTimeout(10)
                             .SetServiceEndPoint(this.ClientComponent.ServiceEndPoint)
@@ -59,7 +60,7 @@ namespace EasySSA.Context {
                             .SetMaxClientCount(500)
                             .SetDebugMode(false);
             this.m_agentComponent = new SROServiceComponent(ServerServiceType.AGENT, 1)
-                            .SetFingerprint(new Fingerprint("SR_Client", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
+                            .SetFingerprint(new Fingerprint("AgentServer", 0, SecurityFlags.Handshake & SecurityFlags.Blowfish & SecurityFlags.SecurityBytes, ""))
                             .SetLocalEndPoint(this.ClientComponent.LocalAgentEndPoint)
                             .SetLocalBindTimeout(10)
                             .SetServiceBindTimeout(100)
@@ -146,28 +147,14 @@ namespace EasySSA.Context {
                                         
                                 }
 
-                                //Request Server List
-                                if (packet.Opcode == 0xA102) {
-                                    byte errorCode = packet.ReadByte();
-                                    if (errorCode == 1) {
-                                        Packet response = new Packet(0x6101, true);
-                                        return new PacketResult(PacketOperationType.RESPONSE, new PacketResult.PacketResponseResultInfo(response));
-                                    } else {
-                                        Console.WriteLine("There is an update or you are using an invalid silkroad version.");
-                                        return new PacketResult(PacketOperationType.IGNORE);
-                                    }
-                                }
-
                                 //Reconnect to AgentServer on successfull login
                                 if (packet.Opcode == 0xA100) {
                                     byte result = packet.ReadByte();
-                                    Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@ RE BIND RESULT : " + result);
                                     if (result == 1) {
                                         this.m_client.SessionID = packet.ReadUInt();
                                         this.m_client.AgentIP = packet.ReadAscii();
                                         this.m_client.AgentPort = packet.ReadUShort();
 
-                                        Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@ RE BIND 111111111111111111");
                                         //CanDoAgentServerConnect = true;                        
 
                                         //this.m_agentComponent.DOConnect(new IPEndPoint(IPAddress.Parse(this.m_client.AgentIP), this.m_client.AgentPort), delegate (bool status, BindErrorType error) {
@@ -208,9 +195,61 @@ namespace EasySSA.Context {
                                     } while (nextShard);
                                 }
 
-                                //ImageCode/Login
+                                //Request Server List
+                                if (packet.Opcode == 0xA102) {
+                                    byte errorCode = packet.ReadByte();
+                                    if (errorCode == 1) { //Connected to Agent Server
+                                        this.ClientComponent.OnAccountStatusChanged?.Invoke(client, AccountStatusType.LOGIN_SUCCESS);
+
+                                        Packet response = new Packet(0x6101, true);
+                                        return new PacketResult(PacketOperationType.RESPONSE, new PacketResult.PacketResponseResultInfo(response));
+                                    } else if (errorCode == 2) { //Cannot connect Agent Server.
+                                        switch (packet.ReadUInt8()) {
+                                            //Wrong ID/PW
+                                            case 1: {
+                                                    byte totalattempts = packet.ReadUInt8();
+                                                    byte num1 = packet.ReadUInt8();
+                                                    byte num2 = packet.ReadUInt8();
+                                                    byte num3 = packet.ReadUInt8();
+                                                    byte attempts = packet.ReadUInt8();
+
+                                                    this.ClientComponent.OnAccountStatusChanged?.Invoke(client, AccountStatusType.LOGIN_FAILED);
+                                                    break;
+                                                }
+
+                                            //Account action
+                                            case 2:
+
+                                                //Blocked
+                                                if (packet.ReadUInt8() == 1) {
+                                                    this.ClientComponent.OnAccountStatusChanged?.Invoke(client, AccountStatusType.BANNED);
+                                                    //Reason -> packet.ReadAscii());
+                                                }
+                                                break;
+
+                                            //Character is already logged on
+                                            case 3:
+                                                this.ClientComponent.OnAccountStatusChanged?.Invoke(client, AccountStatusType.ALREADY_LOGGED_ON);
+                                                break;
+
+                                            //Maybe offline or error ?
+                                            default: {
+                                                    this.ClientComponent.OnAccountStatusChanged?.Invoke(client, AccountStatusType.LOGIN_FAILED);
+                                                    break;
+                                                }
+                                        }
+                                    } else {
+                                        Console.WriteLine("There is an update or you are using an invalid silkroad version.");
+                                        return new PacketResult(PacketOperationType.IGNORE);
+                                    }
+                                }
+
+
+
+                                //CAPTCHA
                                 if (packet.Opcode == 0x2322) {
-                                    this.ClientComponent.OnCaptchaStatusChanged?.Invoke()
+                                    this.ClientComponent.OnCaptchaStatusChanged?.Invoke(client, CaptchaStatusType.FETCH);
+
                                     //var captcha = Captcha.GeneratePacketCaptcha(packet);
                                     //Captcha.SaveCaptchaToBMP(captcha, Environment.CurrentDirectory + "\\captcha.bmp");
                                     //Program.main.picCaptcha.Image = Bitmap.FromFile(Environment.CurrentDirectory + "\\captcha.bmp");
@@ -219,18 +258,23 @@ namespace EasySSA.Context {
 
 
                                 if (packet.Opcode == 0xA323) {
-                                    var result = packet.ReadByte();
-                                    if (result != 1) {
-                                        //Get captcha image ?
-                                        this.m_client.CanCaptchaCheck = true;
-
-                                        Packet response = this.ClientComponent.GetCaptchaPacket();
-                                        return new PacketResult(PacketOperationType.RESPONSE, new PacketResult.PacketResponseResultInfo(response));
-
-                                    } else if (result == 2) {
-                                        //Wrong Captcha
-                                        this.m_client.CanCaptchaCheck = false;
+                                    byte result = packet.ReadByte();
+                                    if(result == 1) {
+                                        this.ClientComponent.OnCaptchaStatusChanged?.Invoke(client, CaptchaStatusType.CORRECT);
+                                    } else {
+                                        this.ClientComponent.OnCaptchaStatusChanged?.Invoke(client, CaptchaStatusType.WRONG);
                                     }
+                                    //if (result != 1) {
+                                    //    //Get captcha image ?
+                                    //    this.m_client.CanCaptchaCheck = true;
+
+                                    //    Packet response = this.ClientComponent.GetCaptchaPacket();
+                                    //    return new PacketResult(PacketOperationType.RESPONSE, new PacketResult.PacketResponseResultInfo(response));
+
+                                    //} else if (result == 2) {
+                                    //    //Wrong Captcha
+                                    //    this.m_client.CanCaptchaCheck = false;
+                                    //}
                                 }
 
                             }
@@ -352,7 +396,7 @@ namespace EasySSA.Context {
 
                                 if (packet.Opcode == 0x34A6) {
                                     this.m_client.CanClientlessSwitchToClient = true;
-                                    Console.WriteLine("Clientless conncetion established. Please use a ReturnScroll");
+                                    this.ClientComponent.OnCharacterStatusChanged?.Invoke(client, CharacterStatusType.SPAWN_SUCCESS);
                                 }
 
                                 if (packet.Opcode == 0xB04C) {
@@ -598,25 +642,58 @@ namespace EasySSA.Context {
         }
 
         public void Connect() {
-            this.m_gatewayComponent.DOBind(delegate (bool success, BindErrorType error) {
+            this.m_gatewayComponent.DOBind(delegate (bool success, BindErrorType bindError) {
                 if (success) {
-                    Console.WriteLine("[GATEWAY LISTENER] PROXY bind SUCCESS");
+                    Console.WriteLine("[GATEWAY LISTENER] PROXY bind SUCCESS.");
 
                     if (this.ClientComponent.IsClientless) {
-                        Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        socket.Blocking = false;
-                        socket.NoDelay = true;
 
-                        SROClient client = new SROClient(socket);
-                        new SROServiceContext(client, this.m_gatewayComponent).DOBind(this.m_gatewayComponent.OnServiceSocketStatusChanged, this.ClientComponent.LocalGatewayEndPoint);
+                        Thread t = new Thread(new ThreadStart(this.StartFakeClient));
+                        t.Start();
+
+                        Console.WriteLine("[GATEWAY LISTENER] Clientless socket connection in progress...");
+
                     }
 
                 } else {
-                    Console.WriteLine("[GATEWAY LISTENER] PROXY bind FAILED -- Reason : " + error);
+                    Console.WriteLine("[GATEWAY LISTENER] PROXY bind FAILED -- Reason : " + bindError);
                 }
             });
 
            
+        }
+
+        SROServiceContext fakeClientService;
+
+        private void StartFakeClient() {
+            Thread.Sleep(1000);
+
+            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            //socket.Blocking = false;
+            //socket.NoDelay = true;
+
+            SROClient fakeClient = new SROClient(socket);
+
+            fakeClientService = new SROServiceContext(fakeClient, this.m_gatewayComponent);
+
+            fakeClientService.DOBind(delegate (SROClient client, SocketError socketError) {
+
+                if (socketError == SocketError.Success) {
+                    Console.WriteLine("[GATEWAY LISTENER] Clientless socket bind SUCCESS");
+
+                    ConnectFakeClient();
+
+                } else {
+                    Console.WriteLine("[GATEWAY LISTENER] Clientless socket bind failed to host. -- Reason : " + socketError);
+                }
+
+
+            });
+
+        }
+
+        private void ConnectFakeClient() {
+            fakeClientService.DOConnect(this.ClientComponent.LocalGatewayEndPoint, false);
         }
 
     }

@@ -9,6 +9,7 @@
 
 namespace EasySSA.Common {
     public enum AccountStatusType {
+        ALREADY_LOGGED_ON,
         LOGIN_SUCCESS,
         LOGIN_FAILED,
         BLOCKED,

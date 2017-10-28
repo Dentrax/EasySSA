@@ -130,12 +130,13 @@ DOBind Error Types
 AccountStatusType Types
 --------------------------
 
-| AccountStatusType | Explanation				                                        |
-| ----------------- |:-----------------------------------------------------------------:|
-| `LOGIN_SUCCESS`	| Trigger if account login success. 								|
-| `LOGIN_FAILED`	| Trigger if account login failed. Wrong (ID, PW).					|
-| `BLOCKED`			| Trigger if account login blocked when over captcha or login try.	|
-| `BANNED`			| Trigger if account login banned from GM.			             	|
+| AccountStatusType   | Explanation				                                            |
+| ------------------- |:-------------------------------------------------------------------:|
+| `ALREADY_LOGGED_ON` | Trigger if account already logged on status. 					    |
+| `LOGIN_SUCCESS`	  | Trigger if account login success. 								    |
+| `LOGIN_FAILED`	  | Trigger if account login failed. Wrong (ID, PW).					|
+| `BLOCKED`			  | Trigger if account login blocked when over captcha or login try.	|
+| `BANNED`			  | Trigger if account login banned from GM.			             	|
 
 
 ClientStatusType Types
@@ -158,8 +159,8 @@ CaptchaStatusType Types
 | ClientStatusType		 | Explanation								      |
 | ---------------------- |:----------------------------------------------:|
 | `FETCH`				 | Trigger if captcha code fetched successfully.  |
-| `SUCCESS`				 | Trigger if captcha code entered successfully.  |
-| `FAILED`	             | Trigger if captcha code entered wrong.		  |
+| `CORRECT`				 | Trigger if captcha code entered correct.       |
+| `WRONG`	             | Trigger if captcha code entered wrong.		  |
 
 
 CharacterStatusType Types

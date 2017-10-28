@@ -35,8 +35,6 @@ namespace EasySSA.Context {
         private Security m_clientSecurity;
         private Security m_serviceSecurity;
 
-        private int TotalPacketCount = 0;
-
         byte[] m_clientBuffer = new byte[4096];
         byte[] m_serviceBuffer = new byte[4096];
 
@@ -57,17 +55,14 @@ namespace EasySSA.Context {
 
             this.ServiceComponent = serviceComponent;
             this.Client = client;
-            this.Client.SetFingerprint(serviceComponent.Fingerprint);
 
             this.m_clientSocket = this.Client.Socket;
 
             this.m_serviceSecurity = new Security();
-            this.m_clientSecurity = new Security();
-            //this.m_clientSecurity = this.Client.Security;
-            this.m_clientSecurity.GenerateSecurity(true, true, true);
+            this.m_clientSecurity = client.Security;
 
-            //this.m_clientTransferBuffer = this.Client.TransferBuffer;
-            //this.m_serviceTransferBuffer = new TransferBuffer(0x10000, 0, 0);
+            //
+            //this.m_serviceSecurity.ChangeIdentity(serviceComponent.Fingerprint);
 
             this.IsRunning = false;
 
@@ -80,23 +75,33 @@ namespace EasySSA.Context {
             Dispose(false);
         }
 
-        public void DOBind(Action<SROClient, SocketError> callback = null, EndPoint clientEndPoint = null) {
+        public void DOBind(Action<SROClient, SocketError> callback = null) {
             this.m_serviceSocket = NetworkHelper.TryConnect(this.ServiceComponent.ServiceEndPoint, this.ServiceComponent.ServiceBindTimeout, delegate(SocketError error) {
                 callback?.Invoke(this.Client, error);
             });
 
-            if (!this.Client.IsConnected() && clientEndPoint != null) {
-                this.Client.Socket.Connect(clientEndPoint);
-                this.Client.Socket.Blocking = false;
-                this.Client.Socket.NoDelay = true;
-            }
-
             this.Start();
+
+           
         }
 
-        public void DOConnect() {
+        public void DOConnect(EndPoint clientEndPoint = null, bool async = false) {
 
+            if (!this.Client.IsConnected() && clientEndPoint != null) {
 
+                if (async) {
+                    IAsyncResult iar = this.Client.Socket.BeginConnect(clientEndPoint, null, null);
+                    if (iar.AsyncWaitHandle.WaitOne(5000)) {
+                        this.Client.Socket.EndConnect(iar);
+                    } else {
+                        this.Client.Socket.Close();
+                    }
+                } else {
+                    this.Client.Socket.Connect(clientEndPoint);
+                }
+                //this.Client.Socket.Blocking = false;
+                //this.Client.Socket.NoDelay = true;
+            }
 
         }
 
@@ -110,7 +115,8 @@ namespace EasySSA.Context {
 
         public bool Start() {
             if (m_serviceSocket == null || !IsServiceSocketConnected()) {
-                Stop();
+                Stop(ClientDisconnectType.CLIENT_SOCKET_NULL);
+                Console.WriteLine("asdas");
                 return false;
             }
 
@@ -131,11 +137,21 @@ namespace EasySSA.Context {
             return false;
         }
 
-        public bool Stop() {
+        public bool Stop(ClientDisconnectType disconnectType, bool force = true) {
             if (!IsRunning) return true;
 
-            bool flag1 = false;
-            bool flag2 = false;
+            this.ServiceComponent.OnClientDisconnected?.Invoke(this.Client, disconnectType);
+
+            if (!force) {
+                try {
+                    this.DisconnectFromClient();
+                    this.DisconnectFromService();
+                    return true;
+                } catch {
+                    return false;
+                }
+            }
+
 
             this.m_canPacketProcess = false;
             this.m_isDisconnecting = true;
@@ -145,7 +161,6 @@ namespace EasySSA.Context {
                 if (!this.Client.IsConnected()) {
                     this.Client.Dispose();
                 }
-                flag1 = true;
             } catch { }
 
             try {
@@ -155,30 +170,17 @@ namespace EasySSA.Context {
                     }
                     this.m_serviceSocket.Close();
                     this.m_serviceSocket = null;
-                    flag2 = true;
                 }
             } catch { }
 
-            if (flag1 && flag2) {
-                this.IsRunning = false;
-                if (ServiceComponent.IsDebugMode) {
-                    Logger.SERVICE.Print(LogLevel.Info, "SROServiceContext stopped..!");
-                }
-                this.m_isDisconnecting = false;
-                return true;
-            }
-
+            
             if (ServiceComponent.IsDebugMode) {
-                Logger.SERVICE.Print(LogLevel.Info, "SROServiceContext stop error");
+                Logger.SERVICE.Print(LogLevel.Info, "SROServiceContext stopped..!");
             }
 
-            return false;
-        }
-
-        public void Disconnect(SROServiceContext server, ClientDisconnectType disconnectType) {
-            if (this.IsRunning) {
-                this.ServiceComponent.OnClientDisconnected?.Invoke(this.Client, disconnectType);
-            }
+            this.IsRunning = false;
+            this.m_isDisconnecting = false;
+            return true;
         }
 
         private void DOPacketTransfer(Packet packet, PacketSocketType direction, PacketResult result) {
@@ -204,8 +206,7 @@ namespace EasySSA.Context {
                                 Logger.PACKET.Print(LogLevel.Warning, "Packet Operation (DISCONNECT) received : " + packet.HexOpcode);
                             }
 
-                            this.Disconnect(this, ClientDisconnectType.PACKET_OPERATION_DISCONNECT);
-                            this.Stop();
+                            this.Stop(ClientDisconnectType.PACKET_OPERATION_DISCONNECT);
                         }
                     }
                     break;
@@ -289,12 +290,11 @@ namespace EasySSA.Context {
         private void OnRecvFromClient(IAsyncResult iar) {
             lock (this.LOCK) {
                 if (!this.m_isDisconnecting && this.m_canPacketProcess) {
-                    try {
+                    //try {
                         int recvCount = this.m_clientSocket.EndReceive(iar);
 
                         if (recvCount == 0) {
-                            this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_CLIENT_SIZE_ZERO);
-                            this.Stop();
+                            this.Stop(ClientDisconnectType.ONRECV_FROM_CLIENT_SIZE_ZERO);
                             return;
                         }
 
@@ -303,9 +303,6 @@ namespace EasySSA.Context {
                         List<Packet> clientRecevivePackets = this.m_clientSecurity.TransferIncoming();
 
                         if (clientRecevivePackets != null) {
-
-                            TotalPacketCount += clientRecevivePackets.Count;
-
                             for (int i = 0; i < clientRecevivePackets.Count; i++) {
                                 Packet packet = clientRecevivePackets[i];
                                 if (this.ServiceComponent.OnPacketReceived != null) {
@@ -321,13 +318,11 @@ namespace EasySSA.Context {
                         this.TransferToService();
                         this.DoRecvFromClient();
 
-                    } catch (SocketException) {
-                        this.Disconnect(this, ClientDisconnectType.CLIENT_DISCONNECTED);
-                        this.Stop();
-                    } catch {
-                        this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_CLIENT);
-                        this.Stop();
-                    }
+                    //} catch (SocketException) {
+                    //    this.Stop(ClientDisconnectType.CLIENT_DISCONNECTED);
+                    //} catch {
+                    //    this.Stop(ClientDisconnectType.ONRECV_FROM_CLIENT);
+                    //}
                 }
             }
         }
@@ -339,8 +334,7 @@ namespace EasySSA.Context {
                         int recvCount = this.m_serviceSocket.EndReceive(iar);
 
                         if (recvCount == 0) {
-                            this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_SERVICE_SIZE_ZERO);
-                            this.Stop();
+                            this.Stop(ClientDisconnectType.ONRECV_FROM_SERVICE_SIZE_ZERO);
                             return;
                         }
 
@@ -364,11 +358,9 @@ namespace EasySSA.Context {
                         this.TransferToClient();
                         this.DoRecvFromService();
                     } catch (SocketException) {
-                        this.Disconnect(this, ClientDisconnectType.SERVICE_DISCONNECTED);
-                        this.Stop();
+                        this.Stop(ClientDisconnectType.SERVICE_DISCONNECTED);
                     } catch {
-                        this.Disconnect(this, ClientDisconnectType.ONRECV_FROM_SERVICE);
-                        this.Stop();
+                        this.Stop(ClientDisconnectType.ONRECV_FROM_SERVICE);
                     }
                 }
             }
@@ -378,9 +370,13 @@ namespace EasySSA.Context {
             try {
                 SocketError error;
                 this.m_clientSocket.BeginReceive(m_clientBuffer, 0, m_clientBuffer.Length, SocketFlags.None, out error, new AsyncCallback(OnRecvFromClient), null);
+                //if (error != SocketError.Success) {
+                //    if (error != SocketError.WouldBlock) {
+                //        this.Stop(ClientDisconnectType.DORECV_FROM_CLIENT_NON_WOULDBLOCK);
+                //    }
+                //}
             } catch {
-                this.Disconnect(this, ClientDisconnectType.DORECV_FROM_CLIENT);
-                this.Stop();
+                this.Stop(ClientDisconnectType.DORECV_FROM_CLIENT);
             }
         }
 
@@ -388,9 +384,13 @@ namespace EasySSA.Context {
             try {
                 SocketError error;
                 this.m_serviceSocket.BeginReceive(m_serviceBuffer, 0, m_serviceBuffer.Length, SocketFlags.None, out error, new AsyncCallback(OnRecvFromService), null);
+                //if (error != SocketError.Success) {
+                //    if (error != SocketError.WouldBlock) {
+                //        this.Stop(ClientDisconnectType.DORECV_FROM_SERVICE_NON_WOULDBLOCK);
+                //    }
+                //}
             } catch {
-                this.Disconnect(this, ClientDisconnectType.DORECV_FROM_SERVICE);
-                this.Stop();
+                this.Stop(ClientDisconnectType.DORECV_FROM_SERVICE);
             }
         }
 
@@ -404,8 +404,7 @@ namespace EasySSA.Context {
                     });
                 }
             } catch {
-                this.Disconnect(this, ClientDisconnectType.TRANSFERTO_CLIENT_OUTGOING);
-                this.Stop();
+                this.Stop(ClientDisconnectType.TRANSFERTO_CLIENT_OUTGOING);
             }
         }
 
@@ -418,8 +417,7 @@ namespace EasySSA.Context {
                     });
                 }
             } catch {
-                this.Disconnect(this, ClientDisconnectType.TRANSFERTO_SERVICE_OUTGOING);
-                this.Stop();
+                this.Stop(ClientDisconnectType.TRANSFERTO_SERVICE_OUTGOING);
             }
         }
 
@@ -430,8 +428,7 @@ namespace EasySSA.Context {
                         SocketError error;
                         this.m_clientSocket.BeginSend(buffer, 0, len, SocketFlags.None, out error, new AsyncCallback(RaiseOnClientSendCompleteCallBack), null);
                     } catch {
-                        this.Disconnect(this, ClientDisconnectType.SENDTO_CLIENT_BEGINSEND);
-                        this.Stop();
+                        this.Stop(ClientDisconnectType.SENDTO_CLIENT_BEGINSEND);
                     }
                 }
             }
@@ -442,9 +439,9 @@ namespace EasySSA.Context {
             try {
                 SocketError error;
                 this.m_clientSocket.EndSend(iar, out error);
+
             } catch {
-                this.Disconnect(this, ClientDisconnectType.SENDTO_CLIENT_ENDSEND);
-                this.Stop();
+                this.Stop(ClientDisconnectType.SENDTO_CLIENT_ENDSEND);
             }
         }
 
@@ -455,8 +452,7 @@ namespace EasySSA.Context {
                         SocketError error;
                         this.m_serviceSocket.BeginSend(buffer, 0, len, SocketFlags.None, out error, new AsyncCallback(RaiseOnServiceSendCompleteCallBack), null);
                     } catch {
-                        this.Disconnect(this, ClientDisconnectType.SENDTO_SERVICE_BEGINSEND);
-                        this.Stop();
+                        this.Stop(ClientDisconnectType.SENDTO_SERVICE_BEGINSEND);
                     }
                 }
             }
@@ -467,8 +463,43 @@ namespace EasySSA.Context {
                 SocketError error;
                 this.m_serviceSocket.EndSend(iar, out error);
             } catch {
-                this.Disconnect(this, ClientDisconnectType.SENDTO_SERVICE_ENDSEND);
-                this.Stop();
+                this.Stop(ClientDisconnectType.SENDTO_SERVICE_ENDSEND);
+            }
+        }
+
+        private void DisconnectFromService() {
+            try {
+                if (this.m_serviceSocket != null) {
+                    this.m_serviceSocket.BeginDisconnect(true, new AsyncCallback(RaiseOnDisconnectedFromService), null);
+                }
+            } catch {
+                this.Stop(ClientDisconnectType.DISCONNECT_FROM_SERVICE);
+            }
+        }
+
+        private void RaiseOnDisconnectedFromService(IAsyncResult iar) {
+            try {
+                this.m_serviceSocket.EndDisconnect(iar);
+            } catch {
+                this.Stop(ClientDisconnectType.DISCONNECT_FROM_SERVICE);
+            }
+        }
+
+        private void DisconnectFromClient() {
+            try {
+                if (this.m_clientSocket != null) {
+                    this.m_clientSocket.BeginDisconnect(true, new AsyncCallback(RaiseOnDisconnectedFromClient), null);
+                }
+            } catch {
+                this.Stop(ClientDisconnectType.DISCONNECT_FROM_CLIENT);
+            }
+        }
+
+        private void RaiseOnDisconnectedFromClient(IAsyncResult iar) {
+            try {
+                this.m_clientSocket.EndDisconnect(iar);
+            } catch {
+                this.Stop(ClientDisconnectType.DISCONNECT_FROM_CLIENT);
             }
         }
 
