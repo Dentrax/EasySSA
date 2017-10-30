@@ -127,10 +127,15 @@ namespace EasySSA.Context {
             if(this.m_gatewayComponent != null){
                 this.m_gatewayComponent.OnPacketReceived += new Func<SROClient, SROPacket, PacketSocketType, PacketResult>(delegate (SROClient client, SROPacket packet, PacketSocketType socketType) {
 
+                    
+
                     this.ClientComponent.OnPacketReceived?.Invoke(client, packet, socketType);
 
+                    //Received from CLIENT
                     if (socketType == PacketSocketType.CLIENT) {
                         return GetPacketResultOnClientPacketReceived(client, packet);
+
+                    //Received from REMOTE
                     } else if (socketType == PacketSocketType.SERVER) {
                         if (this.m_client.IsClientless) {
                             if (!this.m_client.CanSwitchClient) {
@@ -645,14 +650,20 @@ namespace EasySSA.Context {
             this.m_gatewayComponent.DOBind(delegate (bool success, BindErrorType bindError) {
                 if (success) {
                     Console.WriteLine("[GATEWAY LISTENER] PROXY bind SUCCESS.");
+                   
 
                     if (this.ClientComponent.IsClientless) {
 
-                        Thread t = new Thread(new ThreadStart(this.StartFakeClient));
-                        t.Start();
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Clientless auto-login is not supported yet.");
+                        Console.ResetColor();
 
-                        Console.WriteLine("[GATEWAY LISTENER] Clientless socket connection in progress...");
+                        //Thread t = new Thread(new ThreadStart(this.StartFakeClient));
+                        //t.Start();
 
+                        //Console.WriteLine("[GATEWAY LISTENER] Clientless socket connection in progress...");
+                    } else {
+                        Console.WriteLine("[GATEWAY LISTENER] Client socket connection is waiting...");
                     }
 
                 } else {

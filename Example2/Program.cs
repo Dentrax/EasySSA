@@ -39,7 +39,7 @@ namespace Example2 {
                            .SetCaptcha(string.Empty)
                            .SetVersionID(189)
                            .SetLocaleID(22)
-                           .SetClientless(true)
+                           .SetClientless(false)
                            .SetClientPath("D:\\_Coding-Corner_\\vSRO\\vSRO Client")
                            .SetLocalAgentEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 25880))
                            .SetLocalGatewayEndPoint(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 25779))

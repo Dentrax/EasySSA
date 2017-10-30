@@ -244,6 +244,9 @@ Example SROServiceComponent Usage
             case 0x4444:
                 return new PacketResult(PacketOperationType.REPLACE, new PacketResult.PacketReplaceResultInfo(packet, new List<Packet> { new Packet(0x4445) }));
 
+			case 0x5555:
+                return new PacketResult(PacketOperationType.RESPONSE, new PacketResult.PacketResponseResultInfo(new Packet(0x5556)));
+
             default:
                 return new PacketResult(PacketOperationType.NOTHING);
         }
@@ -380,7 +383,7 @@ Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instru
 
 ## Contact
 
-EasySQLITE was created by Furkan 'Dentrax' Türkal
+EasySSA was created by Furkan 'Dentrax' Türkal
 
  * <https://www.furkanturkal.com>
  

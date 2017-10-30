@@ -107,6 +107,9 @@ namespace Example1 {
                 //    case 0x4444:
                 //        return new PacketResult(PacketOperationType.REPLACE, new PacketResult.PacketReplaceResultInfo(packet, new List<Packet> { new Packet(0x4445) }));
 
+                //    case 0x5555:
+                //        return new PacketResult(PacketOperationType.RESPONSE, new PacketResult.PacketResponseResultInfo(new Packet(0x5556)));
+
                 //    default:
                 //        return new PacketResult(PacketOperationType.NOTHING);
                 //}

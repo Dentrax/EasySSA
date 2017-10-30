@@ -81,8 +81,6 @@ namespace EasySSA.Context {
             });
 
             this.Start();
-
-           
         }
 
         public void DOConnect(EndPoint clientEndPoint = null, bool async = false) {
@@ -116,7 +114,6 @@ namespace EasySSA.Context {
         public bool Start() {
             if (m_serviceSocket == null || !IsServiceSocketConnected()) {
                 Stop(ClientDisconnectType.CLIENT_SOCKET_NULL);
-                Console.WriteLine("asdas");
                 return false;
             }
 
@@ -290,7 +287,7 @@ namespace EasySSA.Context {
         private void OnRecvFromClient(IAsyncResult iar) {
             lock (this.LOCK) {
                 if (!this.m_isDisconnecting && this.m_canPacketProcess) {
-                    //try {
+                    try {
                         int recvCount = this.m_clientSocket.EndReceive(iar);
 
                         if (recvCount == 0) {
@@ -310,7 +307,7 @@ namespace EasySSA.Context {
                                     if (packet.Opcode != 0x9000 && packet.Opcode != 0x5000 && packet.Opcode != 0x2001) {
                                         DOPacketTransfer(packet, PacketSocketType.SERVER, result);
                                     }
-                                }
+                               }
                             }
 
                         }
@@ -318,12 +315,12 @@ namespace EasySSA.Context {
                         this.TransferToService();
                         this.DoRecvFromClient();
 
-                    //} catch (SocketException) {
-                    //    this.Stop(ClientDisconnectType.CLIENT_DISCONNECTED);
-                    //} catch {
-                    //    this.Stop(ClientDisconnectType.ONRECV_FROM_CLIENT);
-                    //}
+                } catch (SocketException) {
+                    this.Stop(ClientDisconnectType.CLIENT_DISCONNECTED);
+                } catch {
+                    this.Stop(ClientDisconnectType.ONRECV_FROM_CLIENT);
                 }
+            }
             }
         }
 
