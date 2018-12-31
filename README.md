@@ -371,7 +371,7 @@ Other short-lived branches may pop-up from time to time as we stabilize new rele
  
 The base project code is copyrighted by Furkan 'Dentrax' Türkal and is covered by single licence.
 
-All program code (i.e. C#, Java) is licensed under GPL v3.0 unless otherwise specified. Please see the **[LICENSE.md](https://github.com/Dentrax/EasySSA/blob/master/LICENSE)** file for more information.
+All program code (i.e. C#, Java) is licensed under MIT unless otherwise specified. Please see the **[LICENSE.md](https://github.com/Dentrax/EasySSA/blob/master/LICENSE)** file for more information.
 
 **SilkroadSecurityApi**
 
